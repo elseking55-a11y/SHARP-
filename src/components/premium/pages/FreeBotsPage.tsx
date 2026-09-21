@@ -24,6 +24,7 @@ type DomainBot = {
     category?: string;
     accent?: string;
     imageUrl?: string;
+    imageBase64?: string;
     videoUrl?: string;
     xmlBase64?: string;
 
@@ -239,7 +240,7 @@ const FreeBotsPage = ({ openBotBuilder }: { openBotBuilder?: () => void }) => {
                                     <span>{tag}</span>
                                 </div>
                                 <div className='prodb-bot-card__badge'>
-                                    {bot.imageUrl ? <img src={bot.imageUrl} alt='' /> : (bot.emoji || '🤖')}
+                                    {bot.imageBase64 || bot.imageUrl ? <img src={bot.imageBase64 || bot.imageUrl} alt='' /> : (bot.emoji || '🤖')}
                                 </div>
                                 <small>{domain}</small>
                                 <h2>{name}</h2>
