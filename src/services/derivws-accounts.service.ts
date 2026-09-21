@@ -42,12 +42,18 @@ export class DerivWSAccountsService {
     }
 
     private static getHeaders(accessToken: string): HeadersInit {
-        return {
+        const headers: Record<string, string> = {
             Authorization: `Bearer ${accessToken}`,
-            'Deriv-App-ID': (import.meta.env.VITE_DERIV_APP_ID as string | undefined)?.trim() || this.getSite().client_id,
             'Content-Type': 'application/json',
             Accept: 'application/json',
         };
+
+        // OAuth Bearer tokens do not require Deriv-App-ID. PAT authentication does.
+        // Never fall back to the OAuth client_id here: they are different concepts.
+        const appId = (import.meta.env.VITE_DERIV_APP_ID as string | undefined)?.trim();
+        if (appId) headers['Deriv-App-ID'] = appId;
+
+        return headers;
     }
 
     private static async readError(response: Response): Promise<string> {
