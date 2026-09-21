@@ -128,10 +128,10 @@ const FreeBotsPage = ({ openBotBuilder }: { openBotBuilder?: () => void }) => {
                     .filter((item: any) => item && typeof item.file === 'string')
                     .map((item: any) => ({ ...item, priority: Number(item.priority ?? 999) }))
                     .sort((a: DomainBot, b: DomainBot) => Number(a.priority ?? 999) - Number(b.priority ?? 999));
-                const localBots = readManagedBots().map(bot => ({ ...bot }));
+                const localBots = readManagedBots().filter(bot => bot.published !== false).map(bot => ({ ...bot }));
                 if (alive) setBots([...localBots, ...clean.filter((item: DomainBot) => !localBots.some(local => local.id === item.id))]);
             } catch (err) {
-                const localBots = readManagedBots().map(bot => ({ ...bot }));
+                const localBots = readManagedBots().filter(bot => bot.published !== false).map(bot => ({ ...bot }));
                 if (alive) {
                     setBots(localBots);
                     if (!localBots.length) setError(err instanceof Error ? err.message : String(err));
