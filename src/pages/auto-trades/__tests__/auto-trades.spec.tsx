@@ -39,6 +39,7 @@ jest.mock('@/external/bot-skeleton', () => ({
         is_authorized: true,
         account_info: { loginid: 'CR12345' },
         api: {
+            connection: { readyState: 1 },
             subscribe: (...args: unknown[]) => mockApiSubscribe(...args),
             send: (...args: unknown[]) => mockApiSend(...args),
         },
