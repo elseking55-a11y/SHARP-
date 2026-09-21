@@ -267,7 +267,7 @@ const PremiumLayout = observer(() => {
     } as CSSProperties;
 
     return <div
-        className={`prodb-premium-shell ${isBotBuilder ? 'prodb-premium-shell--builder' : ''} ${isRunPanelOpen ? 'prodb-premium-shell--run-open' : ''}`}
+        className={`prodb-premium-shell ${isBotBuilder ? 'prodb-premium-shell--builder' : ''} ${isRunPanelOpen ? 'prodb-premium-shell--run-open' : ''} ${adminAppearance.theme === 'light' ? 'sharp-theme-light' : 'sharp-theme-dark'}`}
         style={themeStyle}
     >
         {!SHARP_OFFLINE_MODE && <GlobalContractBridge />}
