@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import type { CSSProperties } from 'react';
 
 type AdminBot = {
     id: string;
@@ -118,7 +119,10 @@ const AdminPanelPage = () => {
             if (xmlFile) {
                 const raw = await xmlFile.arrayBuffer();
                 if (raw.byteLength > 5 * 1024 * 1024) throw new Error('XML file is larger than 5 MB.');
-                xmlBase64 = btoa(String.fromCharCode(...new Uint8Array(raw)));
+                const bytes = new Uint8Array(raw);
+                let binary = '';
+                for (let offset = 0; offset < bytes.length; offset += 0x8000) binary += String.fromCharCode(...bytes.subarray(offset, offset + 0x8000));
+                xmlBase64 = btoa(binary);
             }
             const response = await fetch('/api/admin/bots', {
                 method: 'POST',
@@ -206,7 +210,7 @@ const AdminPanelPage = () => {
                         <label>Text colour<input type='color' value={form.text} onChange={e => setForm({...form, text:e.target.value})} /></label>
                     </div>
                     <label className='prodb-admin-file'>Bot XML {editingId && <small>(optional when editing)</small>}<input type='file' accept='.xml,text/xml,application/xml' onChange={e => setXmlFile(e.target.files?.[0] || null)} /></label>
-                    <div className='prodb-admin-preview' style={{'--admin-accent':form.accent,'--admin-surface':form.surface,'--admin-text':form.text} as React.CSSProperties}>
+                    <div className='prodb-admin-preview' style={{'--admin-accent':form.accent,'--admin-surface':form.surface,'--admin-text':form.text} as CSSProperties}>
                         <span>{form.emoji || '🤖'}</span><div><small>{form.badge || 'SPECIAL BOT'}</small><strong>{form.name || 'Your bot name'}</strong><em>{form.description || 'Your bot description'}</em></div>
                     </div>
                     <button className='prodb-admin-save' type='submit' disabled={busy}>{busy ? 'SAVING…' : editingId ? 'SAVE BOT CHANGES' : 'ADD BOT TO LIBRARY'}</button>
@@ -216,7 +220,7 @@ const AdminPanelPage = () => {
                     <div className='prodb-admin-card-head'><div><span>LIVE LIBRARY</span><h2>{bots.length} bots</h2></div><button type='button' onClick={() => loadBots()}>↻ REFRESH</button></div>
                     <div className='prodb-admin-list'>
                         {bots.map(bot => (
-                            <article key={bot.id} className='prodb-admin-bot' style={{'--admin-accent':bot.accent || '#20b98d','--admin-surface':bot.surface || '#0d2135','--admin-text':bot.text || '#fff'} as React.CSSProperties}>
+                            <article key={bot.id} className='prodb-admin-bot' style={{'--admin-accent':bot.accent || '#20b98d','--admin-surface':bot.surface || '#0d2135','--admin-text':bot.text || '#fff'} as CSSProperties}>
                                 <span>{bot.emoji || '🤖'}</span><div><strong>{bot.name}</strong><small>{bot.category || 'Free Bots'} • {bot.file}</small></div>
                                 <div className='prodb-admin-bot-actions'><button type='button' onClick={() => editBot(bot)}>EDIT</button><button type='button' className='danger' onClick={() => deleteBot(bot)}>DELETE</button></div>
                             </article>
