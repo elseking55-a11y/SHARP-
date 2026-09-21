@@ -15,6 +15,7 @@ import useThemeSwitcher from '@/hooks/useThemeSwitcher';
 import { ThemeProvider } from '@deriv-com/quill-ui';
 import { setSmartChartsPublicPath } from '@deriv-com/smartcharts-champion';
 import { localize } from '@deriv-com/translations';
+import { SHARP_OFFLINE_MODE } from '@/config/runtime-mode';
 import Audio from '../components/audio';
 import BlocklyLoading from '../components/blockly-loading';
 import BotStopped from '../components/bot-stopped';
@@ -120,6 +121,11 @@ const AppContent = observer(() => {
     const changeActiveSymbolLoadingState = () => {
         init();
 
+        if (SHARP_OFFLINE_MODE) {
+            setIsLoading(false);
+            return;
+        }
+
         const retrieveActiveSymbols = () => {
             const { active_symbols } = ApiHelpers.instance;
 
@@ -148,6 +154,12 @@ const AppContent = observer(() => {
     };
 
     React.useEffect(() => {
+        if (SHARP_OFFLINE_MODE) {
+            init();
+            setIsLoading(false);
+            return;
+        }
+
         if (is_api_initialized) {
             init();
             setIsLoading(true);
@@ -159,6 +171,7 @@ const AppContent = observer(() => {
     }, [is_api_initialized]);
 
     React.useEffect(() => {
+        if (SHARP_OFFLINE_MODE) return;
         if (client.is_logged_in && is_api_initialized) {
             changeActiveSymbolLoadingState();
         }
