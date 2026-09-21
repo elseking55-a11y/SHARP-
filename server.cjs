@@ -320,17 +320,25 @@ const adminSaveBot = async (req, res) => {
         const body = JSON.parse(await readBody(req) || '{}');
         const name = String(body.name || '').trim();
         const xmlBase64 = String(body.xmlBase64 || '').trim();
-        if (!name || !xmlBase64) return send(res, 400, JSON.stringify({ error: 'name_and_xml_required' }));
-        const safeFile = String(body.fileName || `${name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'bot'}-${Date.now()}.xml`)
-            .replace(/[^a-zA-Z0-9._-]/g, '-');
-        if (!safeFile.toLowerCase().endsWith('.xml')) return send(res, 400, JSON.stringify({ error: 'xml_file_required' }));
-        const xml = Buffer.from(xmlBase64, 'base64').toString('utf8');
-        if (!/<xml[\\s>]/i.test(xml) && !/<block[\\s>]/i.test(xml)) return send(res, 400, JSON.stringify({ error: 'invalid_blockly_xml' }));
-        if (Buffer.byteLength(xml, 'utf8') > 5 * 1024 * 1024) return send(res, 413, JSON.stringify({ error: 'bot_too_large' }));
+        if (!name) return send(res, 400, JSON.stringify({ error: 'bot_name_required' }));
 
         const bots = await readAdminManifest();
-        const id = String(body.id || safeFile.replace(/\\.xml$/i, '')).replace(/[^a-zA-Z0-9_-]/g, '-');
-        const old = bots.find(bot => String(bot.id) === id);
+        const requestedId = String(body.id || '').replace(/[^a-zA-Z0-9_-]/g, '-');
+        const old = requestedId ? bots.find(bot => String(bot.id) === requestedId) : null;
+        if (requestedId && !old) return send(res, 404, JSON.stringify({ error: 'bot_not_found' }));
+
+        const safeFile = String(body.fileName || old?.file?.split('/').pop() || `${name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'bot'}-${Date.now()}.xml`)
+            .replace(/[^a-zA-Z0-9._-]/g, '-');
+        if (!safeFile.toLowerCase().endsWith('.xml')) return send(res, 400, JSON.stringify({ error: 'xml_file_required' }));
+
+        let xml = '';
+        if (xmlBase64) {
+            xml = Buffer.from(xmlBase64, 'base64').toString('utf8');
+            if (!/<xml[\\s>]/i.test(xml) && !/<block[\\s>]/i.test(xml)) return send(res, 400, JSON.stringify({ error: 'invalid_blockly_xml' }));
+            if (Buffer.byteLength(xml, 'utf8') > 5 * 1024 * 1024) return send(res, 413, JSON.stringify({ error: 'bot_too_large' }));
+        } else if (!old) {
+            return send(res, 400, JSON.stringify({ error: 'xml_file_required' }));
+        }
         const bot = {
             id,
             name,
@@ -346,8 +354,10 @@ const adminSaveBot = async (req, res) => {
         };
 
         const filePath = `public/free-bots/${safeFile}`;
-        const remoteXml = await githubContent(filePath);
-        await githubPutFile(filePath, xmlBase64, `Admin: add/update bot ${name}`, remoteXml?.sha);
+        if (xmlBase64) {
+            const remoteXml = await githubContent(filePath);
+            await githubPutFile(filePath, xmlBase64, `Admin: add/update bot ${name}`, remoteXml?.sha);
+        }
 
         const next = bots.filter(item => String(item.id) !== id);
         next.push(bot);
@@ -355,9 +365,11 @@ const adminSaveBot = async (req, res) => {
         await writeAdminManifest(next);
 
         try {
-            const runtimeDir = path.join(ROOT, 'free-bots');
-            fs.mkdirSync(runtimeDir, { recursive: true });
-            fs.writeFileSync(path.join(runtimeDir, safeFile), xml);
+            if (xmlBase64) {
+                const runtimeDir = path.join(ROOT, 'free-bots');
+                fs.mkdirSync(runtimeDir, { recursive: true });
+                fs.writeFileSync(path.join(runtimeDir, safeFile), xml);
+            }
         } catch (error) {
             console.warn('[Admin] Runtime bot cache failed:', error.message);
         }
