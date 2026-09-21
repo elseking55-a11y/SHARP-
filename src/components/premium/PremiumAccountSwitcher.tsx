@@ -311,3 +311,5 @@ const OfflinePremiumAccountSwitcher = () => {
 };
 
 const PremiumAccountSwitcher = () => SHARP_OFFLINE_MODE ? <OfflinePremiumAccountSwitcher /> : <LivePremiumAccountSwitcher />;
+
+export default PremiumAccountSwitcher;
