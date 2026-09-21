@@ -19,9 +19,9 @@ ENV NODE_ENV=production
 ENV PORT=10000
 
 COPY --from=build /app/dist ./dist
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/package.json ./package.json
+COPY --from=build /app/server.cjs ./server.cjs
+COPY --from=build /app/brand.config.json ./brand.config.json
 
 EXPOSE 10000
 
-CMD ["sh", "-c", "npx serve@14.2.4 -s dist -l ${PORT:-10000}"]
+CMD ["node", "server.cjs"]
