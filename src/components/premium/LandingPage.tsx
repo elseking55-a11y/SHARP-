@@ -25,6 +25,7 @@ interface Props {
     onLogin: () => void;
     onSignup: () => void;
     busy?: boolean;
+    error?: string | null;
 }
 
 const ReviewCard = ({ item }: { item: string[] }) => (
@@ -41,7 +42,7 @@ const ReviewCard = ({ item }: { item: string[] }) => (
     </article>
 );
 
-const LandingPage = ({ onLogin, onSignup, busy }: Props) => {
+const LandingPage = ({ onLogin, onSignup, busy, error }: Props) => {
     const site = getCurrentSiteConfig();
 
     return (
@@ -61,6 +62,11 @@ const LandingPage = ({ onLogin, onSignup, busy }: Props) => {
                     <div className='prodb-hero__pill'>FREE DERIV BOTS, AUTOMATION, AND TRADING TOOLS IN ONE WORKSPACE</div>
                     <h1 aria-label={`Welcome to ${site.display_domain}`} />
                     <p>Structured trading, built for focus. Build, load, and run Deriv bot strategies from a focused workspace<br className='desktop-only' /> made for everyday traders.</p>
+                    {error && (
+                        <div role='alert' style={{ margin: '10px auto 0', maxWidth: 520, padding: '9px 12px', border: '1px solid #7f3434', borderRadius: 6, color: '#ffb4b4', background: 'rgba(80, 15, 15, .35)', fontSize: 9, lineHeight: 1.4 }}>
+                            {error}
+                        </div>
+                    )}
                     <div className='prodb-hero__actions'>
                         <button className='prodb-hero__primary' onClick={onLogin} disabled={busy}>
                             <PulseIcon /><span>{busy ? 'Connecting...' : 'Log in and Trade'}</span><ChevronIcon />
