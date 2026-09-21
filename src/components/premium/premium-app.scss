@@ -1114,3 +1114,5 @@
 .prodb-follower-token-input{display:block;width:100%;min-height:150px;margin-top:9px;padding:13px;box-sizing:border-box;resize:vertical;border:1px solid #cfdad6;border-radius:11px;background:#fff;color:#172033;font:700 13px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;outline:none;}
 .prodb-follower-token-input:focus{border-color:#14a879;box-shadow:0 0 0 3px rgba(20,168,121,.1);}
 @media(max-width:700px){.prodb-follower-token-input{min-height:180px;font-size:12px;}.prodb-follower-token-box{padding:10px;}}
+
+.prodb-admin-media-box{display:grid;gap:5px;padding:11px;border:1px solid #294761;border-radius:11px;background:#081827}.prodb-admin-media-box small{font-size:7px;color:#71899e;line-height:1.4}.prodb-admin-media-preview{width:82px;height:62px;border-radius:9px;overflow:hidden;border:1px solid #315776;background:#06121e}.prodb-admin-media-preview img{width:100%;height:100%;object-fit:cover}.prodb-admin-optional{font-size:7px;color:#70889e;font-weight:500}
