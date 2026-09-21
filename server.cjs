@@ -438,7 +438,8 @@ const serveFile = (res, pathname) => {
             const ext = path.extname(filePath).toLowerCase();
             res.writeHead(200, {
                 'Content-Type': mime[ext] || 'application/octet-stream',
-                'Cache-Control': ['.html', '.json', '.css', '.js', '.mjs'].includes(ext) ? 'no-store, max-age=0, must-revalidate' : 'public, max-age=31536000, immutable',\n                'Pragma': 'no-cache',
+                'Cache-Control': ['.html', '.json', '.css', '.js', '.mjs'].includes(ext) ? 'no-store, max-age=0, must-revalidate' : 'public, max-age=31536000, immutable',
+                'Pragma': 'no-cache',
             });
             return res.end(data);
         }
