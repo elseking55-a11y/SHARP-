@@ -87,6 +87,34 @@ const exchangeToken = async (req, res) => {
     }
 };
 
+
+const validateDerivPat = async (req, res) => {
+    try {
+        const raw = await readBody(req);
+        const params = JSON.parse(raw || '{}');
+        const token = String(params.token || '').trim();
+        if (!token) return send(res, 400, JSON.stringify({ valid: false, error_description: 'API token is required.' }));
+        const appId = String(process.env.DERIV_APP_ID || process.env.VITE_DERIV_APP_ID || '').trim();
+        if (!appId) return send(res, 500, JSON.stringify({ valid: false, error_description: 'DERIV_APP_ID is not configured on the server.' }));
+        const ws = new WebSocket(`wss://ws.derivws.com/websockets/v3?app_id=${encodeURIComponent(appId)}`);
+        const result = await new Promise((resolve, reject) => {
+            const timer = setTimeout(() => { try { ws.close(); } catch {} reject(new Error('Deriv API validation timed out.')); }, 15000);
+            ws.addEventListener('open', () => ws.send(JSON.stringify({ authorize: token })));
+            ws.addEventListener('message', event => {
+                try {
+                    const data = JSON.parse(String(event.data));
+                    if (data.error) { clearTimeout(timer); try { ws.close(); } catch {} reject(new Error(data.error.message || 'Deriv rejected the API token.')); return; }
+                    if (data.msg_type === 'authorize') { clearTimeout(timer); try { ws.close(); } catch {} resolve({ account_id: data.authorize?.loginid || null, currency: data.authorize?.currency || null }); }
+                } catch (error) { clearTimeout(timer); try { ws.close(); } catch {} reject(error); }
+            });
+            ws.addEventListener('error', () => { clearTimeout(timer); try { ws.close(); } catch {} reject(new Error('Unable to reach the Deriv API.')); });
+        });
+        return send(res, 200, JSON.stringify({ valid: true, ...result }));
+    } catch (error) {
+        return send(res, 401, JSON.stringify({ valid: false, error_description: error instanceof Error ? error.message : 'Invalid Deriv API token.' }));
+    }
+};
+
 const mime = {
     '.html': 'text/html; charset=utf-8',
     '.js': 'text/javascript; charset=utf-8',
@@ -138,6 +166,10 @@ const server = http.createServer(async (req, res) => {
 
     if (req.method === 'POST' && url.pathname === '/api/oauth/token') {
         return exchangeToken(req, res);
+    }
+
+    if (req.method === 'POST' && url.pathname === '/api/deriv/pat/validate') {
+        return validateDerivPat(req, res);
     }
 
     if (req.method !== 'GET' && req.method !== 'HEAD') {
