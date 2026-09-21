@@ -17,6 +17,7 @@ import { useApiBase } from '@/hooks/useApiBase';
 import { useStore } from '@/hooks/useStore';
 import { DerivWSAccountsService, type DerivAccount } from '@/services/derivws-accounts.service';
 import { OAuthTokenExchangeService } from '@/services/oauth-token-exchange.service';
+import { SHARP_OFFLINE_MODE } from '@/config/runtime-mode';
 
 const money = (value: string | number, currency = 'USD') => {
     const amount = Number(value);
@@ -56,6 +57,18 @@ const AccountIcon = ({ account }: { account?: DerivAccount }) => {
 };
 
 const PremiumAccountSwitcher = observer(() => {
+    if (SHARP_OFFLINE_MODE) {
+        return (
+            <div className='prodb-api-account prodb-api-account--offline' aria-label='Offline workspace'>
+                <span className='prodb-api-account__offline-dot' aria-hidden='true' />
+                <span className='prodb-api-account__current'>
+                    <small>MODE</small>
+                    <strong>OFFLINE</strong>
+                </span>
+            </div>
+        );
+    }
+
     const { activeLoginid, accountList } = useApiBase();
     const { client } = useStore() ?? {};
     const rootRef = useRef<HTMLDivElement>(null);
