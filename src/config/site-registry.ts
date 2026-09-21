@@ -28,7 +28,28 @@ interface MultiSiteConfig {
 
 const multiSite = brandConfig.sites as MultiSiteConfig;
 
-const normalizeHost = (host: string) => host.trim().toLowerCase().replace(/^www\./, '');
+const normalizeHost = (host: string) => host.trim().toLowerCase().replace(/^www\\./, '');
+
+const getRenderSiteConfig = (hostname: string): SiteOAuthConfig | undefined => {
+    if (normalizeHost(hostname) !== 'sharp-mz3h.onrender.com') return undefined;
+
+    const clientId = (import.meta.env.VITE_DERIV_CLIENT_ID as string | undefined)?.trim();
+    const redirectUri = (import.meta.env.VITE_DERIV_REDIRECT_URI as string | undefined)?.trim()
+        || 'https://sharp-mz3h.onrender.com/callback';
+
+    if (!clientId) return undefined;
+
+    return {
+        id: 'sharp-render',
+        hosts: ['sharp-mz3h.onrender.com'],
+        display_domain: 'sharp-mz3h.onrender.com',
+        website_url: 'https://sharp-mz3h.onrender.com',
+        redirect_uri: redirectUri,
+        client_id: clientId,
+        scopes: ['trade', 'application_read'],
+        environment: 'production',
+    };
+};
 
 export const getAllSiteConfigs = (): SiteOAuthConfig[] => multiSite.entries;
 
@@ -53,7 +74,7 @@ export const resolveSiteConfig = (hostname?: string): SiteOAuthConfig | undefine
 
     if (!currentHost) return undefined;
 
-    return multiSite.entries.find(site => site.hosts.some(host => normalizeHost(host) === currentHost));
+    return getRenderSiteConfig(currentHost) || multiSite.entries.find(site => site.hosts.some(host => normalizeHost(host) === currentHost));
 };
 
 /**
