@@ -1,3 +1,5 @@
+import { SUPPORTED_VOLATILITY_MARKETS } from '@/utils/digit-strategy';
+
 type AutoTradePresetTradeType =
     | 'DIGITOVER'
     | 'DIGITUNDER'
