@@ -83,6 +83,7 @@ const PremiumLayout = observer(() => {
     const customization = useSiteCustomization();
     const [section, setSection] = useState<PremiumSection>(() => sectionFromHash(location.hash));
     const [, setAuthProbe] = useState(0);
+    const [authError, setAuthError] = useState<string | null>(null);
     const hasBootstrappedSession = useRef(false);
 
     const params = new URLSearchParams(window.location.search);
@@ -150,13 +151,19 @@ const PremiumLayout = observer(() => {
 
     const startOAuth = useCallback(async (prompt?: string) => {
         try {
+            setAuthError(null);
             setIsAuthorizing(true);
             const url = await generateOAuthURL(prompt);
-            if (url) window.location.replace(url);
-            else setIsAuthorizing(false);
+            if (!url) {
+                setIsAuthorizing(false);
+                setAuthError('Deriv login is not configured yet. Check the OAuth client ID and redirect URL on Render.');
+                return;
+            }
+            window.location.assign(url);
         } catch (error) {
             console.error('OAuth redirect failed:', error);
             setIsAuthorizing(false);
+            setAuthError(error instanceof Error ? error.message : 'Unable to open Deriv login.');
         }
     }, [setIsAuthorizing]);
 
@@ -186,7 +193,7 @@ const PremiumLayout = observer(() => {
     }, [changeSection, customization.loaded, customization.navigation, section]);
 
     if (!runtimeAuthenticated && (isOAuthCallback || isAuthorizing || hasStoredAuth)) return <PremiumLoader />;
-    if (!isAuthenticated) return <LandingPage onLogin={() => startOAuth()} onSignup={() => startOAuth('registration')} busy={isAuthorizing} />;
+    if (!isAuthenticated) return <LandingPage onLogin={() => startOAuth()} onSignup={() => startOAuth('registration')} busy={isAuthorizing} error={authError} />;
 
     const openBotBuilder = () => changeSection('bot_builder');
     const renderSection = () => {
