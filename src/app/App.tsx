@@ -63,16 +63,32 @@ function App() {
 
     React.useEffect(() => {
         if (!isProcessing && isValid && params.code) {
+            // Mark the OAuth callback as an authentication handoff. The app will
+            // stay on the callback page until the token is actually stored.
+            sessionStorage.setItem('sharp_auth_handoff', 'pending');
+
             OAuthTokenExchangeService.exchangeCodeForToken(params.code)
                 .then(response => {
-                    if (response.access_token) {
-                        cleanupURL();
-                    } else if (response.error) {
-                        console.error('Token exchange failed:', response.error, response.error_description);
-                        cleanupURL();
+                    if (response.access_token && OAuthTokenExchangeService.isAuthenticated()) {
+                        sessionStorage.setItem('sharp_auth_handoff', 'complete');
+
+                        // Do a clean application reload after the token is stored.
+                        // This prevents the callback route from rendering the
+                        // landing page while React still has the old auth state.
+                        window.location.replace('/#dashboard');
+                        return;
                     }
+
+                    sessionStorage.removeItem('sharp_auth_handoff');
+                    console.error(
+                        'Token exchange failed:',
+                        response.error,
+                        response.error_description
+                    );
+                    cleanupURL();
                 })
                 .catch(exchangeError => {
+                    sessionStorage.removeItem('sharp_auth_handoff');
                     console.error('OAuth token exchange request failed:', exchangeError);
                     cleanupURL();
                 });
