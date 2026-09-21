@@ -3,7 +3,6 @@ import { DBOT_TABS } from '@/constants/bot-contents';
 import { getSavedWorkspaces, timeSince } from '@/external/bot-skeleton';
 import { useStore } from '@/hooks/useStore';
 import type { PremiumSection } from '../types';
-import { SHARP_OFFLINE_MODE } from '@/config/runtime-mode';
 
 type FreeBotPreview = { id?: string; name?: string; title?: string; file: string; description?: string; emoji?: string };
 type SavedBot = { id: string; name?: string; timestamp?: number; save_type?: string };
@@ -68,8 +67,6 @@ const DashboardHome = ({ openBotBuilder, openSection }: { openBotBuilder: () => 
         }
     };
 
-    const workspaceStatus = SHARP_OFFLINE_MODE ? 'Offline workspace' : 'Live Deriv connection';
-
     return (
         <div className='prodb-dashboard-page'>
             <section className='prodb-dashboard-hero'>
@@ -83,9 +80,9 @@ const DashboardHome = ({ openBotBuilder, openSection }: { openBotBuilder: () => 
                     </div>
                 </div>
                 <div className='prodb-dashboard-balance'>
-                    <span>WORKSPACE STATUS</span>
-                    <strong>{workspaceStatus}</strong>
-                    <small>{SHARP_OFFLINE_MODE ? 'Live account connection is disabled' : 'Deriv account connected'}</small>
+                    <span>ACCOUNT</span>
+                    <strong>{store?.client?.loginid || '—'}</strong>
+                    <small>{store?.client?.currency || '—'}</small>
                 </div>
             </section>
 
@@ -122,7 +119,7 @@ const DashboardHome = ({ openBotBuilder, openSection }: { openBotBuilder: () => 
                     )) : (
                         <div className='prodb-imported-empty'>
                             <span>XML</span>
-                            <div><strong>No imported bots yet</strong><small>Save or import a bot in Bot Builder and it will appear here.</small></div>
+                            <div><strong>—</strong></div>
                             <button type='button' onClick={() => launch('bot_builder')}>BUILD</button>
                         </div>
                     )}
@@ -145,7 +142,7 @@ const DashboardHome = ({ openBotBuilder, openSection }: { openBotBuilder: () => 
                     )) : (
                         <button className='prodb-freebot-card' type='button' onClick={() => launch('free_bots')}>
                             <span className='bot-card-icon'>🤖</span>
-                            <span><small>FREE BOTS</small><strong>Open Free Bots Library</strong><em>Add your XML bots from Admin Panel.</em></span>
+                            <span><small>FREE BOTS</small><strong>—</strong><em></em></span>
                             <b>OPEN</b>
                         </button>
                     )}
