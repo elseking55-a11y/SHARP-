@@ -56,16 +56,6 @@
     --brand-font-secondary: Georgia, 'Times New Roman', Times, serif;
     --brand-font-monospace: 'Courier New', Courier, monospace;
 
-    /* Dynamic brand colors (set by brand configuration) */
-    --brand-primary: #ff444f;
-    --brand-secondary: #85acb0;
-    --brand-tertiary: #2a3052;
-    --brand-success: #4bb4b3;
-    --brand-danger: #cc2e3d;
-    --brand-warning: #ffad3a;
-    --brand-info: #377cfc;
-    --brand-neutral: #999;
-
     // App Cards gradient background
     --app-card-virtual: #{constants.$gradient-virtual};
     --app-card-virtual-swap-free: #{constants.$gradient-virtual-swap-free};
