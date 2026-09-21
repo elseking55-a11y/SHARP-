@@ -282,20 +282,4 @@ const LivePremiumAccountSwitcher = observer(() => {
     );
 });
 
-const PremiumAccountSwitcher = () => {
-    if (SHARP_OFFLINE_MODE) {
-        return (
-            <div className='prodb-api-account prodb-api-account--offline' aria-label='Offline workspace'>
-                <span className='prodb-api-account__offline-dot' aria-hidden='true' />
-                <span className='prodb-api-account__current'>
-                    <small>MODE</small>
-                    <strong>OFFLINE</strong>
-                </span>
-            </div>
-        );
-    }
-
-    return <LivePremiumAccountSwitcher />;
-};
-
-export default PremiumAccountSwitcher;
+const PremiumAccountSwitcher = () => <LivePremiumAccountSwitcher />;
