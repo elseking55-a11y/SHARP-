@@ -24,4 +24,4 @@ COPY --from=build /app/package.json ./package.json
 
 EXPOSE 10000
 
-CMD ["sh", "-c", "npx http-server dist -p ${PORT:-10000} -a 0.0.0.0 --proxy http://127.0.0.1:${PORT:-10000}?"]
+CMD ["sh", "-c", "npx serve@14.2.4 -s dist -l ${PORT:-10000}"]
