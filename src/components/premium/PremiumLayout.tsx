@@ -243,9 +243,11 @@ const PremiumLayout = observer(() => {
         <PremiumHeader active={section} navigation={customization.navigation} onChange={changeSection} />
         <main className='prodb-premium-content'>
             {!isBotBuilder && renderSection()}
-            <div className={`prodb-bot-builder-host ${isBotBuilder ? 'is-active' : 'is-hidden'}`} data-premium-builder-active={isBotBuilder ? 'true' : 'false'}>
-                <Outlet />
-            </div>
+            {isBotBuilder && (
+                <div className='prodb-bot-builder-host is-active' data-premium-builder-active='true'>
+                    <Outlet />
+                </div>
+            )}
         </main>
         <GlobalAIScannerV2 openBotBuilder={openBotBuilder} />
         <GlobalQuickTrade hidden={isBotBuilder} />
