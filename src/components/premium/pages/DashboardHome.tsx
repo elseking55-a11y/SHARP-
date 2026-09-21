@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { DBOT_TABS } from '@/constants/bot-contents';
 import { getSavedWorkspaces, timeSince } from '@/external/bot-skeleton';
 import { useStore } from '@/hooks/useStore';
-import { useApiBase } from '@/hooks/useApiBase';
 import type { PremiumSection } from '../types';
+import { SHARP_OFFLINE_MODE } from '@/config/runtime-mode';
 
 type FreeBotPreview = { id?: string; name?: string; title?: string; file: string; description?: string; emoji?: string };
 type SavedBot = { id: string; name?: string; timestamp?: number; save_type?: string };
@@ -28,7 +28,6 @@ const markets = [
 ];
 
 const DashboardHome = ({ openBotBuilder, openSection }: { openBotBuilder: () => void; openSection?: (section: PremiumSection) => void }) => {
-    const { authData } = useApiBase();
     const store = useStore();
     const [freeBots, setFreeBots] = useState<FreeBotPreview[]>([]);
     const [savedBots, setSavedBots] = useState<SavedBot[]>([]);
@@ -57,6 +56,7 @@ const DashboardHome = ({ openBotBuilder, openSection }: { openBotBuilder: () => 
     }, []);
 
     useEffect(() => {
+        if (SHARP_OFFLINE_MODE) return;
         let alive = true;
         const ws = new WebSocket('wss://api.derivws.com/trading/v1/options/ws/public');
         const subscribePreferred = () => {
@@ -109,8 +109,7 @@ const DashboardHome = ({ openBotBuilder, openSection }: { openBotBuilder: () => 
         }
     };
 
-    const balance = Number(authData?.balance || 0);
-    const currency = authData?.currency || 'USD';
+    const workspaceStatus = SHARP_OFFLINE_MODE ? 'Offline workspace' : 'Live Deriv connection';
 
     return (
         <div className='prodb-dashboard-page'>
@@ -125,9 +124,9 @@ const DashboardHome = ({ openBotBuilder, openSection }: { openBotBuilder: () => 
                     </div>
                 </div>
                 <div className='prodb-dashboard-balance'>
-                    <span>AVAILABLE BALANCE</span>
-                    <strong>{balance.toFixed(2)} {currency}</strong>
-                    <small>{authData?.loginid || 'Deriv account connected'}</small>
+                    <span>WORKSPACE STATUS</span>
+                    <strong>{workspaceStatus}</strong>
+                    <small>{SHARP_OFFLINE_MODE ? 'Live account connection is disabled' : 'Deriv account connected'}</small>
                 </div>
             </section>
 
