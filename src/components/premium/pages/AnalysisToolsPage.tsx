@@ -86,9 +86,15 @@ const AnalysisToolsPage = () => {
         ) : (
             <section className='prodb-live-card' role='tabpanel'>
                 <div className='prodb-analysis-controls'>
-                    <label>Market<select value={symbol} onChange={event => setSymbol(event.target.value)}>{symbols.map(item => <option key={getSymbolCode(item)} value={getSymbolCode(item)}>{getSymbolName(item)}</option>)}</select></label>
-                    <label>Tick window<input type='number' min='10' max='5000' value={windowSize} onChange={event => setWindowSize(Math.min(Math.max(number(event.target.value, 1000), 10), 5000))} /></label>
-                    <button type='button' onClick={refresh}>Refresh history</button>
+                    <div className='prodb-analysis-field prodb-analysis-market-field'>
+                        <label htmlFor='analysis-market'>MARKET</label>
+                        <select id='analysis-market' value={symbol} onChange={event => setSymbol(event.target.value)}>{symbols.map(item => <option key={getSymbolCode(item)} value={getSymbolCode(item)}>{getSymbolName(item)} · {getSymbolCode(item)}</option>)}</select>
+                    </div>
+                    <div className='prodb-analysis-field'>
+                        <label htmlFor='analysis-window'>TICK WINDOW</label>
+                        <input id='analysis-window' type='number' min='10' max='5000' value={windowSize} onChange={event => setWindowSize(Math.min(Math.max(number(event.target.value, 1000), 10), 5000))} />
+                    </div>
+                    <button className='prodb-analysis-refresh' type='button' onClick={refresh}>REFRESH</button>
                 </div>
                 <div className='prodb-analysis-tick'><small>LATEST DERIV TICK</small><strong>{prices.at(-1)?.toFixed(decimals) ?? '—'}</strong><span>{digits.at(-1) ?? '—'}</span></div>
                 <div className='prodb-analysis-digits'>{counts.map((count, digit) => <div key={digit}><span className={count === highest ? 'is-high' : count === lowest ? 'is-low' : ''}>{digit}</span><b>{((count / total) * 100).toFixed(2)}%</b><small>{count}/{digits.length}</small></div>)}</div>
