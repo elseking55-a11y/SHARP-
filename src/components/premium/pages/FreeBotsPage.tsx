@@ -5,6 +5,8 @@ import { load, save_types } from '@/external/bot-skeleton';
 import { ungzip } from 'pako';
 import { getTemplateDomain } from '../domain-brand';
 import { DownloadIcon } from '../icons';
+import { SHARP_OFFLINE_MODE } from '@/config/runtime-mode';
+import { decodeManagedBotXml, readManagedBots } from '@/utils/managed-bot-library';
 
 type DomainBot = {
     id?: string;
@@ -21,6 +23,10 @@ type DomainBot = {
     badge?: string;
     category?: string;
     accent?: string;
+    imageUrl?: string;
+    videoUrl?: string;
+    xmlBase64?: string;
+
     surface?: string;
     text?: string;
 };
@@ -107,6 +113,14 @@ const FreeBotsPage = ({ openBotBuilder }: { openBotBuilder?: () => void }) => {
             setLoading(true);
             setError('');
             try {
+                const localBots = readManagedBots();
+                if (SHARP_OFFLINE_MODE) {
+                    if (alive) {
+                        setBots(localBots.map(bot => ({ ...bot })));
+                        setError('');
+                    }
+                    return;
+                }
                 const manifestPayload = await fetchTextWithFallback(manifestFallbacks, 'Bot manifest');
                 const manifest = JSON.parse(manifestPayload);
                 const items = Array.isArray(manifest) ? manifest : Array.isArray(manifest?.bots) ? manifest.bots : [];
@@ -114,15 +128,25 @@ const FreeBotsPage = ({ openBotBuilder }: { openBotBuilder?: () => void }) => {
                     .filter((item: any) => item && typeof item.file === 'string')
                     .map((item: any) => ({ ...item, priority: Number(item.priority ?? 999) }))
                     .sort((a: DomainBot, b: DomainBot) => Number(a.priority ?? 999) - Number(b.priority ?? 999));
-                if (alive) setBots(clean);
+                const localBots = readManagedBots().map(bot => ({ ...bot }));
+                if (alive) setBots([...localBots, ...clean.filter((item: DomainBot) => !localBots.some(local => local.id === item.id))]);
             } catch (err) {
-                if (alive) setError(err instanceof Error ? err.message : String(err));
+                const localBots = readManagedBots().map(bot => ({ ...bot }));
+                if (alive) {
+                    setBots(localBots);
+                    if (!localBots.length) setError(err instanceof Error ? err.message : String(err));
+                }
             } finally {
                 if (alive) setLoading(false);
             }
         };
         void loadManifest();
-        return () => { alive = false; };
+        const refresh = () => setBots(readManagedBots().map(bot => ({ ...bot })));
+        window.addEventListener('sharp-managed-bots-updated', refresh);
+        return () => {
+            alive = false;
+            window.removeEventListener('sharp-managed-bots-updated', refresh);
+        };
     }, [manifestUrl]);
 
     const loadBot = async (bot: DomainBot) => {
@@ -130,22 +154,27 @@ const FreeBotsPage = ({ openBotBuilder }: { openBotBuilder?: () => void }) => {
         setBusyFile(bot.file);
         setError('');
         try {
-            const assetFile = bot.asset || bot.file;
-            const localAssetUrl = joinUrl(baseUrl, assetFile);
-            const rawAssetBase = githubRawUrlForLocalPath(baseUrl);
-            const payload = await fetchTextWithFallback(
-                [localAssetUrl, rawAssetBase ? joinUrl(rawAssetBase, assetFile) : ''],
-                bot.name || bot.file
-            );
-            const xml = bot.encoding === 'gzip-base64' ? decodeGzipBase64(payload) : payload;
-            if (!/<xml[\s>]/i.test(xml) && !/<block[\s>]/i.test(xml)) {
+            const xml = bot.xmlBase64
+                ? decodeManagedBotXml(bot.xmlBase64)
+                : (() => {
+                    const assetFile = bot.asset || bot.file;
+                    const localAssetUrl = joinUrl(baseUrl, assetFile);
+                    const rawAssetBase = githubRawUrlForLocalPath(baseUrl);
+                    return fetchTextWithFallback(
+                        [localAssetUrl, rawAssetBase ? joinUrl(rawAssetBase, assetFile) : ''],
+                        bot.name || bot.file
+                    );
+                })();
+            const resolvedXml = typeof xml === 'string' ? xml : await xml;
+            const decodedXml = bot.encoding === 'gzip-base64' ? decodeGzipBase64(resolvedXml) : resolvedXml;
+            if (!/<xml[\s>]/i.test(decodedXml) && !/<block[\s>]/i.test(decodedXml)) {
                 throw new Error(`${bot.file} is not a Blockly XML bot.`);
             }
 
             openBotBuilder();
             const workspace = await waitForWorkspace();
             await load({
-                block_string: xml,
+                block_string: decodedXml,
                 file_name: bot.file,
                 workspace,
                 from: save_types.LOCAL,
@@ -209,7 +238,9 @@ const FreeBotsPage = ({ openBotBuilder }: { openBotBuilder?: () => void }) => {
                                     <button type='button' aria-label={`Favorite ${name}`}>☆</button>
                                     <span>{tag}</span>
                                 </div>
-                                <div className='prodb-bot-card__badge'>{bot.emoji || '🤖'}</div>
+                                <div className='prodb-bot-card__badge'>
+                                    {bot.imageUrl ? <img src={bot.imageUrl} alt='' /> : (bot.emoji || '🤖')}
+                                </div>
                                 <small>{domain}</small>
                                 <h2>{name}</h2>
                                 <p>{bot.description || 'Ready to load into the existing Bot Builder workspace.'}</p>
