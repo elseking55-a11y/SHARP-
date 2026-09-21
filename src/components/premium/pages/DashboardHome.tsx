@@ -48,7 +48,7 @@ const DashboardHome = ({ openBotBuilder, openSection }: { openBotBuilder: () => 
     useEffect(() => {
         let alive = true;
         fetch('/free-bots/bots.json', { cache: 'no-store' })
-            .then(response => response.ok ? response.json() : Promise.reject(new Error(\`Free Bots HTTP \${response.status}\`)))
+            .then(response => response.ok ? response.json() : Promise.reject(new Error(`Free Bots HTTP ${response.status}`)))
             .then(payload => {
                 const items = Array.isArray(payload) ? payload : Array.isArray(payload?.bots) ? payload.bots : [];
                 if (alive) setFreeBots(items.filter((item: any) => item?.file).slice(0, 4));
@@ -114,7 +114,7 @@ const DashboardHome = ({ openBotBuilder, openSection }: { openBotBuilder: () => 
                     <div className='prodb-dashboard-shortcuts__track'>
                         {launcherItems.map((item, index) => (
                             <button key={item.label} type='button' onClick={() => launch(item)}>
-                                <span className={\`launcher-icon launcher-icon--\${index}\`}>{item.icon}</span>
+                                <span className={`launcher-icon launcher-icon--${index}`}>{item.icon}</span>
                                 <strong>{item.label}</strong>
                             </button>
                         ))}
@@ -129,10 +129,10 @@ const DashboardHome = ({ openBotBuilder, openSection }: { openBotBuilder: () => 
                 <div className='prodb-dashboard-freebots'>
                     {freeBots.length > 0 ? freeBots.map((bot, index) => (
                         <button key={bot.id || bot.file} type='button' onClick={() => openSection?.('free_bots')} className='prodb-dashboard-freebot'>
-                            <span className={\`prodb-dashboard-freebot__icon prodb-dashboard-freebot__icon--\${index % 4}\`}>{bot.emoji || '🤖'}</span>
+                            <span className={`prodb-dashboard-freebot__icon prodb-dashboard-freebot__icon--${index % 4}`}>{bot.emoji || '🤖'}</span>
                             <span>
                                 <small>FREE BOT</small>
-                                <strong>{bot.name || bot.title || bot.file.replace(/\\.xml$/i, '')}</strong>
+                                <strong>{bot.name || bot.title || bot.file.replace(/\.xml$/i, '')}</strong>
                                 <em>{bot.description || 'Ready to load into Bot Builder.'}</em>
                             </span>
                             <b>OPEN</b>
