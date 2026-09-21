@@ -20,6 +20,7 @@ type AdminForm = {
     priority: string;
     imageUrl: string;
     videoUrl: string;
+    imageBase64: string;
     published: boolean;
     comingSoon: boolean;
 };
@@ -36,6 +37,7 @@ const defaultForm: AdminForm = {
     priority: '1',
     imageUrl: '',
     videoUrl: '',
+    imageBase64: '',
     published: true,
     comingSoon: false,
 };
@@ -60,6 +62,7 @@ const AdminPanelPage = () => {
     const [bots, setBots] = useState<ManagedBot[]>([]);
     const [form, setForm] = useState(defaultForm);
     const [xmlFile, setXmlFile] = useState<File | null>(null);
+    const [imageFile, setImageFile] = useState<File | null>(null);
     const [editingId, setEditingId] = useState('');
     const [busy, setBusy] = useState(false);
     const [message, setMessage] = useState('');
@@ -121,6 +124,7 @@ const AdminPanelPage = () => {
     const resetForm = () => {
         setForm(defaultForm);
         setXmlFile(null);
+        setImageFile(null);
         setEditingId('');
         setMessage('');
         setError('');
@@ -140,6 +144,7 @@ const AdminPanelPage = () => {
             priority: String(bot.priority ?? 1),
             imageUrl: bot.imageUrl || '',
             videoUrl: bot.videoUrl || '',
+            imageBase64: bot.imageBase64 || '',
             published: bot.published !== false,
             comingSoon: Boolean(bot.comingSoon),
         });
@@ -164,7 +169,21 @@ const AdminPanelPage = () => {
         setMessage('');
 
         try {
-            let xmlBase64 = editingId ? readManagedBots().find(bot => bot.id === editingId)?.xmlBase64 || '' : '';
+            const existingBot = editingId ? readManagedBots().find(bot => bot.id === editingId) : undefined;
+            let xmlBase64 = existingBot?.xmlBase64 || '';
+            let imageBase64 = existingBot?.imageBase64 || form.imageBase64 || '';
+
+            if (imageFile) {
+                if (!imageFile.type.startsWith('image/')) throw new Error('Please choose an image file.');
+                if (imageFile.size > 2 * 1024 * 1024) throw new Error('Bot image must be 2 MB or smaller.');
+                imageBase64 = await new Promise<string>((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(String(reader.result || ''));
+                    reader.onerror = () => reject(new Error('Could not read the bot image.'));
+                    reader.readAsDataURL(imageFile);
+                });
+            }
+
             if (xmlFile) {
                 if (xmlFile.size > 5 * 1024 * 1024) throw new Error('XML file is larger than 5 MB.');
                 const raw = await xmlFile.arrayBuffer();
@@ -189,6 +208,7 @@ const AdminPanelPage = () => {
                 text: form.text,
                 priority: Math.max(1, Number(form.priority) || 1),
                 imageUrl: form.imageUrl.trim(),
+                imageBase64,
                 videoUrl: form.videoUrl.trim(),
                 published: form.published,
                 comingSoon: form.comingSoon,
@@ -328,7 +348,12 @@ const adminMenu = [
                     </div>
 
                     <label>Bot XML {editingId && <small>(optional when editing)</small>}<input type='file' accept='.xml,text/xml,application/xml' onChange={e => setXmlFile(e.target.files?.[0] || null)} /></label>
-                    <label>Preview image URL <input value={form.imageUrl} onChange={e => setForm({...form, imageUrl:e.target.value})} placeholder='https://...' /></label>
+                    <div className='prodb-admin-media-box'>
+                        <label>Bot image <input type='file' accept='image/png,image/jpeg,image/webp,image/gif' onChange={e => setImageFile(e.target.files?.[0] || null)} /></label>
+                        <small>Upload the image directly from your phone. No image URL is required. Maximum 2 MB.</small>
+                        {(imageFile || form.imageBase64) && <div className='prodb-admin-media-preview'><img src={imageFile ? URL.createObjectURL(imageFile) : form.imageBase64} alt='Bot preview' /></div>}
+                    </div>
+                    <label>Image URL <span className='prodb-admin-optional'>(optional fallback)</span><input value={form.imageUrl} onChange={e => setForm({...form, imageUrl:e.target.value})} placeholder='Optional: https://...' /></label>
                     <label>Preview video URL <input value={form.videoUrl} onChange={e => setForm({...form, videoUrl:e.target.value})} placeholder='https://...' /></label>
 
                     <div className='prodb-admin-preview' style={{'--admin-accent':form.accent,'--admin-surface':form.surface,'--admin-text':form.text} as CSSProperties}>
