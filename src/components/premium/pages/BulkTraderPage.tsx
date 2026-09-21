@@ -173,6 +173,7 @@ const BulkTraderPage = () => {
     };
 
     return <div className='prodb-bulk-page'>
+        <section className='prodb-bulk-card prodb-bulk-card--market'>
         <div className='prodb-form-row'>
             <label>MARKET
                 <select value={symbol} onChange={e => setSymbol(e.target.value)}>
@@ -186,6 +187,8 @@ const BulkTraderPage = () => {
             </label>
         </div>
 
+        </section>
+        <section className='prodb-bulk-card prodb-bulk-card--contract'>
         <div className='prodb-form-row prodb-bulk-side-row'>
             <label>CONTRACT
                 <select value={side} onChange={e => setSide(e.target.value)}>
@@ -199,6 +202,8 @@ const BulkTraderPage = () => {
             </label>}
         </div>
 
+        </section>
+        <section className='prodb-bulk-card prodb-bulk-card--analysis'>
         <label className='prodb-full-input'>NUMBER OF ANALYSIS TICKS
             <input type='number' min='10' max='5000' value={windowSize} onChange={e => setWindowSize(Math.min(Math.max(numeric(e.target.value, 1000), 10), 5000))}/>
         </label>
@@ -210,6 +215,8 @@ const BulkTraderPage = () => {
             <div className='prodb-sequence'>{digits.slice(-20).map((digit,index)=><span className={digit % 2 === 0 ? 'even':'odd'} key={`${index}-${digit}`}>{digit}</span>)}</div>
         </div>
 
+        </section>
+        <section className='prodb-bulk-card prodb-bulk-card--trade'>
         <div className='prodb-form-row prodb-form-row--three'>
             <label>DURATION (TICKS)<input type='number' min='1' value={duration} onChange={e => setDuration(numeric(e.target.value, 1))}/></label>
             <label>STAKE ({currency})<input type='number' min='.01' step='.01' value={stake} onChange={e => setStake(numeric(e.target.value, .5))}/></label>
@@ -221,12 +228,15 @@ const BulkTraderPage = () => {
             <div><span>{pairStats.rightLabel}</span><strong>{pairStats.rightPercent.toFixed(2)}%</strong><small>{mode === 'Over/Under' ? 'equal digits excluded' : 'analysis window'}</small></div>
         </div>
 
+        </section>
+        <section className='prodb-bulk-card prodb-bulk-card--execute'>
         <button className='prodb-bulk-execute' onClick={execute} disabled={busy || !symbol || !contractSupported}>
             {busy ? `EXECUTING ${results.length}/${Math.min(Math.max(Math.trunc(runs),1),100)}…` : `EXECUTE ${side.toUpperCase()}`}
         </button>
         {!contractSupported && <div className='prodb-live-error'>{side} is not available on the selected market.</div>}
         {error && <div className='prodb-live-error'>{error}</div>}
         {results.length > 0 && <div className='prodb-bulk-results'>{results.slice(-12).map(item => <span className={item.ok ? 'is-ok' : 'is-fail'} key={item.index}>#{item.index} {item.ok ? `✓ ${item.contract_id || ''}` : `✕ ${item.error}`}</span>)}</div>}
+        </section>
     </div>;
 };
 
