@@ -243,7 +243,7 @@ const PremiumLayout = observer(() => {
         className={`prodb-premium-shell ${isBotBuilder ? 'prodb-premium-shell--builder' : ''} ${isRunPanelOpen ? 'prodb-premium-shell--run-open' : ''}`}
         style={themeStyle}
     >
-        <GlobalContractBridge />
+        {!SHARP_OFFLINE_MODE && <GlobalContractBridge />}
         <PremiumHeader active={section} navigation={customization.navigation} onChange={changeSection} />
         <main className='prodb-premium-content'>
             {!isBotBuilder && renderSection()}
@@ -253,9 +253,9 @@ const PremiumLayout = observer(() => {
                 </div>
             )}
         </main>
-        <GlobalAIScannerV2 openBotBuilder={openBotBuilder} />
-        <GlobalQuickTrade hidden={isBotBuilder} />
-        {!isBotBuilder && <BottomStatusBar />}
+        {!SHARP_OFFLINE_MODE && <GlobalAIScannerV2 openBotBuilder={openBotBuilder} />}
+        {!SHARP_OFFLINE_MODE && <GlobalQuickTrade hidden={isBotBuilder} />}
+        {!SHARP_OFFLINE_MODE && !isBotBuilder && <BottomStatusBar />}
     </div>;
 });
 
