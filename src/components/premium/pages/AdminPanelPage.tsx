@@ -137,7 +137,6 @@ const AdminPanelPage = () => {
             });
             const data = await response.json().catch(() => ({}));
             if (!response.ok) throw new Error(data.message || data.error || 'Could not save bot.');
-            setMessage('Bot saved. GitHub was updated; Render will publish the new library on its next deploy.');
             resetForm();
             setMessage('Bot saved. GitHub was updated; Render will publish the new library on its next deploy.');
             await loadBots();
