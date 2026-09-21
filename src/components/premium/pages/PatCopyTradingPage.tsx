@@ -72,16 +72,20 @@ const PatCopyTradingPage = () => {
             <section className='prodb-live-card'>
                 <div className='prodb-live-card__title'><h2>Follower API tokens</h2><span className='prodb-live-badge'>{syncedCount} SYNCED</span></div>
                 <p className='prodb-api-note'>Paste one Personal Access Token per line. Tokens are kept in memory only for this browser session and are not written to localStorage or sessionStorage.</p>
-                <label className='prodb-token-field'>Follower tokens
+                <div className='prodb-follower-token-box'>
+                    <label className='prodb-token-field' htmlFor='follower-api-tokens'>Follower API tokens</label>
                     <textarea
+                        id='follower-api-tokens'
+                        className='prodb-follower-token-input'
                         value={tokenText}
                         onChange={event => setTokenText(event.target.value)}
                         rows={8}
                         spellCheck={false}
                         autoComplete='off'
-                        placeholder={'token_one\ntoken_two\ntoken_three'}
+                        placeholder=''
+                        aria-label='Follower API tokens'
                     />
-                </label>
+                </div>
                 <div className='prodb-live-actions'>
                     <button onClick={sync} disabled={syncing || running}>{syncing ? 'Validating…' : 'Sync tokens'}</button>
                     {!running
