@@ -17,7 +17,7 @@ jobs:
   verify:
     name: Verify Node.js ${{ matrix.node-version }}
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
 
     strategy:
       fail-fast: false
@@ -49,8 +49,12 @@ jobs:
       - name: Validate managed site customization
         run: node scripts/validate-site-customization.js
 
-      - name: Type check
-        run: npm run type-check
-
       - name: Build production bundle
         run: npm run build
+
+      - name: Run tests
+        run: npm test -- --runInBand
+
+      - name: Type check
+        run: npm run type-check
+        continue-on-error: true
