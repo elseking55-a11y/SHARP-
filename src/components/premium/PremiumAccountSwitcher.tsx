@@ -56,18 +56,7 @@ const AccountIcon = ({ account }: { account?: DerivAccount }) => {
     );
 };
 
-const PremiumAccountSwitcher = observer(() => {
-    if (SHARP_OFFLINE_MODE) {
-        return (
-            <div className='prodb-api-account prodb-api-account--offline' aria-label='Offline workspace'>
-                <span className='prodb-api-account__offline-dot' aria-hidden='true' />
-                <span className='prodb-api-account__current'>
-                    <small>MODE</small>
-                    <strong>OFFLINE</strong>
-                </span>
-            </div>
-        );
-    }
+const LivePremiumAccountSwitcher = observer(() => {
 
     const { activeLoginid, accountList } = useApiBase();
     const { client } = useStore() ?? {};
@@ -292,5 +281,21 @@ const PremiumAccountSwitcher = observer(() => {
         </div>
     );
 });
+
+const PremiumAccountSwitcher = () => {
+    if (SHARP_OFFLINE_MODE) {
+        return (
+            <div className='prodb-api-account prodb-api-account--offline' aria-label='Offline workspace'>
+                <span className='prodb-api-account__offline-dot' aria-hidden='true' />
+                <span className='prodb-api-account__current'>
+                    <small>MODE</small>
+                    <strong>OFFLINE</strong>
+                </span>
+            </div>
+        );
+    }
+
+    return <LivePremiumAccountSwitcher />;
+};
 
 export default PremiumAccountSwitcher;
