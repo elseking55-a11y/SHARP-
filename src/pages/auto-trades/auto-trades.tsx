@@ -3293,6 +3293,7 @@ const AutoTrades = observer(() => {
                                             className='auto-trades-controls__run'
                                             onClick={handleRun}
                                             disabled={!client.is_logged_in || selectedMarketSymbols.length === 0}
+                                            aria-label='Run Auto Trades'
                                         >
                                             ▶ Start Trading
                                         </button>
