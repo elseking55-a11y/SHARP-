@@ -44,7 +44,7 @@ export class DerivWSAccountsService {
     private static getHeaders(accessToken: string): HeadersInit {
         return {
             Authorization: `Bearer ${accessToken}`,
-            'Deriv-App-ID': this.getSite().client_id,
+            'Deriv-App-ID': (import.meta.env.VITE_DERIV_APP_ID as string | undefined)?.trim() || this.getSite().client_id,
             'Content-Type': 'application/json',
             Accept: 'application/json',
         };
