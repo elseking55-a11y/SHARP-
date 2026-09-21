@@ -253,7 +253,8 @@ const AdminPanelPage = () => {
         const next = { ...appearance, [key]: value };
         setAppearance(next);
         localStorage.setItem('sharp_admin_appearance_v1', JSON.stringify(next));
-        setMessage('Appearance setting saved on this device.');
+        window.dispatchEvent(new CustomEvent('sharp-admin-appearance-updated'));
+        setMessage('Appearance updated. The live app preview uses this colour now.');
     };
 
     const deleteBot = (bot: ManagedBot) => {
@@ -419,6 +420,11 @@ const adminMenu = [
                         <label>Primary colour<input type='color' value={appearance.primary || '#20b98d'} onChange={e => saveAppearance('primary',e.target.value)} /></label>
                         <label>Accent colour<input type='color' value={appearance.accent || '#1878df'} onChange={e => saveAppearance('accent',e.target.value)} /></label>
                         <label>Card colour<input type='color' value={appearance.card || '#0d2137'} onChange={e => saveAppearance('card',e.target.value)} /></label>
+                        <label>Button colour<input type='color' value={appearance.button || appearance.primary || '#20b98d'} onChange={e => saveAppearance('button',e.target.value)} /></label>
+                        <label>Icon colour<input type='color' value={appearance.icon || appearance.accent || '#1878df'} onChange={e => saveAppearance('icon',e.target.value)} /></label>
+                        <label>Navigation background<input type='color' value={appearance.navBackground || '#151d26'} onChange={e => saveAppearance('navBackground',e.target.value)} /></label>
+                        <label>Navigation text<input type='color' value={appearance.navText || '#f3f6f8'} onChange={e => saveAppearance('navText',e.target.value)} /></label>
+                        <label>Header background<input type='color' value={appearance.header || '#ffffff'} onChange={e => saveAppearance('header',e.target.value)} /></label>
                         <label>Theme
                             <select value={appearance.theme || 'dark'} onChange={e => saveAppearance('theme',e.target.value)}>
                                 <option value='dark'>Dark</option><option value='light'>Light</option>
