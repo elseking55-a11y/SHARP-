@@ -174,10 +174,12 @@ export class OAuthTokenExchangeService {
             const accounts = await DerivWSAccountsService.fetchAccountsList(data.access_token);
 
             if (!accounts?.length) {
-                this.clearAuthInfo();
+                // Keep the OAuth session. A transient account API response must not
+                // throw the user back to the landing page after successful login.
                 return {
+                    ...data,
                     error: 'no_accounts',
-                    error_description: 'Authentication succeeded, but no Options accounts were returned.',
+                    error_description: 'Authentication succeeded, but no Options accounts are available yet.',
                 };
             }
 
