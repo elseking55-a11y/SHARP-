@@ -12,6 +12,8 @@ export type ManagedBot = {
     priority?: number;
     imageUrl?: string;
     videoUrl?: string;
+    published?: boolean;
+    comingSoon?: boolean;
     xmlBase64: string;
     updatedAt: number;
 };
