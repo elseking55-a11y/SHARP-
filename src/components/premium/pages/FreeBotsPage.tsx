@@ -17,6 +17,11 @@ type DomainBot = {
     is_premium?: boolean;
     priority?: number;
     guide?: string;
+    badge?: string;
+    category?: string;
+    accent?: string;
+    surface?: string;
+    text?: string;
 };
 
 const SHARED_BOT_LIBRARY = {
@@ -196,9 +201,9 @@ const FreeBotsPage = ({ openBotBuilder }: { openBotBuilder?: () => void }) => {
                 <div className='prodb-bot-grid prodb-bot-grid--imported prodb-bot-grid--app'>
                     {bots.map((bot, index) => {
                         const name = bot.name || bot.title || bot.file.replace(/\.xml$/i, '');
-                        const tag = bot.is_premium ? 'PREMIUM' : 'SPECIAL BOT';
+                        const tag = bot.badge || (bot.is_premium ? 'PREMIUM' : 'SPECIAL BOT');
                         return (
-                            <article className={`prodb-bot-card prodb-bot-card--imported prodb-bot-card--app prodb-bot-card--tone-${index % 6}`} key={bot.id || bot.file}>
+                            <article className={`prodb-bot-card prodb-bot-card--imported prodb-bot-card--app prodb-bot-card--tone-${index % 6}`} key={bot.id || bot.file} style={{ '--bot-accent': bot.accent || '', '--bot-surface': bot.surface || '', '--bot-text': bot.text || '' } as React.CSSProperties}>
                                 <div className='prodb-bot-card__top'>
                                     <button type='button' aria-label={`Favorite ${name}`}>☆</button>
                                     <span>{tag}</span>
