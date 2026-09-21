@@ -1,19 +1,56 @@
-name: Claude PR Review
+name: Node.js compatibility
 
 on:
-  pull_request_target:
-    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: node-compatibility-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  claude-review:
-    uses: deriv-com/shared-actions/.github/workflows/claude-pr-review.yml@master
-    permissions:
-      contents: read
-      pull-requests: write
-      issues: write
-      id-token: write
-      actions: write
-    secrets:
-      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-      AGENT_METRICS_API_URL: ${{ secrets.AGENT_METRICS_API_URL }}
-      AGENT_METRICS_API_KEY: ${{ secrets.AGENT_METRICS_API_KEY }}
+  verify:
+    name: Verify Node.js ${{ matrix.node-version }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [22, 24]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate brand CSS
+        run: npm run generate:brand-css
+
+      - name: Validate managed site registry
+        run: node scripts/validate-site-registry.js
+
+      - name: Validate free bot assets
+        run: node scripts/validate-free-bots.js
+
+      - name: Validate managed site customization
+        run: node scripts/validate-site-customization.js
+
+      - name: Type check
+        run: npm run type-check
+
+      - name: Build production bundle
+        run: npm run build
