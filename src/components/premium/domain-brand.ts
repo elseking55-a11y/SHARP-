@@ -13,13 +13,7 @@ const cleanDomain = (value: string) =>
  * Site configuration is only a server/SSR fallback; it must never make one
  * hosted domain display another site's marketing name.
  */
-export const getTemplateDomain = () => {
-    const browserHost = typeof window !== 'undefined' ? window.location.hostname : '';
-    if (browserHost) return cleanDomain(browserHost);
-
-    const configured = resolveSiteConfig();
-    return cleanDomain(configured?.display_domain || 'trading.site');
-};
+export const getTemplateDomain = () => 'ELISY254 SHARP';
 
 export const getDomainAbbreviation = (domain = getTemplateDomain()) => {
     const stem = cleanDomain(domain).split('.')[0] || 'site';
