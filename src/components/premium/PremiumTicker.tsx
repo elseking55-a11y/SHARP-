@@ -38,6 +38,17 @@ const PremiumTicker = ({ light = false }: { light?: boolean }) => {
             socket.onopen = () => {
                 if (disposed) return;
                 setStatus('connected');
+
+                // Subscribe immediately to known Volatility symbols so the
+                // landing page can show live quotes without waiting for the catalogue.
+                preferredSymbols.forEach(symbol => {
+                    socket.send(JSON.stringify({
+                        ticks: symbol,
+                        subscribe: 1,
+                        req_id: ++requestIdRef.current,
+                    }));
+                });
+
                 socket.send(JSON.stringify({
                     active_symbols: 'brief',
                     req_id: ++requestIdRef.current,
@@ -60,12 +71,13 @@ const PremiumTicker = ({ light = false }: { light?: boolean }) => {
                 }
 
                 if (message?.msg_type === 'active_symbols' && Array.isArray(message.active_symbols)) {
+                    // New Deriv API fields: underlying_symbol, underlying_symbol_name, pip_size.
                     const all = message.active_symbols
-                        .filter((item: any) => item?.symbol)
+                        .filter((item: any) => item?.underlying_symbol || item?.symbol)
                         .map((item: any) => ({
-                            symbol: String(item.symbol),
-                            display_name: item.display_name || item.underlying_symbol_name || item.symbol,
-                            pip_size: item.pip_size,
+                            symbol: String(item.underlying_symbol || item.symbol),
+                            display_name: item.underlying_symbol_name || item.display_name || item.underlying_symbol || item.symbol,
+                            pip_size: item.pip_size ?? item.pip,
                         }));
 
                     const preferred = preferredSymbols
@@ -73,7 +85,7 @@ const PremiumTicker = ({ light = false }: { light?: boolean }) => {
                         .filter(Boolean) as MarketSymbol[];
 
                     const picked = (preferred.length >= 5 ? preferred : all).slice(0, 8);
-                    setSymbols(picked);
+                    if (picked.length) setSymbols(picked);
 
                     picked.forEach(item => {
                         socket.send(JSON.stringify({
@@ -89,6 +101,11 @@ const PremiumTicker = ({ light = false }: { light?: boolean }) => {
                     const symbol = String(message.tick.symbol);
                     const value = Number(message.tick.quote);
                     if (!Number.isFinite(value)) return;
+
+                    setSymbols(current => {
+                        if (current.some(item => item.symbol === symbol)) return current;
+                        return [...current, { symbol, display_name: symbol, pip_size: 0.01 }].slice(0, 8);
+                    });
 
                     setQuotes(current => ({
                         ...current,
