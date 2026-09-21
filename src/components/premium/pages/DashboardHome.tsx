@@ -15,6 +15,7 @@ const shortcuts: { icon: string; label: string; section: PremiumSection }[] = [
     { icon: '▥', label: 'Analysis', section: 'analysis_tools' },
     { icon: '▦', label: 'Bulk Trader', section: 'bulk_trader' },
     { icon: '▤', label: 'Charts', section: 'charts' },
+    { icon: '🛡️', label: 'Admin Panel', section: 'admin' },
 ];
 
 const markets = [
@@ -127,16 +128,16 @@ const DashboardHome = ({ openBotBuilder, openSection }: { openBotBuilder: () => 
                 </div>
             </section>
 
-            <section className='prodb-dashboard-block prodb-freebots-block'>
+            <section className='prodb-dashboard-block prodb-freebots-block prodb-dashboard-imported'>
                 <div className='prodb-dashboard-block-head'>
-                    <div><span>READY TO LOAD</span><h2>Free Bots</h2></div>
+                    <div><span>BOT LIBRARY</span><h2>Imported Bots</h2></div>
                     <button className='text-button' type='button' onClick={() => launch('free_bots')}>View all →</button>
                 </div>
                 <div className='prodb-freebot-grid'>
                     {freeBots.length ? freeBots.map((bot, index) => (
-                        <button className='prodb-freebot-card' type='button' key={bot.id || bot.file} onClick={() => launch('free_bots')}>
+                        <button className='prodb-freebot-card' type='button' key={bot.id || bot.file} onClick={() => launch('free_bots')} aria-label={`Open ${bot.name || bot.title || bot.file}`}>
                             <span className={\`bot-card-icon bot-card-icon--\${index % 4}\`}>{bot.emoji || '🤖'}</span>
-                            <span><small>FREE BOT</small><strong>{bot.name || bot.title || bot.file.replace(/\.xml$/i, '')}</strong><em>{bot.description || 'Ready to load into Bot Builder.'}</em></span>
+                            <span><small>IMPORTED BOT</small><strong>{bot.name || bot.title || bot.file.replace(/\.xml$/i, '')}</strong><em>{bot.description || 'Ready to load into Bot Builder.'}</em></span>
                             <b>OPEN</b>
                         </button>
                     )) : (
