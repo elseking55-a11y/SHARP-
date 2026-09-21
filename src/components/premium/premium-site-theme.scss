@@ -79,3 +79,62 @@
         color: var(--site-secondary, #19cba3);
     }
 }
+
+/* Admin Appearance: persisted app-wide controls */
+.prodb-premium-shell{
+  --sharp-card-background: #091a2b;
+  --sharp-button-background: var(--site-primary,#059669);
+  --sharp-icon-color: var(--site-secondary,#19cba3);
+}
+.prodb-premium-shell .prodb-dashboard-block,
+.prodb-premium-shell .prodb-dashboard-tool-card,
+.prodb-premium-shell .prodb-freebot-card,
+.prodb-premium-shell .prodb-market-card,
+.prodb-premium-shell .prodb-live-card,
+.prodb-premium-shell .prodb-copy-master>div,
+.prodb-premium-shell .prodb-bulk-card,
+.prodb-premium-shell .prodb-analysis-controls{
+  border-color: color-mix(in srgb,var(--site-secondary,#19cba3) 42%,#25435e);
+}
+.prodb-premium-shell .prodb-dashboard-tool-card,
+.prodb-premium-shell .prodb-freebot-card,
+.prodb-premium-shell .prodb-market-card,
+.prodb-premium-shell .prodb-live-card{
+  background: var(--sharp-card-background,#091a2b);
+}
+.prodb-premium-shell button.prodb-dashboard-tool-card,
+.prodb-premium-shell .prodb-analysis-refresh,
+.prodb-premium-shell .prodb-bulk-execute,
+.prodb-premium-shell .prodb-admin-save{
+  background: var(--sharp-button-background,var(--site-primary,#059669));
+}
+.prodb-premium-shell .prodb-dashboard-tool-card>span,
+.prodb-premium-shell .prodb-freebot-card .bot-card-icon,
+.prodb-premium-shell .prodb-market-card>div span{
+  border-color: var(--sharp-icon-color,var(--site-secondary,#19cba3));
+  color: var(--sharp-icon-color,var(--site-secondary,#19cba3));
+}
+.prodb-premium-shell .prodb-dashboard-block-head span,
+.prodb-premium-shell .prodb-freebot-card small,
+.prodb-premium-shell .live-dot{
+  color: var(--sharp-icon-color,var(--site-secondary,#19cba3)) !important;
+}
+.prodb-premium-shell.sharp-theme-light{
+  background:#f5f8fa;
+  color:#172033;
+}
+.prodb-premium-shell.sharp-theme-light .prodb-dashboard-page,
+.prodb-premium-shell.sharp-theme-light .prodb-freebots-page{
+  background:#f5f8fa;
+}
+.prodb-premium-shell.sharp-theme-light .prodb-dashboard-block,
+.prodb-premium-shell.sharp-theme-light .prodb-dashboard-tool-card,
+.prodb-premium-shell.sharp-theme-light .prodb-freebot-card,
+.prodb-premium-shell.sharp-theme-light .prodb-market-card{
+  background:var(--sharp-card-background,#fff);
+  color:#172033;
+}
+.prodb-premium-shell.sharp-theme-light .prodb-dashboard-tool-card strong,
+.prodb-premium-shell.sharp-theme-light .prodb-freebot-card strong{
+  color:#172033;
+}
