@@ -49,12 +49,14 @@ const getDefaultServerURL = () => {
     const isProductionEnv = isProduction();
 
     try {
-        return isProductionEnv ? WS_SERVERS.PRODUCTION : WS_SERVERS.STAGING;
+        const httpUrl = isProductionEnv ? WS_SERVERS.PRODUCTION : WS_SERVERS.STAGING;
+        return httpUrl.replace(/^https:\/\//, 'wss://');
     } catch (error) {
         console.error('Error in getDefaultServerURL:', error);
     }
 
-    return isProductionEnv ? WS_SERVERS.PRODUCTION : WS_SERVERS.STAGING;
+    const httpUrl = isProductionEnv ? WS_SERVERS.PRODUCTION : WS_SERVERS.STAGING;
+    return httpUrl.replace(/^https:\/\//, 'wss://');
 };
 
 /**
