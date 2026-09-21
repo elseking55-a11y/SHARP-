@@ -82,9 +82,6 @@ const FreeBotsPage = ({ openBotBuilder }: { openBotBuilder?: () => void }) => {
             : SHARED_BOT_LIBRARY.base_url);
     const manifestFallbacks = [manifestUrl, githubRawUrlForLocalPath(manifestUrl)];
 
-    // Existing sites inherit the shared library until the external bot manager
-    // publishes their first domain manifest. An intentionally empty domain
-    // manifest is still authoritative and therefore does not fall through.
     if (usesManagedDomainManifest) {
         manifestFallbacks.push(
             SHARED_BOT_LIBRARY.manifest_url,
@@ -96,6 +93,7 @@ const FreeBotsPage = ({ openBotBuilder }: { openBotBuilder?: () => void }) => {
     const [loading, setLoading] = useState(true);
     const [busyFile, setBusyFile] = useState('');
     const [error, setError] = useState('');
+    const [riskBot, setRiskBot] = useState<DomainBot | null>(null);
 
     useEffect(() => {
         let alive = true;
@@ -153,31 +151,99 @@ const FreeBotsPage = ({ openBotBuilder }: { openBotBuilder?: () => void }) => {
             setError(err instanceof Error ? err.message : String(err));
         } finally {
             setBusyFile('');
+            setRiskBot(null);
         }
     };
 
-    return <div className='prodb-free-bots'>
-        {loading && <div className='prodb-live-empty'>Loading bots…</div>}
-        {error && <div className='prodb-live-error'>{error}</div>}
-        {!loading && !error && bots.length === 0 && <div className='prodb-live-empty'>No free bots are available yet.</div>}
+    const confirmRisk = () => {
+        if (!riskBot) return;
+        void loadBot(riskBot);
+    };
 
-        <div className='prodb-bot-grid prodb-bot-grid--imported'>
-            {bots.map(bot => {
-                const name = bot.name || bot.title || bot.file.replace(/\.xml$/i, '');
-                const tag = bot.is_premium ? 'PREMIUM' : bot.emoji || 'FREE BOT';
-                return <article className='prodb-bot-card prodb-bot-card--imported' key={bot.id || bot.file}>
-                    <div className='prodb-bot-card__top'><button type='button'>☆</button><span>{tag}</span></div>
-                    <small>{domain}</small>
-                    <h2>{name}</h2>
-                    <p><i>★</i> {bot.description || 'Bot configured for this domain.'}</p>
-                    {bot.guide && baseUrl && <a className='prodb-source-guide' href={joinUrl(baseUrl, bot.guide)} target='_blank' rel='noreferrer'>QUICK GUIDE</a>}
-                    <button className='prodb-load-bot' disabled={Boolean(busyFile)} onClick={() => loadBot(bot)}>
-                        {busyFile === bot.file ? 'LOADING…' : 'LOAD BOT'} <DownloadIcon />
-                    </button>
-                </article>;
-            })}
+    return (
+        <div className='prodb-free-bots prodb-free-bots--app'>
+            <header className='prodb-free-bots__header'>
+                <div>
+                    <span>ELISY254 SHARP</span>
+                    <h1>Free Bots</h1>
+                    <p>Ready-made Blockly bots. Upload an XML bot to the library and it will appear here automatically.</p>
+                </div>
+                <div className='prodb-free-bots__count'><strong>{bots.length}</strong><small>AVAILABLE</small></div>
+            </header>
+
+            <div className='prodb-risk-banner'>
+                <div className='prodb-risk-banner__icon'>⚠️</div>
+                <div>
+                    <strong>Risk disclaimer</strong>
+                    <span>Automated trading can open trades without manual intervention. Test a strategy on a demo account first and only trade funds you can afford to lose.</span>
+                </div>
+                <button type='button' onClick={() => setRiskBot(bots[0] || null)} disabled={!bots.length}>Read before run</button>
+            </div>
+
+            {loading && <div className='prodb-live-empty'>Loading bots…</div>}
+            {error && <div className='prodb-live-error'>{error}</div>}
+
+            {!loading && !error && bots.length === 0 && (
+                <section className='prodb-free-bots-empty'>
+                    <div className='prodb-free-bots-empty__icon'>🤖</div>
+                    <span>BOT LIBRARY</span>
+                    <h2>No bots uploaded yet</h2>
+                    <p>Add your XML bots inside <code>public/free-bots/</code> and list them in <code>public/free-bots/bots.json</code>. They will appear here after the next deploy.</p>
+                </section>
+            )}
+
+            {!loading && !error && bots.length > 0 && (
+                <div className='prodb-bot-grid prodb-bot-grid--imported prodb-bot-grid--app'>
+                    {bots.map((bot, index) => {
+                        const name = bot.name || bot.title || bot.file.replace(/\.xml$/i, '');
+                        const tag = bot.is_premium ? 'PREMIUM' : 'SPECIAL BOT';
+                        return (
+                            <article className={`prodb-bot-card prodb-bot-card--imported prodb-bot-card--app prodb-bot-card--tone-${index % 6}`} key={bot.id || bot.file}>
+                                <div className='prodb-bot-card__top'>
+                                    <button type='button' aria-label={`Favorite ${name}`}>☆</button>
+                                    <span>{tag}</span>
+                                </div>
+                                <div className='prodb-bot-card__badge'>{bot.emoji || '🤖'}</div>
+                                <small>{domain}</small>
+                                <h2>{name}</h2>
+                                <p>{bot.description || 'Ready to load into the existing Bot Builder workspace.'}</p>
+                                <div className='prodb-bot-card__actions'>
+                                    {bot.guide && baseUrl && (
+                                        <a className='prodb-source-guide' href={joinUrl(baseUrl, bot.guide)} target='_blank' rel='noreferrer'>GUIDE</a>
+                                    )}
+                                    <button className='prodb-load-bot' disabled={Boolean(busyFile)} onClick={() => setRiskBot(bot)}>
+                                        {busyFile === bot.file ? 'LOADING…' : 'LOAD BOT'} <DownloadIcon />
+                                    </button>
+                                </div>
+                            </article>
+                        );
+                    })}
+                </div>
+            )}
+
+            {riskBot && (
+                <div className='prodb-risk-modal' role='dialog' aria-modal='true' aria-labelledby='prodb-risk-title'>
+                    <button className='prodb-risk-modal__backdrop' type='button' aria-label='Close risk disclaimer' onClick={() => setRiskBot(null)} />
+                    <section className='prodb-risk-modal__card'>
+                        <button className='prodb-risk-modal__close' type='button' aria-label='Close' onClick={() => setRiskBot(null)}>×</button>
+                        <div className='prodb-risk-modal__icon'>⚠️</div>
+                        <span>BEFORE RUNNING A BOT</span>
+                        <h2 id='prodb-risk-title'>Risk Disclaimer</h2>
+                        <p>Trading can result in the loss of your invested funds. Automated execution can open and close trades without manual intervention, and market conditions can change quickly.</p>
+                        <p>Review the bot strategy, test it on a demo account first, and monitor it while running.</p>
+                        <div className='prodb-risk-modal__bot'>
+                            <span>{riskBot.emoji || '🤖'}</span>
+                            <div><strong>{riskBot.name || riskBot.title || riskBot.file}</strong><small>{riskBot.file}</small></div>
+                        </div>
+                        <button className='prodb-risk-modal__confirm' type='button' onClick={confirmRisk} disabled={Boolean(busyFile)}>
+                            I UNDERSTAND — LOAD BOT
+                        </button>
+                        <button className='prodb-risk-modal__cancel' type='button' onClick={() => setRiskBot(null)}>Cancel</button>
+                    </section>
+                </div>
+            )}
         </div>
-    </div>;
+    );
 };
 
 export default FreeBotsPage;
