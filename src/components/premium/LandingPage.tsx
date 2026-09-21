@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { getCurrentSiteConfig } from '@/config/site-registry';
 import BrandMark from './BrandMark';
 import { BoltIcon, ChevronIcon, PulseIcon } from './icons';
