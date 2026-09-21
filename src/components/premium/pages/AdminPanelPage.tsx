@@ -352,6 +352,8 @@ const adminMenu = [
                                 <div><strong>{bot.name}</strong><small>{bot.category || 'Free Bots'} • {bot.file}</small></div>
                                 <div className='prodb-admin-bot-actions'>
                                     <button type='button' onClick={() => editBot(bot)}>EDIT</button>
+                                    <button type='button' onClick={() => togglePublished(bot)}>{bot.published === false ? 'PUBLISH' : 'UNPUBLISH'}</button>
+                                    <button type='button' onClick={() => downloadBot(bot)}>DOWNLOAD</button>
                                     <button type='button' className='danger' onClick={() => deleteBot(bot)}>DELETE</button>
                                 </div>
                             </article>
@@ -359,7 +361,7 @@ const adminMenu = [
                         {!bots.length && <div className='prodb-admin-empty'>No bots yet. Upload your first XML above.</div>}
                     </div>
                 </section>
-            <;
+            </div>
         }
 
         if (activeTab === 'dashboard') {
