@@ -623,3 +623,128 @@
     .prodb-admin-head p { font-size:7px; }
     .prodb-admin-fields,.prodb-admin-colours { gap:6px; }
 }
+
+
+/* Mobile-first dashboard vision: larger touch targets and app-like hierarchy */
+.prodb-dashboard-page {
+    width:100%;
+    box-sizing:border-box;
+    padding:16px 18px 92px;
+}
+.prodb-dashboard-hero {
+    min-height:190px;
+    padding:24px;
+    border-radius:22px;
+}
+.prodb-dashboard-hero h1 { font-size:30px; line-height:1.08; }
+.prodb-dashboard-hero p { font-size:12px; line-height:1.55; max-width:620px; }
+.prodb-dashboard-hero-actions button { min-height:48px; padding:0 18px; border-radius:12px; font-size:10px; }
+.prodb-dashboard-balance { min-width:210px; padding:17px; border-radius:16px; }
+.prodb-dashboard-balance strong { font-size:22px; }
+.prodb-dashboard-block { padding:18px; border-radius:20px; }
+.prodb-dashboard-block-head h2 { font-size:20px; }
+.prodb-dashboard-tools {
+    display:grid !important;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:10px;
+    overflow:visible !important;
+}
+.prodb-dashboard-tools button {
+    min-height:112px;
+    padding:14px 8px;
+    border-radius:16px;
+}
+.prodb-dashboard-tools button span {
+    width:52px; height:52px;
+    border-radius:14px;
+    font-size:25px;
+}
+.prodb-dashboard-tools button strong { font-size:10px; line-height:1.2; }
+.prodb-freebot-grid {
+    display:grid !important;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;
+    overflow:visible !important;
+}
+.prodb-freebot-card {
+    min-height:112px;
+    padding:13px;
+    border-radius:16px;
+}
+.prodb-freebot-card .bot-card-icon { width:48px; height:48px; font-size:24px; border-radius:13px; }
+.prodb-freebot-card strong { font-size:11px; }
+.prodb-freebot-card em { font-size:8px; line-height:1.35; }
+.prodb-freebot-card b { font-size:8px; }
+
+@media (max-width:700px) {
+    .prodb-dashboard-page {
+        padding:12px 9px 94px;
+    }
+    .prodb-dashboard-hero {
+        min-height:auto;
+        padding:18px;
+        border-radius:19px;
+        display:block;
+    }
+    .prodb-dashboard-hero h1 {
+        margin:6px 0;
+        font-size:25px;
+    }
+    .prodb-dashboard-hero p { font-size:10px; }
+    .prodb-dashboard-hero-actions {
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:8px;
+        margin-top:14px;
+    }
+    .prodb-dashboard-hero-actions button { min-height:48px; font-size:9px; }
+    .prodb-dashboard-balance {
+        margin-top:10px;
+        min-width:0;
+        padding:13px;
+    }
+    .prodb-dashboard-balance strong { font-size:19px; }
+    .prodb-dashboard-block {
+        margin-top:10px;
+        padding:13px;
+        border-radius:17px;
+    }
+    .prodb-dashboard-block-head h2 { font-size:18px; }
+    .prodb-dashboard-tools {
+        grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+        gap:7px;
+    }
+    .prodb-dashboard-tools button {
+        min-height:104px;
+        padding:10px 5px;
+        border-radius:14px;
+    }
+    .prodb-dashboard-tools button span {
+        width:48px;
+        height:48px;
+        font-size:23px;
+        border-radius:13px;
+    }
+    .prodb-dashboard-tools button strong { font-size:9px; }
+    .prodb-freebot-grid {
+        grid-template-columns:1fr !important;
+        gap:8px;
+    }
+    .prodb-freebot-card {
+        min-height:96px;
+        padding:11px;
+    }
+    .prodb-freebot-card .bot-card-icon { width:46px; height:46px; }
+    .prodb-market-grid {
+        grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+        gap:7px;
+    }
+    .prodb-market-card { min-height:90px; }
+}
+
+@media (max-width:390px) {
+    .prodb-dashboard-hero h1 { font-size:22px; }
+    .prodb-dashboard-tools button { min-height:96px; }
+    .prodb-dashboard-tools button span { width:43px; height:43px; font-size:20px; }
+    .prodb-dashboard-tools button strong { font-size:8px; }
+}
