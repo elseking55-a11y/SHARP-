@@ -155,7 +155,14 @@ export class DerivWSAccountsService {
                 }
 
                 const data: AccountsResponse = await response.json();
-                const accounts = Array.isArray(data?.data) ? this.activeAccounts(data.data) : [];
+                // Deriv may return one account object (HTTP 200) or an array (HTTP 201)
+                // depending on the account endpoint response. Normalize both forms.
+                const rawAccounts = Array.isArray(data?.data)
+                    ? data.data
+                    : data?.data
+                        ? [data.data as unknown as DerivAccount]
+                        : [];
+                const accounts = this.activeAccounts(rawAccounts);
                 this.storeAccounts(accounts);
                 return accounts;
             } catch (error) {
