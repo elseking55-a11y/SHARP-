@@ -38,7 +38,11 @@ const exchangeToken = async (req, res) => {
     try {
         const raw = await readBody(req);
         const params = JSON.parse(raw || '{}');
-        const site = sites.find(entry => entry.id === params.site_id);
+        const site = sites.find(entry => entry.id === params.site_id) || (params.site_id === 'sharp-render' && process.env.DERIV_CLIENT_ID ? {
+            id: 'sharp-render',
+            client_id: String(process.env.DERIV_CLIENT_ID).trim(),
+            redirect_uri: String(process.env.DERIV_REDIRECT_URI || 'https://sharp-mz3h.onrender.com/callback').trim(),
+        } : null);
 
         if (!site) {
             return send(res, 400, JSON.stringify({
