@@ -231,12 +231,39 @@ const PremiumLayout = observer(() => {
 
     const isBotBuilder = section === 'bot_builder';
     const isRunPanelOpen = Boolean(run_panel?.is_drawer_open);
+    const [adminAppearance, setAdminAppearance] = useState<Record<string, string>>(() => {
+        try {
+            return JSON.parse(localStorage.getItem('sharp_admin_appearance_v1') || '{}');
+        } catch {
+            return {};
+        }
+    });
+
+    useEffect(() => {
+        const syncAppearance = () => {
+            try {
+                setAdminAppearance(JSON.parse(localStorage.getItem('sharp_admin_appearance_v1') || '{}'));
+            } catch {
+                setAdminAppearance({});
+            }
+        };
+        window.addEventListener('sharp-admin-appearance-updated', syncAppearance);
+        window.addEventListener('storage', syncAppearance);
+        return () => {
+            window.removeEventListener('sharp-admin-appearance-updated', syncAppearance);
+            window.removeEventListener('storage', syncAppearance);
+        };
+    }, []);
+
     const themeStyle = {
-        '--site-primary': customization.colors.primary,
-        '--site-secondary': customization.colors.secondary,
-        '--site-nav-background': customization.colors.nav_background,
-        '--site-nav-text': customization.colors.nav_text,
-        '--site-header-background': customization.colors.header_background,
+        '--site-primary': adminAppearance.primary || customization.colors.primary,
+        '--site-secondary': adminAppearance.accent || customization.colors.secondary,
+        '--site-nav-background': adminAppearance.navBackground || customization.colors.nav_background,
+        '--site-nav-text': adminAppearance.navText || customization.colors.nav_text,
+        '--site-header-background': adminAppearance.header || customization.colors.header_background,
+        '--sharp-card-background': adminAppearance.card || '#091a2b',
+        '--sharp-button-background': adminAppearance.button || adminAppearance.primary || customization.colors.primary,
+        '--sharp-icon-color': adminAppearance.icon || adminAppearance.accent || customization.colors.secondary,
     } as CSSProperties;
 
     return <div
