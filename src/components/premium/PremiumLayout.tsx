@@ -192,7 +192,11 @@ const PremiumLayout = observer(() => {
         }
     }, [changeSection, customization.loaded, customization.navigation, section]);
 
-    if (!runtimeAuthenticated && (isOAuthCallback || isAuthorizing || hasStoredAuth)) return <PremiumLoader />;
+    // A successful OAuth exchange stores the Bearer token before the Deriv
+    // WebSocket/account observable finishes initializing. Do not send the user
+    // back to the landing page (or keep them on a loader) during that handoff.
+    // The restoreSession effect below completes the live Deriv connection.
+    if (!runtimeAuthenticated && isOAuthCallback && !hasStoredAuth) return <PremiumLoader />;
     if (!isAuthenticated) return <LandingPage onLogin={() => startOAuth()} onSignup={() => startOAuth('registration')} busy={isAuthorizing} error={authError} />;
 
     const openBotBuilder = () => changeSection('bot_builder');
