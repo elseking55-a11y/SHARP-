@@ -15,7 +15,7 @@ export const useLogout = () => {
         try {
             await client?.logout();
         } catch (error) {
-            ErrorLogger.error('Logout', 'Logout request failed; clearing local session anyway', error);
+            ErrorLogger.error('Logout', 'Logout failed', error);
         } finally {
             try {
                 OAuthTokenExchangeService.clearAuthInfo();
@@ -37,7 +37,13 @@ export const useLogout = () => {
                 sessionStorage.removeItem('oauth_site_id');
                 sessionStorage.removeItem('oauth_redirect_uri');
             } catch (storageError) {
-                ErrorLogger.error('Logout', 'Failed to clear persisted auth storage', storageError);
+                ErrorLogger.error('Logout', 'Failed to clear auth storage', storageError);
+                try {
+                    sessionStorage.clear();
+                    localStorage.clear();
+                } catch (finalError) {
+                    ErrorLogger.error('Logout', 'Failed to clear all storage', finalError);
+                }
             }
         }
     }, [client]);
