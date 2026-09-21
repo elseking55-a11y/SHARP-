@@ -1,9 +1,7 @@
 /**
  * SHARP runtime mode.
  *
- * Offline mode keeps the public UI, Bot Builder workspace, saved/imported bots,
- * dashboard and Admin Panel usable without opening a Deriv account session.
- *
- * Set to false only when the live Deriv OAuth/WebSocket integration is ready.
+ * SHARP uses the real Deriv OAuth/WebSocket session when a client logs in.
+ * Public users stay on the landing page until they authenticate with Deriv.
  */
-export const SHARP_OFFLINE_MODE = true;
+export const SHARP_OFFLINE_MODE = false;
