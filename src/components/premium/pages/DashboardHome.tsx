@@ -129,7 +129,6 @@ const DashboardHome = ({ openBotBuilder, openSection }: { openBotBuilder: () => 
                 </div>
             </section>
 
-section>
 
             <section className='prodb-dashboard-block prodb-freebots-block'>
                 <div className='prodb-dashboard-block-head'>
