@@ -92,6 +92,31 @@ const exchangeToken = async (req, res) => {
 };
 
 
+const getOAuthConfig = (req, res) => {
+    const clientId = String(process.env.DERIV_CLIENT_ID || process.env.VITE_DERIV_CLIENT_ID || '').trim();
+    const redirectUri = String(
+        process.env.DERIV_REDIRECT_URI ||
+        process.env.VITE_DERIV_REDIRECT_URI ||
+        'https://sharp-mz3h.onrender.com/callback'
+    ).trim();
+
+    if (!clientId) {
+        return send(res, 503, JSON.stringify({
+            configured: false,
+            error: 'oauth_not_configured',
+            error_description: 'DERIV_CLIENT_ID is not configured on the server.',
+        }));
+    }
+
+    return send(res, 200, JSON.stringify({
+        configured: true,
+        client_id: clientId,
+        redirect_uri: redirectUri,
+        site_id: 'sharp-render',
+        scopes: ['trade', 'application_read'],
+    }));
+};
+
 const validateDerivPat = async (req, res) => {
     try {
         const raw = await readBody(req);
@@ -170,6 +195,10 @@ const server = http.createServer(async (req, res) => {
 
     if (req.method === 'POST' && url.pathname === '/api/oauth/token') {
         return exchangeToken(req, res);
+    }
+
+    if (req.method === 'GET' && url.pathname === '/api/deriv/oauth-config') {
+        return getOAuthConfig(req, res);
     }
 
     if (req.method === 'POST' && url.pathname === '/api/deriv/pat/validate') {
