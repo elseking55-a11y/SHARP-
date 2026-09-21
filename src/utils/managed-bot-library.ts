@@ -11,6 +11,7 @@ export type ManagedBot = {
     file: string;
     priority?: number;
     imageUrl?: string;
+    imageBase64?: string;
     videoUrl?: string;
     published?: boolean;
     comingSoon?: boolean;
