@@ -20,18 +20,10 @@ const shortcuts: { icon: string; label: string; section: PremiumSection; tone: s
     { icon: '🛡️', label: 'Admin Panel', section: 'admin', tone: 'red' },
 ];
 
-const markets = [
-    { symbol: '1HZ100V', name: 'Volatility 100 (1s)', accent: 'green' },
-    { symbol: '1HZ50V', name: 'Volatility 50 (1s)', accent: 'blue' },
-    { symbol: '1HZ10V', name: 'Volatility 10 (1s)', accent: 'purple' },
-    { symbol: 'R_100', name: 'Volatility 100', accent: 'orange' },
-];
-
 const DashboardHome = ({ openBotBuilder, openSection }: { openBotBuilder: () => void; openSection?: (section: PremiumSection) => void }) => {
     const store = useStore();
     const [freeBots, setFreeBots] = useState<FreeBotPreview[]>([]);
     const [savedBots, setSavedBots] = useState<SavedBot[]>([]);
-    const [marketQuotes, setMarketQuotes] = useState<Record<string, string>>({});
 
     useEffect(() => {
         let alive = true;
@@ -53,39 +45,6 @@ const DashboardHome = ({ openBotBuilder, openSection }: { openBotBuilder: () => 
             .catch(() => alive && setSavedBots([]));
 
         return () => { alive = false; };
-    }, []);
-
-    useEffect(() => {
-        if (SHARP_OFFLINE_MODE) return;
-        let alive = true;
-        const ws = new WebSocket('wss://api.derivws.com/trading/v1/options/ws/public');
-        const subscribePreferred = () => {
-            markets.forEach(market => {
-                try { ws.send(JSON.stringify({ ticks: market.symbol, subscribe: 1 })); } catch { /* reconnect handles it */ }
-            });
-        };
-        const onMessage = (event: MessageEvent) => {
-            try {
-                const data = JSON.parse(event.data);
-                if (data?.tick?.symbol && data?.tick?.quote !== undefined) {
-                    setMarketQuotes(previous => ({ ...previous, [data.tick.symbol]: Number(data.tick.quote).toFixed(data.tick.pip_size ?? 2) }));
-                }
-                if (data?.active_symbols) {
-                    data.active_symbols.forEach((item: any) => {
-                        const symbol = item?.underlying_symbol || item?.symbol;
-                        if (symbol && markets.some(m => m.symbol === symbol)) {
-                            try { ws.send(JSON.stringify({ ticks: symbol, subscribe: 1 })); } catch { /* socket closing */ }
-                        }
-                    });
-                }
-            } catch { /* public ticker is visual only */ }
-        };
-        ws.addEventListener('message', onMessage);
-        ws.addEventListener('open', () => {
-            try { ws.send(JSON.stringify({ active_symbols: 'brief' })); } catch {}
-            subscribePreferred();
-        });
-        return () => { alive = false; ws.close(); };
     }, []);
 
     const launch = (section: PremiumSection) => {
@@ -117,7 +76,7 @@ const DashboardHome = ({ openBotBuilder, openSection }: { openBotBuilder: () => 
                 <div className='prodb-dashboard-hero-copy'>
                     <span className='prodb-dashboard-kicker'>ELISY254 SHARP • TRADING WORKSPACE</span>
                     <h1>Everything you need, in one app.</h1>
-                    <p>Build bots, open saved strategies, watch live markets and move directly into your trading tools.</p>
+                    <p>Build bots, open saved strategies and move directly into your trading tools.</p>
                     <div className='prodb-dashboard-hero-actions'>
                         <button type='button' onClick={() => launch('bot_builder')}>＋ Build Bot</button>
                         <button type='button' className='secondary' onClick={() => launch('free_bots')}>🤖 Free Bots</button>
@@ -170,21 +129,7 @@ const DashboardHome = ({ openBotBuilder, openSection }: { openBotBuilder: () => 
                 </div>
             </section>
 
-            <section className='prodb-dashboard-block'>
-                <div className='prodb-dashboard-block-head'>
-                    <div><span>LIVE MARKET WATCH</span><h2>Markets</h2></div>
-                    <span className='live-dot'>● LIVE</span>
-                </div>
-                <div className='prodb-market-grid'>
-                    {markets.map((market, index) => (
-                        <div className={`prodb-market-card prodb-market-card--${market.accent}`} key={market.symbol}>
-                            <div><span>{index + 1}</span><small>{market.name}</small></div>
-                            <strong>{marketQuotes[market.symbol] || '—'}</strong>
-                            <em>{market.symbol}</em>
-                        </div>
-                    ))}
-                </div>
-            </section>
+section>
 
             <section className='prodb-dashboard-block prodb-freebots-block'>
                 <div className='prodb-dashboard-block-head'>
