@@ -230,7 +230,26 @@ export const clearCSRFToken = (): void => {
  */
 export const generateOAuthURL = async (prompt?: string) => {
     try {
-        const site = requireCurrentSiteConfig();
+        // Render/Vite exposes VITE_* variables at build time. Use the explicit
+        // SHARP Render values first so OAuth does not depend on brand.config.json
+        // containing the deployment hostname.
+        const runtimeClientId = (import.meta.env.VITE_DERIV_CLIENT_ID as string | undefined)?.trim();
+        const runtimeRedirectUri =
+            (import.meta.env.VITE_DERIV_REDIRECT_URI as string | undefined)?.trim()
+            || 'https://sharp-mz3h.onrender.com/callback';
+
+        const configuredSite = resolveSiteConfig();
+        const site = configuredSite || (runtimeClientId ? {
+            id: 'sharp-runtime',
+            hosts: [window.location.hostname],
+            display_domain: window.location.hostname,
+            website_url: window.location.origin,
+            redirect_uri: runtimeRedirectUri,
+            client_id: runtimeClientId,
+            scopes: ['trade', 'application_read'],
+            environment: 'production' as const,
+        } : requireCurrentSiteConfig());
+
         const authBase = brandConfig.platform.auth2_url[site.environment];
         if (!authBase) throw new Error(`No Deriv OAuth base URL for ${site.environment}`);
 
