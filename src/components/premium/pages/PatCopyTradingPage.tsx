@@ -17,7 +17,6 @@ const PatCopyTradingPage = () => {
     const masterType = localStorage.getItem('account_type') || 'active';
     const syncedCount = followers.length;
     const realFollowers = useMemo(() => followers.filter(item => item.account_type === 'real').length, [followers]);
-    const demoFollowers = syncedCount - realFollowers;
 
     const sync = async () => {
         setSyncing(true);
@@ -65,7 +64,7 @@ const PatCopyTradingPage = () => {
 
         <div className='prodb-copy-master'>
             <div><small>MASTER ACCOUNT</small><strong>{masterAccount}</strong><span>{masterType}</span></div>
-            <div><small>FOLLOWERS</small><strong>{syncedCount}</strong><span>{realFollowers} real · {demoFollowers} demo</span></div>
+            <div><small>FOLLOWERS</small><strong>{syncedCount}</strong><span>{realFollowers} real</span></div>
             <div className={running ? 'is-running' : ''}><small>COPY STATUS</small><strong>{running ? 'RUNNING' : 'STOPPED'}</strong><span>{running ? 'Watching confirmed master purchases' : 'No follower purchases will be sent'}</span></div>
         </div>
 
@@ -96,7 +95,7 @@ const PatCopyTradingPage = () => {
                 <div className='prodb-live-card__title'><h2>Synced follower accounts</h2><span>{followers.length}</span></div>
                 <div className='prodb-copy-followers'>
                     {followers.length === 0
-                        ? <div className='prodb-live-empty'>No follower token has been synced yet.</div>
+                        ? <div className='prodb-copy-empty-box' aria-hidden='true'></div>
                         : followers.map(item => <article key={item.id}>
                             <div><strong>{item.account_id}</strong><small>{item.token_hint}</small></div>
                             <span>{item.account_type}</span>
@@ -110,7 +109,7 @@ const PatCopyTradingPage = () => {
             <div className='prodb-live-card__title'><h2>Copy activity</h2><button className='is-ghost' onClick={() => setLogs([])}>Clear</button></div>
             <div className='prodb-copy-logs'>
                 {logs.length === 0
-                    ? <div className='prodb-live-empty'>Activity will appear here after tokens are synced or copy trading starts.</div>
+                    ? <div className='prodb-copy-empty-box' aria-hidden='true'></div>
                     : logs.map(log => <div key={log.id} className={`is-${log.level}`}><time>{new Date(log.at).toLocaleTimeString()}</time><span>{log.message}</span></div>)}
             </div>
         </section>
