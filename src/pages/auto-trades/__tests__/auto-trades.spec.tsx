@@ -267,7 +267,8 @@ describe('<AutoTrades />', () => {
 
         render(<AutoTrades />);
 
-        await user.selectOptions(screen.getAllByRole('combobox')[0], 'RUNHIGH');
+        await user.selectOptions(screen.getAllByRole('combobox')[0], 'STANDARD');
+        await user.selectOptions(screen.getAllByRole('combobox')[1], 'RUNHIGH');
         await user.click(screen.getByRole('button', { name: /Run Auto Trades/i }));
 
         await waitFor(() => {
@@ -397,7 +398,8 @@ describe('<AutoTrades />', () => {
 
         render(<AutoTrades />);
 
-        await user.selectOptions(screen.getAllByRole('combobox')[0], 'CALL');
+        await user.selectOptions(screen.getAllByRole('combobox')[0], 'STANDARD');
+        await user.selectOptions(screen.getAllByRole('combobox')[1], 'CALL');
         await user.click(screen.getByRole('button', { name: /Run Auto Trades/i }));
 
         await waitFor(() => {
