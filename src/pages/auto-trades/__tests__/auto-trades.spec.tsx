@@ -62,6 +62,14 @@ jest.mock('@/stores/condition-notifier-store', () => ({
 
 const mockUseStore = useStore as jest.Mock;
 
+const getTradeTypeSelect = () =>
+    screen.getAllByRole('combobox').find(select =>
+        Array.from((select as HTMLSelectElement).options).some(option => option.value === 'RUNHIGH' || option.value === 'CALL')
+    ) as HTMLSelectElement;
+
+const getAnalysisTicksSelect = () =>
+    screen.getByText('Analysis ticks').parentElement?.querySelector('select') as HTMLSelectElement;
+
 const createMockStore = () => ({
     dashboard: {
         active_tab: DBOT_TABS.AUTO_TRADES,
@@ -140,7 +148,7 @@ describe('<AutoTrades />', () => {
         render(<AutoTrades />);
 
         const strategySelect = screen.getAllByRole('combobox')[0];
-        const tradeTypeSelect = screen.getAllByRole('combobox')[1];
+        const tradeTypeSelect = getTradeTypeSelect();
         await user.selectOptions(strategySelect, 'STANDARD');
         await user.selectOptions(tradeTypeSelect, 'RUNHIGH');
 
@@ -149,7 +157,7 @@ describe('<AutoTrades />', () => {
             expect(screen.getByText(/falling ticks \+ bullish 5m candle/i)).toBeInTheDocument();
         });
 
-        const analysisTickSelect = screen.getAllByRole('combobox')[2];
+        const analysisTickSelect = getAnalysisTicksSelect();
         await user.selectOptions(analysisTickSelect, '3');
 
         expect(screen.getByText(/Only Ups \(3 ticks\)/i)).toBeInTheDocument();
@@ -270,7 +278,7 @@ describe('<AutoTrades />', () => {
         render(<AutoTrades />);
 
         await user.selectOptions(screen.getAllByRole('combobox')[0], 'STANDARD');
-        await user.selectOptions(screen.getAllByRole('combobox')[1], 'RUNHIGH');
+        await user.selectOptions(getTradeTypeSelect(), 'RUNHIGH');
         await user.click(screen.getByRole('button', { name: /Run Auto Trades/i }));
 
         await waitFor(() => {
@@ -401,7 +409,7 @@ describe('<AutoTrades />', () => {
         render(<AutoTrades />);
 
         await user.selectOptions(screen.getAllByRole('combobox')[0], 'STANDARD');
-        await user.selectOptions(screen.getAllByRole('combobox')[1], 'CALL');
+        await user.selectOptions(getTradeTypeSelect(), 'CALL');
         await user.click(screen.getByRole('button', { name: /Run Auto Trades/i }));
 
         await waitFor(() => {
