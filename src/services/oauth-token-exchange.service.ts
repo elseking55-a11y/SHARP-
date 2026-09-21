@@ -76,6 +76,7 @@ export class OAuthTokenExchangeService {
 
     private static getSiteId(): string {
         const storedSiteId = sessionStorage.getItem('oauth_site_id') || this.readStoredAuthInfo()?.site_id;
+        if (storedSiteId === 'sharp-render') return 'sharp-render';
         if (storedSiteId && getSiteConfigById(storedSiteId)) return storedSiteId;
         return requireCurrentSiteConfig().id;
     }
