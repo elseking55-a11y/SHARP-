@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { DBOT_TABS } from '@/constants/bot-contents';
 import { getSavedWorkspaces, timeSince } from '@/external/bot-skeleton';
 import { useStore } from '@/hooks/useStore';
-import { useApiBase } from '@/hooks/useApiBase';
 import type { PremiumSection } from '../types';
 
 type FreeBotPreview = { id?: string; name?: string; title?: string; file: string; description?: string; emoji?: string };
@@ -22,7 +21,6 @@ const shortcuts: { icon: string; label: string; section: PremiumSection; tone: s
 
 const DashboardHome = ({ openBotBuilder, openSection }: { openBotBuilder: () => void; openSection?: (section: PremiumSection) => void }) => {
     const store = useStore();
-    const { authData } = useApiBase();
     const [freeBots, setFreeBots] = useState<FreeBotPreview[]>([]);
     const [savedBots, setSavedBots] = useState<SavedBot[]>([]);
 
@@ -71,23 +69,6 @@ const DashboardHome = ({ openBotBuilder, openSection }: { openBotBuilder: () => 
 
     return (
         <div className='prodb-dashboard-page'>
-            <section className='prodb-dashboard-hero'>
-                <div className='prodb-dashboard-hero-copy'>
-                    <span className='prodb-dashboard-kicker'>ELISY254 SHARP • TRADING WORKSPACE</span>
-                    <h1>Everything you need, in one app.</h1>
-                    <p>Build bots, open saved strategies and move directly into your trading tools.</p>
-                    <div className='prodb-dashboard-hero-actions'>
-                        <button type='button' onClick={() => launch('bot_builder')}>＋ Build Bot</button>
-                        <button type='button' className='secondary' onClick={() => launch('free_bots')}>🤖 Free Bots</button>
-                    </div>
-                </div>
-                <div className='prodb-dashboard-balance'>
-                    <span>BALANCE</span>
-                    <strong>{typeof authData?.balance === 'number' ? authData.balance.toFixed(2) : '—'}</strong>
-                    <small>{authData?.currency || 'USD'}</small>
-                </div>
-            </section>
-
             <section className='prodb-dashboard-block prodb-dashboard-tools-block'>
                 <div className='prodb-dashboard-block-head'>
                     <div><span>SHORTCUTS</span><h2>Trading tools</h2></div>
