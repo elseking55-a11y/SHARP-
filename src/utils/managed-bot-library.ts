@@ -10,6 +10,8 @@ export type ManagedBot = {
     text?: string;
     file: string;
     priority?: number;
+    imageUrl?: string;
+    videoUrl?: string;
     xmlBase64: string;
     updatedAt: number;
 };
