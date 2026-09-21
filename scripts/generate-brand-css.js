@@ -48,63 +48,22 @@ const updateBrandColorsInThemes = () => {
         brandColorLines.push(`    --brand-font-monospace: ${typography.font_family.monospace};`);
     }
 
-    // Find and replace the brand colors section
-    let insertionPoint = -1;
-    let endPoint = -1;
+    // Replace the complete generated brand section.
+    // This prevents duplicate variables when the generator runs repeatedly.
+    const brandStartMarker = '    /* Brand colors - dynamically generated from brand.config.json */';
+    const appCardsMarker = '    // App Cards gradient background';
+    const insertionPoint = themesContent.indexOf(brandStartMarker);
+    const endPoint = themesContent.indexOf(appCardsMarker, insertionPoint);
 
-    // Look for existing brand colors section (with or without AI markers)
-    const brandCommentStart = themesContent.indexOf(
-        '/* Brand colors - dynamically generated from brand.config.json */'
-    );
-    const legacyBrandStart = themesContent.indexOf('    // Brand primary colors');
-
-    if (brandCommentStart !== -1) {
-        // Found modern brand section with comment
-        insertionPoint = themesContent.lastIndexOf('\n', brandCommentStart) + 1;
-
-        // Look for end marker - either AI closing tag or next major section
-        const aiEndMarker = themesContent.indexOf('/* [/AI] */', brandCommentStart);
-        if (aiEndMarker !== -1) {
-            endPoint = themesContent.indexOf('\n', aiEndMarker) + 1;
-        } else {
-            // Find end by looking for next CSS section or end of root block
-            const nextSection = themesContent.indexOf('\n    // App Cards', brandCommentStart);
-            const nextComment = themesContent.indexOf('\n    /*', brandCommentStart + 100); // Skip current comment
-            const nextThemeClass = themesContent.indexOf('\n    .theme--', brandCommentStart);
-
-            endPoint = Math.min(...[nextSection, nextComment, nextThemeClass].filter(pos => pos > -1));
-            if (endPoint === Infinity) {
-                // Fallback - find next blank lines
-                endPoint = themesContent.indexOf('\n\n    ', brandCommentStart + 100);
-            }
-        }
-    } else if (legacyBrandStart !== -1) {
-        // Found legacy brand section
-        insertionPoint = legacyBrandStart;
-        endPoint = themesContent.indexOf('\n    // App Cards', legacyBrandStart);
-        if (endPoint === -1) {
-            endPoint = themesContent.indexOf('\n    .theme--', legacyBrandStart);
-        }
-    } else {
-        // No existing brand section - insert after text align
-        const textAlignEnd = themesContent.indexOf('    --text-align-center: center;');
-        if (textAlignEnd !== -1) {
-            insertionPoint = themesContent.indexOf('\n', textAlignEnd) + 1;
-            endPoint = insertionPoint;
-        }
-    }
-
-    if (insertionPoint === -1) {
-        console.error('❌ Could not find insertion point in _themes.scss');
+    if (insertionPoint === -1 || endPoint === -1) {
+        console.error('❌ Could not find the generated brand section boundaries in _themes.scss');
         process.exit(1);
     }
 
-    // Replace or insert the brand colors section
     const beforeSection = themesContent.substring(0, insertionPoint);
-    const afterSection =
-        endPoint > insertionPoint ? themesContent.substring(endPoint) : themesContent.substring(insertionPoint);
+    const afterSection = themesContent.substring(endPoint);
 
-    themesContent = beforeSection + '\n\n' + brandColorLines.join('\n') + '\n' + afterSection;
+    themesContent = beforeSection + brandColorLines.join('\n') + '\n\n' + afterSection;
 
     // Write the updated file
     fs.writeFileSync(themesPath, themesContent, 'utf8');
