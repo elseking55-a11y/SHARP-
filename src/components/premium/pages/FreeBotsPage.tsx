@@ -81,26 +81,10 @@ const decodeGzipBase64 = (encoded: string): string => {
 };
 
 const FreeBotsPage = ({ openBotBuilder }: { openBotBuilder?: () => void }) => {
-    const site = getCurrentSiteConfig();
     const domain = getTemplateDomain();
-    const configuredLibrary = site.bot_library;
-    const domainManifestUrl = `/free-bots/domains/${encodeURIComponent(site.id)}.json`;
-    const configuredManifestUrl = configuredLibrary?.manifest_url;
-    const usesManagedDomainManifest = !configuredManifestUrl || configuredManifestUrl === SHARED_BOT_LIBRARY.manifest_url;
-    const manifestUrl = usesManagedDomainManifest ? domainManifestUrl : configuredManifestUrl;
-    const baseUrl =
-        configuredLibrary?.base_url ||
-        (configuredManifestUrl && !usesManagedDomainManifest
-            ? configuredManifestUrl.replace(/\/[^/]*$/, '')
-            : SHARED_BOT_LIBRARY.base_url);
+    const manifestUrl = SHARED_BOT_LIBRARY.manifest_url;
+    const baseUrl = SHARED_BOT_LIBRARY.base_url;
     const manifestFallbacks = [manifestUrl, githubRawUrlForLocalPath(manifestUrl)];
-
-    if (usesManagedDomainManifest) {
-        manifestFallbacks.push(
-            SHARED_BOT_LIBRARY.manifest_url,
-            githubRawUrlForLocalPath(SHARED_BOT_LIBRARY.manifest_url)
-        );
-    }
 
     const [bots, setBots] = useState<DomainBot[]>([]);
     const [loading, setLoading] = useState(true);
@@ -117,7 +101,7 @@ const FreeBotsPage = ({ openBotBuilder }: { openBotBuilder?: () => void }) => {
                 const localBots = readManagedBots();
                 if (SHARP_OFFLINE_MODE) {
                     if (alive) {
-                        setBots(localBots.map(bot => ({ ...bot })));
+                        setBots(localBots.filter(bot => bot.published !== false).map(bot => ({ ...bot })));
                         setError('');
                     }
                     return;
@@ -142,7 +126,7 @@ const FreeBotsPage = ({ openBotBuilder }: { openBotBuilder?: () => void }) => {
             }
         };
         void loadManifest();
-        const refresh = () => setBots(readManagedBots().map(bot => ({ ...bot })));
+        const refresh = () => setBots(readManagedBots().filter(bot => bot.published !== false).map(bot => ({ ...bot })));
         window.addEventListener('sharp-managed-bots-updated', refresh);
         return () => {
             alive = false;
@@ -200,21 +184,19 @@ const FreeBotsPage = ({ openBotBuilder }: { openBotBuilder?: () => void }) => {
         <div className='prodb-free-bots prodb-free-bots--app'>
             <header className='prodb-free-bots__header'>
                 <div>
-                    <span>ELISY254 SHARP</span>
                     <h1>Free Bots</h1>
-                    <p>Ready-made Blockly bots. Upload an XML bot to the library and it will appear here automatically.</p>
                 </div>
                 <div className='prodb-free-bots__count'><strong>{bots.length}</strong><small>AVAILABLE</small></div>
             </header>
 
-            <div className='prodb-risk-banner'>
+            {bots.length > 0 && <div className='prodb-risk-banner'>
                 <div className='prodb-risk-banner__icon'>⚠️</div>
                 <div>
                     <strong>Risk disclaimer</strong>
                     <span>Automated trading can open trades without manual intervention. Test a strategy on a demo account first and only trade funds you can afford to lose.</span>
                 </div>
                 <button type='button' onClick={() => setRiskBot(bots[0] || null)} disabled={!bots.length}>Read before run</button>
-            </div>
+            </div>}
 
             {loading && <div className='prodb-live-empty'>Loading bots…</div>}
             {error && <div className='prodb-live-error'>{error}</div>}
@@ -222,9 +204,8 @@ const FreeBotsPage = ({ openBotBuilder }: { openBotBuilder?: () => void }) => {
             {!loading && !error && bots.length === 0 && (
                 <section className='prodb-free-bots-empty'>
                     <div className='prodb-free-bots-empty__icon'>🤖</div>
-                    <span>BOT LIBRARY</span>
-                    <h2>No bots uploaded yet</h2>
-                    <p>Add your XML bots inside <code>public/free-bots/</code> and list them in <code>public/free-bots/bots.json</code>. They will appear here after the next deploy.</p>
+                    <h2>No bots available</h2>
+                    <p>Use Admin Panel → Bot Management → Add Bot to add your first bot.</p>
                 </section>
             )}
 
