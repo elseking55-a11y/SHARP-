@@ -255,6 +255,15 @@ export const generateOAuthURL = async (prompt?: string) => {
         if (prompt) oauthUrl.searchParams.set('prompt', prompt);
         if (site.legacy_app_id) oauthUrl.searchParams.set('app_id', site.legacy_app_id);
 
+        const affiliateToken = (import.meta.env.VITE_DERIV_AFFILIATE_TOKEN as string | undefined)?.trim();
+        const utmSource = (import.meta.env.VITE_DERIV_UTM_SOURCE as string | undefined)?.trim();
+        const utmMedium = (import.meta.env.VITE_DERIV_UTM_MEDIUM as string | undefined)?.trim();
+        const utmCampaign = (import.meta.env.VITE_DERIV_UTM_CAMPAIGN as string | undefined)?.trim();
+        if (affiliateToken) oauthUrl.searchParams.set('affiliate_token', affiliateToken);
+        if (utmSource) oauthUrl.searchParams.set('utm_source', utmSource);
+        if (utmMedium) oauthUrl.searchParams.set('utm_medium', utmMedium);
+        if (utmCampaign) oauthUrl.searchParams.set('utm_campaign', utmCampaign);
+
         return oauthUrl.toString();
     } catch (error) {
         console.error('Error generating OAuth URL:', error);
