@@ -127,3 +127,76 @@
     .prodb-dashboard-shortcuts__track button { flex-basis:96px; height:70px; }
     .prodb-dashboard-freebot { flex-basis:220px; }
 }
+
+
+/* Clean app dashboard */
+.prodb-dashboard-page { min-height:100%; padding:18px 20px 90px; background:linear-gradient(180deg,#f7faf9 0%,#f5f7f9 55%,#ffffff 100%); color:#172033; }
+.prodb-dashboard-hero { max-width:1180px; margin:0 auto 16px; min-height:145px; padding:22px 24px; border:1px solid #dce7e3; border-radius:18px; background:linear-gradient(135deg,#ffffff 0%,#f0faf6 100%); box-shadow:0 8px 28px rgba(18,42,35,.06); display:flex; align-items:center; justify-content:space-between; gap:22px; overflow:hidden; position:relative; }
+.prodb-dashboard-hero:after { content:''; position:absolute; width:180px; height:180px; right:-70px; top:-80px; border-radius:50%; background:rgba(10,170,120,.08); pointer-events:none; }
+.prodb-dashboard-kicker,.prodb-dashboard-block-head > div > span { color:#078c68; font-size:8px; font-weight:900; letter-spacing:1.2px; }
+.prodb-dashboard-hero h1 { margin:5px 0 6px; font-size:25px; line-height:1.12; font-weight:900; letter-spacing:-.4px; }
+.prodb-dashboard-hero p { margin:0; max-width:560px; color:#6c7788; font-size:11px; line-height:1.5; }
+.prodb-dashboard-hero-actions { display:flex; gap:8px; margin-top:15px; }
+.prodb-dashboard-hero-actions button { border:0; border-radius:9px; padding:9px 13px; background:#079b72; color:#fff; font-size:9px; font-weight:900; cursor:pointer; box-shadow:0 5px 12px rgba(7,155,114,.18); }
+.prodb-dashboard-hero-actions button.secondary { background:#e7f7f1; color:#087d5e; box-shadow:none; }
+.prodb-dashboard-balance { flex:0 0 190px; position:relative; z-index:1; padding:15px; border:1px solid #dce9e5; border-radius:13px; background:rgba(255,255,255,.86); }
+.prodb-dashboard-balance span { display:block; color:#8a95a4; font-size:7px; font-weight:900; letter-spacing:.8px; }
+.prodb-dashboard-balance strong { display:block; margin:7px 0 4px; color:#132033; font-size:18px; font-weight:900; }
+.prodb-dashboard-balance small { color:#748092; font-size:8px; }
+
+.prodb-dashboard-block { max-width:1180px; margin:0 auto 15px; padding:15px; border:1px solid #e0e7e5; border-radius:15px; background:#fff; box-shadow:0 5px 20px rgba(20,35,45,.045); }
+.prodb-dashboard-block-head { display:flex; align-items:flex-end; justify-content:space-between; gap:10px; margin-bottom:11px; }
+.prodb-dashboard-block-head h2 { margin:3px 0 0; color:#172033; font-size:17px; line-height:1; font-weight:900; }
+.live-dot { color:#079b72; font-size:8px; font-weight:900; }
+.block-hint { color:#9aa3af; font-size:8px; font-weight:700; }
+.text-button { border:0; background:none; color:#078b67; font-size:9px; font-weight:900; cursor:pointer; }
+
+.prodb-market-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:9px; }
+.prodb-market-card { min-height:86px; padding:12px; border-radius:11px; border:1px solid #e1e6ea; background:#fafcfc; position:relative; overflow:hidden; }
+.prodb-market-card:before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:#11a879; }
+.prodb-market-card--blue:before { background:#4b83df; }
+.prodb-market-card--purple:before { background:#8b63d9; }
+.prodb-market-card--orange:before { background:#d48a32; }
+.prodb-market-card div { display:flex; align-items:center; gap:6px; }
+.prodb-market-card div span { width:17px; height:17px; display:grid; place-items:center; border-radius:50%; background:#edf8f4; color:#078c68; font-size:7px; font-weight:900; }
+.prodb-market-card div small { color:#677386; font-size:8px; font-weight:800; }
+.prodb-market-card strong { display:block; margin-top:10px; font-size:16px; font-weight:900; letter-spacing:.2px; }
+.prodb-market-card em { display:block; margin-top:2px; color:#9aa3af; font-size:7px; font-style:normal; }
+
+.prodb-dashboard-tools { display:flex; gap:8px; overflow-x:auto; scrollbar-width:none; padding-bottom:2px; }
+.prodb-dashboard-tools::-webkit-scrollbar { display:none; }
+.prodb-dashboard-tools button { flex:0 0 105px; height:72px; border:1px solid #e1e7ea; border-radius:10px; background:#fbfcfc; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:7px; cursor:pointer; }
+.prodb-dashboard-tools button:hover { border-color:#8bd5bd; background:#f5fcf9; }
+.prodb-dashboard-tools button span { width:32px; height:32px; display:grid; place-items:center; border-radius:9px; background:#eaf7f3; font-size:16px; }
+.prodb-dashboard-tools button strong { color:#2b3647; font-size:8px; white-space:nowrap; }
+
+.prodb-freebot-grid { display:flex; gap:9px; overflow-x:auto; scrollbar-width:none; }
+.prodb-freebot-grid::-webkit-scrollbar { display:none; }
+.prodb-freebot-card { flex:0 0 255px; min-height:82px; display:grid; grid-template-columns:40px minmax(0,1fr) auto; align-items:center; gap:9px; padding:10px; border:1px solid #e0e8e5; border-radius:11px; background:#fcfefd; cursor:pointer; text-align:left; }
+.prodb-freebot-card:hover { border-color:#8ed8c0; }
+.bot-card-icon { width:40px; height:40px; display:grid; place-items:center; border-radius:10px; background:#eaf8f3; font-size:20px; }
+.bot-card-icon--1 { background:#edf3ff; }.bot-card-icon--2 { background:#fff4e6; }.bot-card-icon--3 { background:#f3edff; }
+.prodb-freebot-card > span:nth-child(2) { min-width:0; display:flex; flex-direction:column; gap:3px; }
+.prodb-freebot-card small { color:#078d69; font-size:6px; font-weight:900; letter-spacing:1px; }
+.prodb-freebot-card strong { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#1b2637; font-size:9px; font-weight:900; }
+.prodb-freebot-card em { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#8490a0; font-size:7px; font-style:normal; }
+.prodb-freebot-card b { padding:5px 7px; border-radius:5px; background:#e7f7f1; color:#087f60; font-size:7px; }
+
+@media (max-width:700px) {
+    .prodb-dashboard-page { padding:11px 9px 78px; }
+    .prodb-dashboard-hero { display:block; min-height:0; padding:17px; border-radius:14px; }
+    .prodb-dashboard-hero h1 { font-size:21px; }
+    .prodb-dashboard-hero p { font-size:10px; }
+    .prodb-dashboard-balance { margin-top:13px; width:auto; }
+    .prodb-dashboard-balance strong { font-size:16px; }
+    .prodb-dashboard-block { padding:12px; border-radius:12px; }
+    .prodb-market-grid { grid-template-columns:1fr 1fr; gap:7px; }
+    .prodb-market-card { min-height:78px; padding:10px; }
+    .prodb-market-card strong { font-size:14px; }
+    .prodb-dashboard-tools button { flex-basis:92px; height:67px; }
+    .prodb-freebot-card { flex-basis:230px; }
+}
+@media (max-width:390px) {
+    .prodb-dashboard-hero-actions button { padding:8px 9px; font-size:8px; }
+    .prodb-market-card div small { font-size:7px; }
+}
