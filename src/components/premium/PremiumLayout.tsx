@@ -39,6 +39,7 @@ import { ChartsPage } from './pages/LiveTradingPages';
 import PatCopyTradingPage from './pages/PatCopyTradingPage';
 import SpeedBotPage from './pages/SpeedBotPage';
 import { isCustomizableSection, useSiteCustomization } from './site-customization';
+import { SHARP_OFFLINE_MODE } from '@/config/runtime-mode';
 import type { PremiumSection } from './types';
 import './premium-base.scss';
 import './premium-app.scss';
@@ -91,7 +92,7 @@ const PremiumLayout = observer(() => {
     const isOAuthCallback = Boolean(params.get('code') && params.get('state'));
     const hasStoredAuth = OAuthTokenExchangeService.isAuthenticated();
     const runtimeAuthenticated = Boolean(activeLoginid || client?.is_logged_in);
-    const isAuthenticated = Boolean(runtimeAuthenticated || hasStoredAuth || isLocalDevelopmentHost());
+    const isAuthenticated = Boolean(SHARP_OFFLINE_MODE || runtimeAuthenticated || hasStoredAuth || isLocalDevelopmentHost());
 
     useEffect(() => { document.title = getTemplateDomain(); }, []);
 
@@ -100,6 +101,7 @@ const PremiumLayout = observer(() => {
     }, [location.hash]);
 
     useEffect(() => {
+        if (SHARP_OFFLINE_MODE) return;
         if (hasBootstrappedSession.current || isOAuthCallback || !hasStoredAuth || runtimeAuthenticated) return;
         hasBootstrappedSession.current = true;
         setIsAuthorizing(true);
@@ -197,7 +199,7 @@ const PremiumLayout = observer(() => {
     // WebSocket/account observable finishes initializing. Do not send the user
     // back to the landing page (or keep them on a loader) during that handoff.
     // The restoreSession effect below completes the live Deriv connection.
-    if (!runtimeAuthenticated && isOAuthCallback && !hasStoredAuth) return <PremiumLoader />;
+    if (!SHARP_OFFLINE_MODE && !runtimeAuthenticated && isOAuthCallback && !hasStoredAuth) return <PremiumLoader />;
     if (!isAuthenticated) return <LandingPage onLogin={() => startOAuth()} onSignup={() => startOAuth('registration')} busy={isAuthorizing} error={authError} />;
 
     const openBotBuilder = () => changeSection('bot_builder');
