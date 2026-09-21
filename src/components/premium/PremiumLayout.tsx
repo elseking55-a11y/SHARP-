@@ -19,6 +19,7 @@ import LandingPage from './LandingPage';
 import PremiumHeader from './PremiumHeader';
 import PremiumLoader from './PremiumLoader';
 import AnalysisToolsPage from './pages/AnalysisToolsPage';
+import AdminPanelPage from './pages/AdminPanelPage';
 import BatchTraderPage from './pages/BatchTraderPage';
 import BulkTraderPage from './pages/BulkTraderPage';
 import CalculatorPage from './pages/CalculatorPage';
@@ -64,7 +65,7 @@ import './premium-site-theme.scss';
 const validSections: PremiumSection[] = [
     'dashboard', 'bot_ideas', 'quick_bot', 'bot_builder', 'free_bots', 'signal_ai', 'auto_trader',
     'manual_trading', 'bulk_trader', 'batch_trader', 'copy_trading', 'speedbot', 'calculator', 'pro_ai', 'analysis_tools',
-    'analysis_hub', 'charts', 'tradingview', 'dtrader',
+    'analysis_hub', 'charts', 'tradingview', 'dtrader', 'admin',
 ];
 
 const sectionFromHash = (hash: string): PremiumSection => {
@@ -221,6 +222,7 @@ const PremiumLayout = observer(() => {
             case 'charts': return <ChartsPage />;
             case 'tradingview': return <TradingViewPage />;
             case 'dtrader': return <DTraderPage />;
+            case 'admin': return <AdminPanelPage />;
             default: return null;
         }
     };
