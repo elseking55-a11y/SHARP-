@@ -1,164 +1,153 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DBOT_TABS } from '@/constants/bot-contents';
-import { useApiBase } from '@/hooks/useApiBase';
 import { useStore } from '@/hooks/useStore';
-import { PremiumDerivApiService } from '@/services/premium-deriv-api.service';
-import { useDevice } from '@deriv-com/ui';
-import { getTemplateDomain } from '../domain-brand';
+import { useApiBase } from '@/hooks/useApiBase';
 import type { PremiumSection } from '../types';
 
-type LauncherItem = { icon: string; label: string; section?: PremiumSection; action?: 'local-file' };
 type FreeBotPreview = { id?: string; name?: string; title?: string; file: string; description?: string; emoji?: string };
 
-const launcherItems: LauncherItem[] = [
-    { icon: '▰', label: 'My computer', action: 'local-file' },
-    { icon: '⚙', label: 'Bot Builder', section: 'bot_builder' },
+const shortcuts: { icon: string; label: string; section: PremiumSection }[] = [
+    { icon: '⚙️', label: 'Bot Builder', section: 'bot_builder' },
     { icon: '🤖', label: 'Free Bots', section: 'free_bots' },
     { icon: '⚡', label: 'Auto Trades', section: 'auto_trader' },
-    { icon: '✋', label: 'Manual Trading', section: 'manual_trading' },
+    { icon: '✋', label: 'Manual', section: 'manual_trading' },
     { icon: '⇄', label: 'Copy Trading', section: 'copy_trading' },
-    { icon: '▥', label: 'Analysis Tool', section: 'analysis_tools' },
+    { icon: '▥', label: 'Analysis', section: 'analysis_tools' },
     { icon: '▦', label: 'Bulk Trader', section: 'bulk_trader' },
+    { icon: '▤', label: 'Charts', section: 'charts' },
+];
+
+const markets = [
+    { symbol: '1HZ100V', name: 'Volatility 100', accent: 'green' },
+    { symbol: '1HZ50V', name: 'Volatility 50', accent: 'blue' },
+    { symbol: '1HZ10V', name: 'Volatility 10', accent: 'purple' },
+    { symbol: 'R_100', name: 'Volatility 100', accent: 'orange' },
 ];
 
 const DashboardHome = ({ openBotBuilder, openSection }: { openBotBuilder: () => void; openSection?: (section: PremiumSection) => void }) => {
     const { authData } = useApiBase();
     const store = useStore();
-    const { isDesktop } = useDevice();
-    const domain = getTemplateDomain();
-    const [marketCount, setMarketCount] = useState(0);
-    const [openContracts, setOpenContracts] = useState(0);
-    const [history, setHistory] = useState<any[]>([]);
     const [freeBots, setFreeBots] = useState<FreeBotPreview[]>([]);
-    const [error, setError] = useState('');
-
-    useEffect(() => {
-        Promise.allSettled([
-            PremiumDerivApiService.activeSymbols(),
-            PremiumDerivApiService.portfolio(),
-            PremiumDerivApiService.profitTable(20),
-        ]).then(([symbols, portfolio, profit]) => {
-            if (symbols.status === 'fulfilled') setMarketCount(symbols.value.length);
-            if (portfolio.status === 'fulfilled') setOpenContracts(Array.isArray(portfolio.value.contracts) ? portfolio.value.contracts.length : 0);
-            if (profit.status === 'fulfilled') setHistory(Array.isArray(profit.value.transactions) ? profit.value.transactions : []);
-            if ([symbols, portfolio, profit].every(item => item.status === 'rejected')) setError('Unable to read the current Deriv session.');
-        });
-    }, [authData?.loginid]);
+    const [marketQuotes, setMarketQuotes] = useState<Record<string, string>>({});
 
     useEffect(() => {
         let alive = true;
         fetch('/free-bots/bots.json', { cache: 'no-store' })
-            .then(response => response.ok ? response.json() : Promise.reject(new Error(`Free Bots HTTP ${response.status}`)))
+            .then(response => response.ok ? response.json() : Promise.reject(new Error('free bots unavailable')))
             .then(payload => {
                 const items = Array.isArray(payload) ? payload : Array.isArray(payload?.bots) ? payload.bots : [];
                 if (alive) setFreeBots(items.filter((item: any) => item?.file).slice(0, 4));
             })
-            .catch(() => {
-                if (alive) setFreeBots([]);
-            });
+            .catch(() => alive && setFreeBots([]));
         return () => { alive = false; };
     }, []);
 
-    const pnl = useMemo(() => history.reduce((sum, item) => sum + (Number(item.sell_price || 0) - Number(item.buy_price || 0)), 0), [history]);
-    const currency = authData?.currency || 'USD';
+    useEffect(() => {
+        const ws = new WebSocket('wss://api.derivws.com/trading/v1/options/ws/public');
+        const onMessage = (event: MessageEvent) => {
+            try {
+                const data = JSON.parse(event.data);
+                if (data?.tick?.symbol && data?.tick?.quote !== undefined) {
+                    setMarketQuotes(previous => ({ ...previous, [data.tick.symbol]: Number(data.tick.quote).toFixed(data.tick.pip_size ?? 2) }));
+                }
+                if (data?.active_symbols) {
+                    const symbols = data.active_symbols.filter((item: any) => markets.some(m => m.symbol === (item.underlying_symbol || item.symbol)));
+                    symbols.forEach((item: any) => {
+                        const symbol = item.underlying_symbol || item.symbol;
+                        if (symbol) ws.send(JSON.stringify({ ticks: symbol, subscribe: 1 }));
+                    });
+                }
+            } catch { /* public ticker is visual only */ }
+        };
+        ws.addEventListener('message', onMessage);
+        ws.addEventListener('open', () => ws.send(JSON.stringify({ active_symbols: 'brief' })));
+        return () => ws.close();
+    }, []);
 
-    const openNativeBotBuilder = () => {
-        store?.dashboard?.setActiveTab(DBOT_TABS.BOT_BUILDER);
-        store?.run_panel?.toggleDrawer(true);
-        openBotBuilder();
-    };
-
-    const openLocalBot = () => {
-        try {
+    const launch = (section: PremiumSection) => {
+        if (section === 'bot_builder') {
             store?.dashboard?.setActiveTab(DBOT_TABS.BOT_BUILDER);
-            store?.load_modal?.setActiveTabIndex(isDesktop ? 1 : 0);
-            store?.load_modal?.toggleLoadModal();
             store?.run_panel?.toggleDrawer(true);
             openBotBuilder();
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Could not open the bot file loader.');
+            return;
         }
+        openSection?.(section);
     };
 
-    const launch = (item: LauncherItem) => {
-        setError('');
-        if (item.action === 'local-file') return openLocalBot();
-        if (!item.section) return;
-        if (item.section === 'bot_builder') return openNativeBotBuilder();
-        openSection?.(item.section);
-    };
+    const balance = Number(authData?.balance || 0);
+    const currency = authData?.currency || 'USD';
 
     return (
         <div className='prodb-dashboard-page'>
-            <div className='prodb-dashboard-candles' />
-            <section className='prodb-dashboard-main'>
-                <div className='prodb-dashboard-heading'>
-                    <div>
-                        <span className='prodb-dashboard-eyebrow'>ELISY254 SHARP • LIVE TRADING</span>
-                        <h1>Trading Dashboard</h1>
-                        <p>Everything you need is one tap away. Your Deriv account is connected to this workspace.</p>
-                    </div>
-                    <div className='prodb-dashboard-connection'><i /> CONNECTED</div>
-                </div>
-
-                <div className='prodb-dashboard-api-strip'>
-                    <div><small>DERIV ACCOUNT</small><strong>{authData?.loginid || 'Connected'}</strong></div>
-                    <div><small>LIVE BALANCE</small><strong>{Number(authData?.balance || 0).toFixed(2)} {currency}</strong></div>
-                    <div><small>ACTIVE MARKETS</small><strong>{marketCount}</strong></div>
-                    <div><small>OPEN CONTRACTS</small><strong>{openContracts}</strong></div>
-                    <div><small>LAST 20 NET</small><strong className={pnl >= 0 ? 'is-positive' : 'is-negative'}>{pnl.toFixed(2)} {currency}</strong></div>
-                </div>
-
-                <div className='prodb-dashboard-shortcuts'>
-                    <div className='prodb-dashboard-shortcuts__head'><strong>Quick shortcuts</strong><span>Tap any tool to open it</span></div>
-                    <div className='prodb-dashboard-shortcuts__track'>
-                        {launcherItems.map((item, index) => (
-                            <button key={item.label} type='button' onClick={() => launch(item)}>
-                                <span className={`launcher-icon launcher-icon--${index}`}>{item.icon}</span>
-                                <strong>{item.label}</strong>
-                            </button>
-                        ))}
+            <section className='prodb-dashboard-hero'>
+                <div>
+                    <span className='prodb-dashboard-kicker'>ELISY254 SHARP</span>
+                    <h1>Your trading workspace</h1>
+                    <p>Markets, bots and trading tools — organised in one clean workspace.</p>
+                    <div className='prodb-dashboard-hero-actions'>
+                        <button type='button' onClick={() => launch('bot_builder')}>⚙️ Open Bot Builder</button>
+                        <button type='button' className='secondary' onClick={() => launch('free_bots')}>🤖 Free Bots</button>
                     </div>
                 </div>
-
-                <div className='prodb-dashboard-section-head'>
-                    <div><span>READY TO USE</span><h2>Free Bots</h2></div>
-                    <button type='button' onClick={() => openSection?.('free_bots')}>View all free bots →</button>
+                <div className='prodb-dashboard-balance'>
+                    <span>AVAILABLE BALANCE</span>
+                    <strong>{balance.toFixed(2)} {currency}</strong>
+                    <small>{authData?.loginid || 'Deriv account connected'}</small>
                 </div>
+            </section>
 
-                <div className='prodb-dashboard-freebots'>
-                    {freeBots.length > 0 ? freeBots.map((bot, index) => (
-                        <button key={bot.id || bot.file} type='button' onClick={() => openSection?.('free_bots')} className='prodb-dashboard-freebot'>
-                            <span className={`prodb-dashboard-freebot__icon prodb-dashboard-freebot__icon--${index % 4}`}>{bot.emoji || '🤖'}</span>
-                            <span>
-                                <small>FREE BOT</small>
-                                <strong>{bot.name || bot.title || bot.file.replace(/\.xml$/i, '')}</strong>
-                                <em>{bot.description || 'Ready to load into Bot Builder.'}</em>
-                            </span>
+            <section className='prodb-dashboard-block'>
+                <div className='prodb-dashboard-block-head'>
+                    <div><span>LIVE MARKET WATCH</span><h2>Markets</h2></div>
+                    <span className='live-dot'>● LIVE</span>
+                </div>
+                <div className='prodb-market-grid'>
+                    {markets.map((market, index) => (
+                        <div className={\`prodb-market-card prodb-market-card--\${market.accent}\`} key={market.symbol}>
+                            <div><span>{index + 1}</span><small>{market.name}</small></div>
+                            <strong>{marketQuotes[market.symbol] || '—'}</strong>
+                            <em>{market.symbol}</em>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
+            <section className='prodb-dashboard-block'>
+                <div className='prodb-dashboard-block-head'>
+                    <div><span>TOOLS</span><h2>Quick access</h2></div>
+                    <span className='block-hint'>Swipe to explore</span>
+                </div>
+                <div className='prodb-dashboard-tools'>
+                    {shortcuts.map(item => (
+                        <button key={item.label} type='button' onClick={() => launch(item.section)}>
+                            <span>{item.icon}</span>
+                            <strong>{item.label}</strong>
+                        </button>
+                    ))}
+                </div>
+            </section>
+
+            <section className='prodb-dashboard-block prodb-freebots-block'>
+                <div className='prodb-dashboard-block-head'>
+                    <div><span>READY TO LOAD</span><h2>Free Bots</h2></div>
+                    <button className='text-button' type='button' onClick={() => launch('free_bots')}>View all →</button>
+                </div>
+                <div className='prodb-freebot-grid'>
+                    {freeBots.length ? freeBots.map((bot, index) => (
+                        <button className='prodb-freebot-card' type='button' key={bot.id || bot.file} onClick={() => launch('free_bots')}>
+                            <span className={\`bot-card-icon bot-card-icon--\${index % 4}\`}>{bot.emoji || '🤖'}</span>
+                            <span><small>FREE BOT</small><strong>{bot.name || bot.title || bot.file.replace(/\.xml$/i, '')}</strong><em>{bot.description || 'Ready to load into Bot Builder.'}</em></span>
                             <b>OPEN</b>
                         </button>
                     )) : (
-                        <button type='button' className='prodb-dashboard-freebot prodb-dashboard-freebot--empty' onClick={() => openSection?.('free_bots')}>
-                            <span className='prodb-dashboard-freebot__icon'>🤖</span>
-                            <span><small>FREE BOTS</small><strong>Open Free Bots Library</strong><em>Browse and load your available bots.</em></span>
+                        <button className='prodb-freebot-card' type='button' onClick={() => launch('free_bots')}>
+                            <span className='bot-card-icon'>🤖</span>
+                            <span><small>FREE BOTS</small><strong>Open Free Bots Library</strong><em>Add your XML bots to /public/free-bots/</em></span>
                             <b>OPEN</b>
                         </button>
                     )}
                 </div>
-
-                {error && <div className='prodb-live-error'>{error}</div>}
             </section>
-
-            <aside className='prodb-help-panel'>
-                <article className='prodb-help-panel__welcome'>
-                    <div className='prodb-help-line' />
-                    <span className='prodb-help-icon'>🧠</span>
-                    <h2>Welcome to {domain}</h2>
-                    <p>Your connected Deriv workspace. Use the shortcuts above to move between trading tools without leaving the app.</p>
-                </article>
-                <article className='prodb-help-card prodb-help-card--green'><span>🤖</span><div><h3>Free Bots</h3><p>Open the library, choose a bot and load it into the existing Bot Builder.</p></div></article>
-                <article className='prodb-help-card prodb-help-card--blue'><span>⚡</span><div><h3>Live tools</h3><p>Auto Trades, Manual Trading, Charts, Analysis and Copy Trading remain available from the app navigation.</p></div></article>
-            </aside>
         </div>
     );
 };
