@@ -59,6 +59,11 @@ const exchangeToken = async (req, res) => {
             redirect_uri: site.redirect_uri,
         });
 
+        // Some Deriv OAuth clients are configured with a client secret.
+        // Keep it server-side only; never expose it to the browser.
+        const clientSecret = String(process.env.DERIV_CLIENT_SECRET || '').trim();
+        if (clientSecret) form.set('client_secret', clientSecret);
+
         if (params.grant_type === 'refresh_token') {
             form.delete('code');
             form.delete('code_verifier');
