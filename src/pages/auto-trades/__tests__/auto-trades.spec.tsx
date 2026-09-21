@@ -139,7 +139,9 @@ describe('<AutoTrades />', () => {
 
         render(<AutoTrades />);
 
-        const tradeTypeSelect = screen.getAllByRole('combobox')[0];
+        const strategySelect = screen.getAllByRole('combobox')[0];
+        const tradeTypeSelect = screen.getAllByRole('combobox')[1];
+        await user.selectOptions(strategySelect, 'STANDARD');
         await user.selectOptions(tradeTypeSelect, 'RUNHIGH');
 
         await waitFor(() => {
@@ -147,7 +149,7 @@ describe('<AutoTrades />', () => {
             expect(screen.getByText(/falling ticks \+ bullish 5m candle/i)).toBeInTheDocument();
         });
 
-        const analysisTickSelect = screen.getAllByRole('combobox')[1];
+        const analysisTickSelect = screen.getAllByRole('combobox')[2];
         await user.selectOptions(analysisTickSelect, '3');
 
         expect(screen.getByText(/Only Ups \(3 ticks\)/i)).toBeInTheDocument();
