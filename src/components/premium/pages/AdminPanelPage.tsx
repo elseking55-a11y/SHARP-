@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import type { FormEvent } from 'react';
 import type { CSSProperties } from 'react';
 import {
     readManagedBots,
@@ -19,6 +20,8 @@ type AdminForm = {
     priority: string;
     imageUrl: string;
     videoUrl: string;
+    published: boolean;
+    comingSoon: boolean;
 };
 
 const defaultForm: AdminForm = {
@@ -33,6 +36,8 @@ const defaultForm: AdminForm = {
     priority: '1',
     imageUrl: '',
     videoUrl: '',
+    published: true,
+    comingSoon: false,
 };
 
 const ADMIN_SESSION_KEY = 'sharp_local_admin_session_v1';
@@ -59,6 +64,10 @@ const AdminPanelPage = () => {
     const [busy, setBusy] = useState(false);
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
+    const [activeTab, setActiveTab] = useState('dashboard');
+    const [appearance, setAppearance] = useState<Record<string, string>>(() => {
+        try { return JSON.parse(localStorage.getItem('sharp_admin_appearance_v1') || '{}'); } catch { return {}; }
+    });
 
     const refreshBots = () => setBots(readManagedBots());
 
@@ -131,13 +140,15 @@ const AdminPanelPage = () => {
             priority: String(bot.priority ?? 1),
             imageUrl: bot.imageUrl || '',
             videoUrl: bot.videoUrl || '',
+            published: bot.published !== false,
+            comingSoon: Boolean(bot.comingSoon),
         });
         setMessage('Editing bot. Select a new XML only if you want to replace its file.');
         setError('');
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    const saveBot = async (event: React.FormEvent) => {
+    const saveBot = async (event: FormEvent) => {
         event.preventDefault();
         if (!form.name.trim()) {
             setError('Enter a bot name.');
@@ -179,6 +190,8 @@ const AdminPanelPage = () => {
                 priority: Math.max(1, Number(form.priority) || 1),
                 imageUrl: form.imageUrl.trim(),
                 videoUrl: form.videoUrl.trim(),
+                published: form.published,
+                comingSoon: form.comingSoon,
                 file: xmlFile?.name || readManagedBots().find(bot => bot.id === editingId)?.file || `${id}.xml`,
                 xmlBase64,
                 updatedAt: Date.now(),
@@ -192,6 +205,35 @@ const AdminPanelPage = () => {
         } finally {
             setBusy(false);
         }
+    };
+
+    const togglePublished = (bot: ManagedBot) => {
+        upsertManagedBot({ ...bot, published: bot.published === false });
+        refreshBots();
+        setMessage(`${bot.name} is now ${bot.published === false ? 'published' : 'unpublished'}.`);
+    };
+
+    const downloadBot = (bot: ManagedBot) => {
+        try {
+            const binary = atob(bot.xmlBase64);
+            const bytes = Uint8Array.from(binary, char => char.charCodeAt(0));
+            const blob = new Blob([bytes], { type: 'application/xml' });
+            const url = URL.createObjectURL(blob);
+            const anchor = document.createElement('a');
+            anchor.href = url;
+            anchor.download = bot.file || `${bot.name}.xml`;
+            anchor.click();
+            URL.revokeObjectURL(url);
+        } catch {
+            setError('This bot file could not be downloaded. Replace its XML file from Bot Files.');
+        }
+    };
+
+    const saveAppearance = (key: string, value: string) => {
+        const next = { ...appearance, [key]: value };
+        setAppearance(next);
+        localStorage.setItem('sharp_admin_appearance_v1', JSON.stringify(next));
+        setMessage('Appearance setting saved on this device.');
     };
 
     const deleteBot = (bot: ManagedBot) => {
@@ -231,21 +273,20 @@ const AdminPanelPage = () => {
         );
     }
 
-    return (
-        <div className='prodb-admin-page'>
-            <header className='prodb-admin-head'>
-                <div>
-                    <span>ELISY254 SHARP • CONTROL CENTRE</span>
-                    <h1>Admin Panel</h1>
-                    <p>Add bots, XML files, preview links and card colours without opening code.</p>
-                </div>
-                <button type='button' onClick={logout}>LOCK PANEL</button>
-            </header>
+const adminMenu = [
+        { id: 'dashboard', icon: '📊', label: 'Dashboard' },
+        { id: 'bot_management', icon: '🤖', label: 'Bot Management' },
+        { id: 'bot_files', icon: '📁', label: 'Bot Files' },
+        { id: 'appearance', icon: '🎨', label: 'App Appearance' },
+        { id: 'users', icon: '👥', label: 'Users' },
+        { id: 'trading', icon: '📈', label: 'Trading Activity' },
+        { id: 'content', icon: '📢', label: 'Tutorials / Content' },
+        { id: 'settings', icon: '⚙️', label: 'System Settings' },
+    ];
 
-            {error && <div className='prodb-admin-error'>{error}</div>}
-            {message && <div className='prodb-admin-success'>{message}</div>}
-
-            <div className='prodb-admin-layout'>
+    const renderAdminPanel = () => {
+        if (activeTab === 'bot_management' || activeTab === 'bot_files') {
+            return             <div className='prodb-admin-layout'>
                 <form className='prodb-admin-card prodb-admin-form' onSubmit={saveBot}>
                     <div className='prodb-admin-card-head'>
                         <div><span>BOT MANAGER</span><h2>{editingId ? 'Edit bot' : 'Add new bot'}</h2></div>
@@ -269,6 +310,21 @@ const AdminPanelPage = () => {
                         <label>Accent<input type='color' value={form.accent} onChange={e => setForm({...form, accent:e.target.value})} /></label>
                         <label>Card colour<input type='color' value={form.surface} onChange={e => setForm({...form, surface:e.target.value})} /></label>
                         <label>Text colour<input type='color' value={form.text} onChange={e => setForm({...form, text:e.target.value})} /></label>
+                    </div>
+
+                    <div className='prodb-admin-fields'>
+                        <label>Publishing status
+                            <select value={form.published ? 'published' : 'unpublished'} onChange={e => setForm({...form, published:e.target.value === 'published'})}>
+                                <option value='published'>Published</option>
+                                <option value='unpublished'>Unpublished</option>
+                            </select>
+                        </label>
+                        <label>Bot release
+                            <select value={form.comingSoon ? 'coming_soon' : 'available'} onChange={e => setForm({...form, comingSoon:e.target.value === 'coming_soon'})}>
+                                <option value='available'>Available / Free Bot</option>
+                                <option value='coming_soon'>Coming Soon</option>
+                            </select>
+                        </label>
                     </div>
 
                     <label>Bot XML {editingId && <small>(optional when editing)</small>}<input type='file' accept='.xml,text/xml,application/xml' onChange={e => setXmlFile(e.target.files?.[0] || null)} /></label>
@@ -303,6 +359,104 @@ const AdminPanelPage = () => {
                         {!bots.length && <div className='prodb-admin-empty'>No bots yet. Upload your first XML above.</div>}
                     </div>
                 </section>
+            <;
+        }
+
+        if (activeTab === 'dashboard') {
+            const published = bots.filter(bot => bot.published !== false && !bot.comingSoon).length;
+            const comingSoon = bots.filter(bot => bot.comingSoon).length;
+            return (
+                <section className='prodb-admin-dashboard-grid'>
+                    <article className='prodb-admin-stat'><span>🤖 TOTAL BOTS</span><strong>{bots.length}</strong><small>Managed bot files</small></article>
+                    <article className='prodb-admin-stat'><span>🟢 PUBLISHED</span><strong>{published}</strong><small>Visible as available bots</small></article>
+                    <article className='prodb-admin-stat'><span>🕐 COMING SOON</span><strong>{comingSoon}</strong><small>Prepared for release</small></article>
+                    <article className='prodb-admin-stat'><span>🔒 MODE</span><strong>LOCAL</strong><small>Live server publishing is disabled</small></article>
+                    <section className='prodb-admin-wide-card'>
+                        <span>QUICK ACTIONS</span><h2>Manage your app</h2>
+                        <div className='prodb-admin-quick-grid'>
+                            <button onClick={() => { setActiveTab('bot_management'); resetForm(); }}>＋ Add Bot</button>
+                            <button onClick={() => setActiveTab('bot_files')}>📁 Bot Files</button>
+                            <button onClick={() => setActiveTab('appearance')}>🎨 Appearance</button>
+                            <button onClick={() => setActiveTab('content')}>📢 Content</button>
+                        </div>
+                    </section>
+                </section>
+            );
+        }
+
+        if (activeTab === 'appearance') {
+            return (
+                <section className='prodb-admin-wide-card'>
+                    <span>APP APPEARANCE</span><h2>Colours, buttons & dashboard cards</h2>
+                    <div className='prodb-admin-appearance-grid'>
+                        <label>Primary colour<input type='color' value={appearance.primary || '#20b98d'} onChange={e => saveAppearance('primary',e.target.value)} /></label>
+                        <label>Accent colour<input type='color' value={appearance.accent || '#1878df'} onChange={e => saveAppearance('accent',e.target.value)} /></label>
+                        <label>Card colour<input type='color' value={appearance.card || '#0d2137'} onChange={e => saveAppearance('card',e.target.value)} /></label>
+                        <label>Theme
+                            <select value={appearance.theme || 'dark'} onChange={e => saveAppearance('theme',e.target.value)}>
+                                <option value='dark'>Dark</option><option value='light'>Light</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div className='prodb-admin-appearance-preview' style={{ background: appearance.card || '#0d2137', borderColor: appearance.primary || '#20b98d' }}>
+                        <span>🤖</span><div><small>PREVIEW</small><strong>Dashboard card</strong><em>Appearance settings are stored on this device.</em></div>
+                    </div>
+                </section>
+            );
+        }
+
+        const info: Record<string, {title:string; text:string; items:string[]}> = {
+            users: { title:'Users', text:'User/account analytics will appear here when a shared backend is enabled.', items:['Users','Active users','User activity'] },
+            trading: { title:'Trading Activity', text:'Trading records are intentionally not fabricated while live trading is disabled.', items:['Auto Trades','Manual Trades','Trade History'] },
+            content: { title:'Tutorials / Content', text:'Create the content-management area here for tutorials, guides and announcements.', items:['Tutorials','Guides','Announcements'] },
+            settings: { title:'System Settings', text:'Core application controls for this device and future backend settings.', items:['Security','Runtime mode','Data management'] },
+        };
+        const current = info[activeTab];
+        return (
+            <section className='prodb-admin-wide-card'>
+                <span>{current.title.toUpperCase()}</span><h2>{current.title}</h2><p className='prodb-admin-section-copy'>{current.text}</p>
+                <div className='prodb-admin-placeholder-grid'>
+                    {current.items.map(item => <button key={item} type='button' onClick={() => setMessage(`${item}: ready for configuration.`)}><strong>{item}</strong><small>Open section →</small></button>)}
+                </div>
+            </section>
+        );
+    };
+
+    return (
+        <div className='prodb-admin-page'>
+            <header className='prodb-admin-head'>
+                <div><span>ELISY254 SHARP • CONTROL CENTRE</span><h1>Admin Panel</h1><p>Manage bots, files, appearance and app sections without editing code.</p></div>
+                <button type='button' onClick={logout}>LOCK PANEL</button>
+            </header>
+
+            {error && <div className='prodb-admin-error'>{error}</div>}
+            {message && <div className='prodb-admin-success'>{message}</div>}
+
+            <div className='prodb-admin-shell'>
+                <aside className='prodb-admin-sidebar'>
+                    <div className='prodb-admin-sidebar-brand'><div>⚡</div><strong>SHARP ADMIN</strong><small>CONTROL CENTRE</small></div>
+                    <nav>
+                        {adminMenu.map(item => (
+                            <button key={item.id} type='button' className={activeTab === item.id ? 'is-active' : ''} onClick={() => { setActiveTab(item.id); setError(''); }}>
+                                <span>{item.icon}</span><strong>{item.label}</strong><b>›</b>
+                            </button>
+                        ))}
+                    </nav>
+                </aside>
+
+                <main className='prodb-admin-main'>
+                    <div className='prodb-admin-breadcrumb'><span>ADMIN</span><b>›</b><strong>{adminMenu.find(item => item.id === activeTab)?.label}</strong></div>
+
+                    {(activeTab === 'bot_management' || activeTab === 'bot_files') && (
+                        <div className='prodb-admin-subnav'>
+                            <button className={activeTab === 'bot_management' ? 'is-active' : ''} onClick={() => setActiveTab('bot_management')}>🤖 Bot Management</button>
+                            <button className={activeTab === 'bot_files' ? 'is-active' : ''} onClick={() => setActiveTab('bot_files')}>📁 Bot Files</button>
+                            <button onClick={() => { setActiveTab('bot_management'); resetForm(); }}>＋ Add Bot</button>
+                        </div>
+                    )}
+
+                    {renderAdminPanel()}
+                </main>
             </div>
         </div>
     );
