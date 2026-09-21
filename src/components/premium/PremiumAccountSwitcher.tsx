@@ -282,4 +282,32 @@ const LivePremiumAccountSwitcher = observer(() => {
     );
 });
 
-const PremiumAccountSwitcher = () => <LivePremiumAccountSwitcher />;
+const OfflinePremiumAccountSwitcher = () => {
+    const [mode, setMode] = useState<'demo' | 'real'>(() => (localStorage.getItem('sharp_account_mode') as 'demo' | 'real') || 'demo');
+    const selectMode = (next: 'demo' | 'real') => {
+        setMode(next);
+        localStorage.setItem('sharp_account_mode', next);
+    };
+
+    return (
+        <div className='prodb-api-account prodb-api-account--offline'>
+            <button
+                type='button'
+                className='prodb-api-account__trigger'
+                aria-label={`Account mode: ${mode === 'demo' ? 'Demo' : 'Real'}`}
+                onClick={() => selectMode(mode === 'demo' ? 'real' : 'demo')}
+            >
+                <span className={`prodb-api-account-icon ${mode === 'demo' ? 'is-demo' : 'is-real'}`} aria-hidden='true'>
+                    <CurrencyDemoIcon iconSize='sm' />
+                </span>
+                <span className='prodb-api-account__current'>
+                    <small>{mode === 'demo' ? 'Demo' : 'Real'}</small>
+                    <strong>— USD</strong>
+                </span>
+                <span className='prodb-api-account__chevron'>⌄</span>
+            </button>
+        </div>
+    );
+};
+
+const PremiumAccountSwitcher = () => SHARP_OFFLINE_MODE ? <OfflinePremiumAccountSwitcher /> : <LivePremiumAccountSwitcher />;
