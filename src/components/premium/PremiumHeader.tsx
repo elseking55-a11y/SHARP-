@@ -99,6 +99,7 @@ const PremiumHeader = observer(
                         >
                             {is_dark_mode_on ? <MoonIcon /> : <SunIcon />}
                         </button>
+                        <button type='button' className='prodb-admin-shortcut' onClick={() => onChange('admin')} aria-label='Open Admin Panel' title='Admin Panel'>🛡️</button>
                         <PremiumAccountSwitcher />
                     </div>
                 </div>
