@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { DBOT_TABS } from '@/constants/bot-contents';
 import { getSavedWorkspaces, timeSince } from '@/external/bot-skeleton';
 import { useStore } from '@/hooks/useStore';
+import { useApiBase } from '@/hooks/useApiBase';
 import type { PremiumSection } from '../types';
 
 type FreeBotPreview = { id?: string; name?: string; title?: string; file: string; description?: string; emoji?: string };
@@ -21,6 +22,7 @@ const shortcuts: { icon: string; label: string; section: PremiumSection; tone: s
 
 const DashboardHome = ({ openBotBuilder, openSection }: { openBotBuilder: () => void; openSection?: (section: PremiumSection) => void }) => {
     const store = useStore();
+    const { authData } = useApiBase();
     const [freeBots, setFreeBots] = useState<FreeBotPreview[]>([]);
     const [savedBots, setSavedBots] = useState<SavedBot[]>([]);
 
@@ -80,9 +82,9 @@ const DashboardHome = ({ openBotBuilder, openSection }: { openBotBuilder: () => 
                     </div>
                 </div>
                 <div className='prodb-dashboard-balance'>
-                    <span>ACCOUNT</span>
-                    <strong>{store?.client?.loginid || '—'}</strong>
-                    <small>{store?.client?.currency || '—'}</small>
+                    <span>BALANCE</span>
+                    <strong>{typeof authData?.balance === 'number' ? authData.balance.toFixed(2) : '—'}</strong>
+                    <small>{authData?.currency || 'USD'}</small>
                 </div>
             </section>
 
