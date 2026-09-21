@@ -230,17 +230,33 @@ export const clearCSRFToken = (): void => {
  */
 export const generateOAuthURL = async (prompt?: string) => {
     try {
-        // Render/Vite exposes VITE_* variables at build time. Use the explicit
-        // SHARP Render values first so OAuth does not depend on brand.config.json
-        // containing the deployment hostname.
-        const runtimeClientId = (import.meta.env.VITE_DERIV_CLIENT_ID as string | undefined)?.trim();
-        const runtimeRedirectUri =
+        // Prefer server-side Render configuration so login still works even when
+        // VITE_* values were added after the last frontend build.
+        let runtimeClientId = (import.meta.env.VITE_DERIV_CLIENT_ID as string | undefined)?.trim();
+        let runtimeRedirectUri =
             (import.meta.env.VITE_DERIV_REDIRECT_URI as string | undefined)?.trim()
             || 'https://sharp-mz3h.onrender.com/callback';
 
+        try {
+            const response = await fetch('/api/deriv/oauth-config', { cache: 'no-store' });
+            if (response.ok) {
+                const runtime = await response.json() as {
+                    configured?: boolean;
+                    client_id?: string;
+                    redirect_uri?: string;
+                };
+                if (runtime.configured && runtime.client_id) {
+                    runtimeClientId = runtime.client_id.trim();
+                    runtimeRedirectUri = runtime.redirect_uri?.trim() || runtimeRedirectUri;
+                }
+            }
+        } catch (error) {
+            console.warn('[OAuth] Runtime config endpoint unavailable; using build-time configuration.', error);
+        }
+
         const configuredSite = resolveSiteConfig();
-        const site = configuredSite || (runtimeClientId ? {
-            id: 'sharp-runtime',
+        const site = runtimeClientId ? {
+            id: 'sharp-render',
             hosts: [window.location.hostname],
             display_domain: window.location.hostname,
             website_url: window.location.origin,
@@ -248,7 +264,7 @@ export const generateOAuthURL = async (prompt?: string) => {
             client_id: runtimeClientId,
             scopes: ['trade', 'application_read'],
             environment: 'production' as const,
-        } : requireCurrentSiteConfig());
+        } : configuredSite || requireCurrentSiteConfig();
 
         const authBase = brandConfig.platform.auth2_url[site.environment];
         if (!authBase) throw new Error(`No Deriv OAuth base URL for ${site.environment}`);
