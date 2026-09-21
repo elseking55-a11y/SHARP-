@@ -1,27 +1,29 @@
 import { useEffect, useState } from 'react';
 import { DBOT_TABS } from '@/constants/bot-contents';
+import { getSavedWorkspaces, timeSince } from '@/external/bot-skeleton';
 import { useStore } from '@/hooks/useStore';
 import { useApiBase } from '@/hooks/useApiBase';
 import type { PremiumSection } from '../types';
 
 type FreeBotPreview = { id?: string; name?: string; title?: string; file: string; description?: string; emoji?: string };
+type SavedBot = { id: string; name?: string; timestamp?: number; save_type?: string };
 
-const shortcuts: { icon: string; label: string; section: PremiumSection }[] = [
-    { icon: '⚙️', label: 'Bot Builder', section: 'bot_builder' },
-    { icon: '🤖', label: 'Free Bots', section: 'free_bots' },
-    { icon: '⚡', label: 'Auto Trades', section: 'auto_trader' },
-    { icon: '✋', label: 'Manual', section: 'manual_trading' },
-    { icon: '⇄', label: 'Copy Trading', section: 'copy_trading' },
-    { icon: '▥', label: 'Analysis', section: 'analysis_tools' },
-    { icon: '▦', label: 'Bulk Trader', section: 'bulk_trader' },
-    { icon: '▤', label: 'Charts', section: 'charts' },
-    { icon: '🛡️', label: 'Admin Panel', section: 'admin' },
+const shortcuts: { icon: string; label: string; section: PremiumSection; tone: string }[] = [
+    { icon: '＋', label: 'Bot Builder', section: 'bot_builder', tone: 'blue' },
+    { icon: '🤖', label: 'Free Bots', section: 'free_bots', tone: 'purple' },
+    { icon: '⚡', label: 'Auto Trades', section: 'auto_trader', tone: 'green' },
+    { icon: '✋', label: 'Manual Trading', section: 'manual_trading', tone: 'orange' },
+    { icon: '⇄', label: 'Copy Trading', section: 'copy_trading', tone: 'gold' },
+    { icon: '▥', label: 'Analysis Tool', section: 'analysis_tools', tone: 'cyan' },
+    { icon: '▦', label: 'Bulk Trader', section: 'bulk_trader', tone: 'violet' },
+    { icon: '▤', label: 'Charts', section: 'charts', tone: 'slate' },
+    { icon: '🛡️', label: 'Admin Panel', section: 'admin', tone: 'red' },
 ];
 
 const markets = [
-    { symbol: '1HZ100V', name: 'Volatility 100', accent: 'green' },
-    { symbol: '1HZ50V', name: 'Volatility 50', accent: 'blue' },
-    { symbol: '1HZ10V', name: 'Volatility 10', accent: 'purple' },
+    { symbol: '1HZ100V', name: 'Volatility 100 (1s)', accent: 'green' },
+    { symbol: '1HZ50V', name: 'Volatility 50 (1s)', accent: 'blue' },
+    { symbol: '1HZ10V', name: 'Volatility 10 (1s)', accent: 'purple' },
     { symbol: 'R_100', name: 'Volatility 100', accent: 'orange' },
 ];
 
@@ -29,6 +31,7 @@ const DashboardHome = ({ openBotBuilder, openSection }: { openBotBuilder: () => 
     const { authData } = useApiBase();
     const store = useStore();
     const [freeBots, setFreeBots] = useState<FreeBotPreview[]>([]);
+    const [savedBots, setSavedBots] = useState<SavedBot[]>([]);
     const [marketQuotes, setMarketQuotes] = useState<Record<string, string>>({});
 
     useEffect(() => {
@@ -37,14 +40,30 @@ const DashboardHome = ({ openBotBuilder, openSection }: { openBotBuilder: () => 
             .then(response => response.ok ? response.json() : Promise.reject(new Error('free bots unavailable')))
             .then(payload => {
                 const items = Array.isArray(payload) ? payload : Array.isArray(payload?.bots) ? payload.bots : [];
-                if (alive) setFreeBots(items.filter((item: any) => item?.file).slice(0, 4));
+                if (alive) setFreeBots(items.filter((item: any) => item?.file).slice(0, 6));
             })
             .catch(() => alive && setFreeBots([]));
+
+        void getSavedWorkspaces()
+            .then((items: any[]) => alive && setSavedBots((items || []).slice(0, 6).map(item => ({
+                id: String(item.id),
+                name: item.name || 'Untitled Bot',
+                timestamp: Number(item.timestamp || Date.now()),
+                save_type: item.save_type,
+            }))))
+            .catch(() => alive && setSavedBots([]));
+
         return () => { alive = false; };
     }, []);
 
     useEffect(() => {
+        let alive = true;
         const ws = new WebSocket('wss://api.derivws.com/trading/v1/options/ws/public');
+        const subscribePreferred = () => {
+            markets.forEach(market => {
+                try { ws.send(JSON.stringify({ ticks: market.symbol, subscribe: 1 })); } catch { /* reconnect handles it */ }
+            });
+        };
         const onMessage = (event: MessageEvent) => {
             try {
                 const data = JSON.parse(event.data);
@@ -52,17 +71,21 @@ const DashboardHome = ({ openBotBuilder, openSection }: { openBotBuilder: () => 
                     setMarketQuotes(previous => ({ ...previous, [data.tick.symbol]: Number(data.tick.quote).toFixed(data.tick.pip_size ?? 2) }));
                 }
                 if (data?.active_symbols) {
-                    const symbols = data.active_symbols.filter((item: any) => markets.some(m => m.symbol === (item.underlying_symbol || item.symbol)));
-                    symbols.forEach((item: any) => {
-                        const symbol = item.underlying_symbol || item.symbol;
-                        if (symbol) ws.send(JSON.stringify({ ticks: symbol, subscribe: 1 }));
+                    data.active_symbols.forEach((item: any) => {
+                        const symbol = item?.underlying_symbol || item?.symbol;
+                        if (symbol && markets.some(m => m.symbol === symbol)) {
+                            try { ws.send(JSON.stringify({ ticks: symbol, subscribe: 1 })); } catch { /* socket closing */ }
+                        }
                     });
                 }
             } catch { /* public ticker is visual only */ }
         };
         ws.addEventListener('message', onMessage);
-        ws.addEventListener('open', () => ws.send(JSON.stringify({ active_symbols: 'brief' })));
-        return () => ws.close();
+        ws.addEventListener('open', () => {
+            try { ws.send(JSON.stringify({ active_symbols: 'brief' })); } catch {}
+            subscribePreferred();
+        });
+        return () => { alive = false; ws.close(); };
     }, []);
 
     const launch = (section: PremiumSection) => {
@@ -75,18 +98,29 @@ const DashboardHome = ({ openBotBuilder, openSection }: { openBotBuilder: () => 
         openSection?.(section);
     };
 
+    const openSavedBot = async (bot: SavedBot) => {
+        try {
+            store?.load_modal?.setSelectedStrategyId(bot.id);
+            await store?.load_modal?.loadFileFromRecent();
+            store?.dashboard?.setActiveTab(DBOT_TABS.BOT_BUILDER);
+            openBotBuilder();
+        } catch {
+            openBotBuilder();
+        }
+    };
+
     const balance = Number(authData?.balance || 0);
     const currency = authData?.currency || 'USD';
 
     return (
         <div className='prodb-dashboard-page'>
             <section className='prodb-dashboard-hero'>
-                <div>
-                    <span className='prodb-dashboard-kicker'>ELISY254 SHARP</span>
-                    <h1>Your trading workspace</h1>
-                    <p>Markets, bots and trading tools — organised in one clean workspace.</p>
+                <div className='prodb-dashboard-hero-copy'>
+                    <span className='prodb-dashboard-kicker'>ELISY254 SHARP • TRADING WORKSPACE</span>
+                    <h1>Everything you need, in one app.</h1>
+                    <p>Build bots, open saved strategies, watch live markets and move directly into your trading tools.</p>
                     <div className='prodb-dashboard-hero-actions'>
-                        <button type='button' onClick={() => launch('bot_builder')}>⚙️ Open Bot Builder</button>
+                        <button type='button' onClick={() => launch('bot_builder')}>＋ Build Bot</button>
                         <button type='button' className='secondary' onClick={() => launch('free_bots')}>🤖 Free Bots</button>
                     </div>
                 </div>
@@ -97,6 +131,46 @@ const DashboardHome = ({ openBotBuilder, openSection }: { openBotBuilder: () => 
                 </div>
             </section>
 
+            <section className='prodb-dashboard-block prodb-dashboard-tools-block'>
+                <div className='prodb-dashboard-block-head'>
+                    <div><span>SHORTCUTS</span><h2>Trading tools</h2></div>
+                    <span className='block-hint'>Tap any tool</span>
+                </div>
+                <div className='prodb-dashboard-tools prodb-dashboard-tools--grid'>
+                    {shortcuts.map(item => (
+                        <button key={item.label} className={`prodb-dashboard-tool-card prodb-dashboard-tool-card--${item.tone}`} type='button' onClick={() => launch(item.section)}>
+                            <span>{item.icon}</span>
+                            <strong>{item.label}</strong>
+                        </button>
+                    ))}
+                </div>
+            </section>
+
+            <section className='prodb-dashboard-block'>
+                <div className='prodb-dashboard-block-head'>
+                    <div><span>YOUR WORKSPACE</span><h2>Imported bots</h2></div>
+                    <button className='text-button' type='button' onClick={() => launch('bot_builder')}>Open Builder →</button>
+                </div>
+                <div className='prodb-imported-bots'>
+                    {savedBots.length ? savedBots.map((bot, index) => (
+                        <article className={`prodb-imported-bot prodb-imported-bot--${index % 4}`} key={bot.id}>
+                            <div className='prodb-imported-bot-icon'>XML</div>
+                            <div className='prodb-imported-bot-info'>
+                                <strong>{bot.name || 'Untitled Bot'}</strong>
+                                <small>{bot.timestamp ? `saved · ${timeSince(bot.timestamp)}` : 'saved bot'}</small>
+                            </div>
+                            <button type='button' onClick={() => void openSavedBot(bot)}>OPEN</button>
+                        </article>
+                    )) : (
+                        <div className='prodb-imported-empty'>
+                            <span>XML</span>
+                            <div><strong>No imported bots yet</strong><small>Save or import a bot in Bot Builder and it will appear here.</small></div>
+                            <button type='button' onClick={() => launch('bot_builder')}>BUILD</button>
+                        </div>
+                    )}
+                </div>
+            </section>
+
             <section className='prodb-dashboard-block'>
                 <div className='prodb-dashboard-block-head'>
                     <div><span>LIVE MARKET WATCH</span><h2>Markets</h2></div>
@@ -104,7 +178,7 @@ const DashboardHome = ({ openBotBuilder, openSection }: { openBotBuilder: () => 
                 </div>
                 <div className='prodb-market-grid'>
                     {markets.map((market, index) => (
-                        <div className={\`prodb-market-card prodb-market-card--\${market.accent}\`} key={market.symbol}>
+                        <div className={`prodb-market-card prodb-market-card--${market.accent}`} key={market.symbol}>
                             <div><span>{index + 1}</span><small>{market.name}</small></div>
                             <strong>{marketQuotes[market.symbol] || '—'}</strong>
                             <em>{market.symbol}</em>
@@ -113,37 +187,22 @@ const DashboardHome = ({ openBotBuilder, openSection }: { openBotBuilder: () => 
                 </div>
             </section>
 
-            <section className='prodb-dashboard-block'>
+            <section className='prodb-dashboard-block prodb-freebots-block'>
                 <div className='prodb-dashboard-block-head'>
-                    <div><span>TOOLS</span><h2>Quick access</h2></div>
-                    <span className='block-hint'>Swipe to explore</span>
-                </div>
-                <div className='prodb-dashboard-tools'>
-                    {shortcuts.map(item => (
-                        <button key={item.label} type='button' onClick={() => launch(item.section)}>
-                            <span>{item.icon}</span>
-                            <strong>{item.label}</strong>
-                        </button>
-                    ))}
-                </div>
-            </section>
-
-            <section className='prodb-dashboard-block prodb-freebots-block prodb-dashboard-imported'>
-                <div className='prodb-dashboard-block-head'>
-                    <div><span>BOT LIBRARY</span><h2>Imported Bots</h2></div>
+                    <div><span>READY TO LOAD</span><h2>Free Bots</h2></div>
                     <button className='text-button' type='button' onClick={() => launch('free_bots')}>View all →</button>
                 </div>
                 <div className='prodb-freebot-grid'>
                     {freeBots.length ? freeBots.map((bot, index) => (
-                        <button className='prodb-freebot-card' type='button' key={bot.id || bot.file} onClick={() => launch('free_bots')} aria-label={`Open ${bot.name || bot.title || bot.file}`}>
-                            <span className={\`bot-card-icon bot-card-icon--\${index % 4}\`}>{bot.emoji || '🤖'}</span>
-                            <span><small>IMPORTED BOT</small><strong>{bot.name || bot.title || bot.file.replace(/\.xml$/i, '')}</strong><em>{bot.description || 'Ready to load into Bot Builder.'}</em></span>
+                        <button className={`prodb-freebot-card prodb-freebot-card--${index % 4}`} type='button' key={bot.id || bot.file} onClick={() => launch('free_bots')}>
+                            <span className='bot-card-icon'>{bot.emoji || '🤖'}</span>
+                            <span><small>FREE BOT</small><strong>{bot.name || bot.title || bot.file.replace(/\.xml$/i, '')}</strong><em>{bot.description || 'Ready to load into Bot Builder.'}</em></span>
                             <b>OPEN</b>
                         </button>
                     )) : (
                         <button className='prodb-freebot-card' type='button' onClick={() => launch('free_bots')}>
                             <span className='bot-card-icon'>🤖</span>
-                            <span><small>FREE BOTS</small><strong>Open Free Bots Library</strong><em>Add your XML bots to /public/free-bots/</em></span>
+                            <span><small>FREE BOTS</small><strong>Open Free Bots Library</strong><em>Add your XML bots from Admin Panel.</em></span>
                             <b>OPEN</b>
                         </button>
                     )}
