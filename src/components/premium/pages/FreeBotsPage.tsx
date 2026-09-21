@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import type { CSSProperties } from 'react';
 import { getCurrentSiteConfig } from '@/config/site-registry';
 import { load, save_types } from '@/external/bot-skeleton';
 import { ungzip } from 'pako';
@@ -203,7 +204,7 @@ const FreeBotsPage = ({ openBotBuilder }: { openBotBuilder?: () => void }) => {
                         const name = bot.name || bot.title || bot.file.replace(/\.xml$/i, '');
                         const tag = bot.badge || (bot.is_premium ? 'PREMIUM' : 'SPECIAL BOT');
                         return (
-                            <article className={`prodb-bot-card prodb-bot-card--imported prodb-bot-card--app prodb-bot-card--tone-${index % 6}`} key={bot.id || bot.file} style={{ '--bot-accent': bot.accent || '', '--bot-surface': bot.surface || '', '--bot-text': bot.text || '' } as React.CSSProperties}>
+                            <article className={`prodb-bot-card prodb-bot-card--imported prodb-bot-card--app prodb-bot-card--tone-${index % 6}`} key={bot.id || bot.file} style={{ '--bot-accent': bot.accent || '', '--bot-surface': bot.surface || '', '--bot-text': bot.text || '' } as CSSProperties}>
                                 <div className='prodb-bot-card__top'>
                                     <button type='button' aria-label={`Favorite ${name}`}>☆</button>
                                     <span>{tag}</span>
