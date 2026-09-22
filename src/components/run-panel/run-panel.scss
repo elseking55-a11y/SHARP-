@@ -59,6 +59,11 @@
     &__stat {
         @include flex-center(flex-start, flex-end);
 
+        @include mobile-or-tablet-screen {
+            max-height: 10.5rem;
+            overflow: hidden;
+        }
+
         flex-direction: column;
         width: 35rem;
         background-color: var(--general-section-2);
@@ -92,6 +97,14 @@
             width: 100%;
             display: grid;
             grid-template: 64px 64px / 1fr 1fr 1fr;
+
+            @include mobile-or-tablet-screen {
+                grid-template: 64px / repeat(6, minmax(104px, 1fr));
+                overflow-x: auto;
+                overflow-y: hidden;
+                max-height: 7.2rem;
+                -webkit-overflow-scrolling: touch;
+            }
         }
 
         &-amount {
