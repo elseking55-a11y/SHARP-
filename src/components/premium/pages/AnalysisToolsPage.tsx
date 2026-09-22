@@ -67,6 +67,18 @@ const AnalysisToolsPage = () => {
     const odd = digits.length - even;
     const highest = Math.max(...counts);
     const lowest = Math.min(...counts);
+    const distinctCounts = Array.from(new Set(counts)).sort((a, b) => b - a);
+    const secondHighest = distinctCounts.length > 1 ? distinctCounts[1] : distinctCounts[0];
+    const ascendingDistinctCounts = Array.from(new Set(counts)).sort((a, b) => a - b);
+    const secondLowest = ascendingDistinctCounts.length > 1 ? ascendingDistinctCounts[1] : ascendingDistinctCounts[0];
+    const secondHighDigits = counts
+        .map((count, digit) => ({ digit, count }))
+        .filter(item => item.count === secondHighest)
+        .map(item => item.digit);
+    const secondLowDigits = counts
+        .map((count, digit) => ({ digit, count }))
+        .filter(item => item.count === secondLowest)
+        .map(item => item.digit);
 
     return <div className='prodb-live-page prodb-analysis-page'>
         <header className='prodb-live-header'>
@@ -97,7 +109,17 @@ const AnalysisToolsPage = () => {
                     <button className='prodb-analysis-refresh' type='button' onClick={refresh}>REFRESH</button>
                 </div>
                 <div className='prodb-analysis-tick'><small>LATEST DERIV TICK</small><strong>{prices.at(-1)?.toFixed(decimals) ?? '—'}</strong><span>{digits.at(-1) ?? '—'}</span></div>
-                <div className='prodb-analysis-digits'>{counts.map((count, digit) => <div key={digit}><span className={count === highest ? 'is-high' : count === lowest ? 'is-low' : ''}>{digit}</span><b>{((count / total) * 100).toFixed(2)}%</b><small>{count}/{digits.length}</small></div>)}</div>
+                <div className='prodb-analysis-appearance-cards'>
+                    <div className='prodb-analysis-appearance-card prodb-analysis-appearance-card--high'>
+                        <div className='prodb-analysis-appearance-card__icon'>2ND HIGH</div>
+                        <div><small>SECOND HIGH APPEARANCE</small><strong>{secondHighDigits.length ? secondHighDigits.join(' · ') : '—'}</strong><span>{secondHighest} appearance{secondHighest === 1 ? '' : 's'} · {((secondHighest / total) * 100).toFixed(2)}%</span></div>
+                    </div>
+                    <div className='prodb-analysis-appearance-card prodb-analysis-appearance-card--low'>
+                        <div className='prodb-analysis-appearance-card__icon'>2ND LOW</div>
+                        <div><small>SECOND LOW APPEARANCE</small><strong>{secondLowDigits.length ? secondLowDigits.join(' · ') : '—'}</strong><span>{secondLowest} appearance{secondLowest === 1 ? '' : 's'} · {((secondLowest / total) * 100).toFixed(2)}%</span></div>
+                    </div>
+                </div>
+                <div className='prodb-analysis-digits'>{counts.map((count, digit) => <div key={digit}><span className={count === highest ? 'is-high' : count === lowest ? 'is-low' : secondHighDigits.includes(digit) ? 'is-second-high' : secondLowDigits.includes(digit) ? 'is-second-low' : ''}>{digit}</span><b>{((count / total) * 100).toFixed(2)}%</b><small>{count}/{digits.length}</small></div>)}</div>
                 <div className='prodb-analysis-bars'><div style={{ flex: even || 1 }}><span>Even</span><strong>{((even / total) * 100).toFixed(2)}%</strong></div><div style={{ flex: odd || 1 }}><span>Odd</span><strong>{((odd / total) * 100).toFixed(2)}%</strong></div></div>
                 <div className='prodb-analysis-sequence'>{digits.slice(-30).map((digit, index) => <span className={digit % 2 === 0 ? 'is-even' : 'is-odd'} key={`${index}-${digit}`}>{digit}</span>)}</div>
                 {error && <div className='prodb-live-error'>{error}</div>}
