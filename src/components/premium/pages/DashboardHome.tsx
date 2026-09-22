@@ -11,7 +11,6 @@ const shortcuts: { icon: string; label: string; section: PremiumSection; tone: s
     { icon: '⚡', label: 'Auto Trades', section: 'auto_trader', tone: 'green' }, { icon: '✋', label: 'Manual Trading', section: 'manual_trading', tone: 'orange' },
     { icon: '⇄', label: 'Copy Trading', section: 'copy_trading', tone: 'gold' }, { icon: '▥', label: 'Analysis Tool', section: 'analysis_tools', tone: 'cyan' },
     { icon: '▦', label: 'Bulk Trader', section: 'bulk_trader', tone: 'violet' }, { icon: '▤', label: 'Charts', section: 'charts', tone: 'slate' },
-    { icon: '🛡️', label: 'Admin Panel', section: 'admin', tone: 'red' },
 ];
 
 const DashboardHome = ({ openBotBuilder, openSection }: { openBotBuilder: () => void; openSection?: (section: PremiumSection) => void }) => {
