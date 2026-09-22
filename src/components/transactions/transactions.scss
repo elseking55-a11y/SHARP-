@@ -155,6 +155,41 @@
         }
     }
 
+    /* Mobile history: larger usable viewport with compact Deriv-style rows. */
+    @include mobile-or-tablet-screen {
+        &__header {
+            min-height: 5.2rem;
+            height: 5.2rem;
+            padding: 0.55rem 1rem;
+            font-size: 13px;
+        }
+
+        &__item-wrapper {
+            height: 6.4rem;
+            padding: 0 1rem;
+        }
+
+        &__item {
+            min-height: 6.4rem;
+            padding: 0.65rem 0;
+            font-size: 13px;
+            grid-row-gap: 2px;
+        }
+
+        &__content--mobile {
+            min-height: 0;
+        }
+
+        .download__container {
+            padding: 0.6rem 1rem;
+            min-height: 5.2rem;
+
+            .dc-btn {
+                min-height: 4rem;
+            }
+        }
+    }
+
     &__item {
         display: grid;
         font-size: 12px;
