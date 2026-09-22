@@ -61,8 +61,11 @@ const AppContent = observer(() => {
         if (connectionStatus === CONNECTION_STATUS.OPENED) {
             setIsApiInitialized(true);
             common.setSocketOpened(true);
-        } else if (connectionStatus !== CONNECTION_STATUS.OPENED) {
+        } else {
             common.setSocketOpened(false);
+            // The premium shell can open Bot Builder as soon as an authenticated
+            // client exists. Do not make the editor wait for the WebSocket status.
+            if (client.is_logged_in) setIsApiInitialized(true);
         }
     }, [common, connectionStatus]);
 
@@ -150,11 +153,12 @@ const AppContent = observer(() => {
     React.useEffect(() => {
         // Public users should see the landing page immediately. The authenticated
         // OAuth flow initializes api_base and then this effect prepares the bot engine.
-        if (!is_api_initialized) return;
         if (!client.is_logged_in) {
             setIsLoading(false);
             return;
         }
+        // Initialise the DBot stores immediately after OAuth login. Market/account
+        // data can finish in the background, but the Blockly editor must mount now.
         init();
         setIsLoading(true);
         changeActiveSymbolLoadingState();
