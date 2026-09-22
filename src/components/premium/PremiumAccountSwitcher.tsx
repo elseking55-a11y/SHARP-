@@ -84,7 +84,7 @@ const AccountIcon = ({ account }: { account?: DerivAccount }) => {
                         flexShrink: 0,
                     }}
                 >
-                    <svg viewBox='0 0 100 100' width='48' height='48' aria-hidden='true' focusable='false'>
+                    <svg viewBox='0 0 100 100' width='48' height='48' aria-hidden='true' focusable='false' style={{display:'block',width:'48px',height:'48px'}}>
                         <defs>
                             <clipPath id='sharp-real-flag-circle'><circle cx='50' cy='50' r='50' /></clipPath>
                         </defs>
