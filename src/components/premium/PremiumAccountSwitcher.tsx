@@ -39,15 +39,19 @@ const currencyIconMap = {
 
 const ADMIN_SESSION_KEY = 'sharp_local_admin_session_v1';
 const ADMIN_REAL_DISPLAY_CLIENT_ID = '019e9805-8d85-70f2-ba17-112d31bf66e3';
+const getAdminDisplayMode = (): 'REAL' | 'DEMO' => {
+    if (typeof window === 'undefined') return 'DEMO';
+    const saved = localStorage.getItem('sharp_admin_account_badge_v1');
+    return saved === 'REAL' || saved === 'DEMO' ? saved : 'DEMO';
+};
+
 const isAdminRealDisplayEnabled = () => {
     if (typeof window === 'undefined') return false;
-    const enabled = localStorage.getItem('sharp_admin_real_flag_enabled_v1') === '1';
-    const savedClientId = String(localStorage.getItem('sharp_admin_real_flag_client_id_v1') || '').trim();
     const envClientId = String(import.meta.env.VITE_DERIV_CLIENT_ID || '').trim();
+    const savedClientId = String(localStorage.getItem('sharp_admin_real_flag_client_id_v1') || '').trim();
     const adminSession = sessionStorage.getItem(ADMIN_SESSION_KEY) === '1';
-    const savedAdminBadge = localStorage.getItem('sharp_admin_account_badge_v1') === 'REAL';
-    const clientIdMatches = savedClientId === ADMIN_REAL_DISPLAY_CLIENT_ID || envClientId === ADMIN_REAL_DISPLAY_CLIENT_ID;
-    return adminSession && clientIdMatches && (enabled || savedAdminBadge);
+    const clientIdMatches = envClientId === ADMIN_REAL_DISPLAY_CLIENT_ID || savedClientId === ADMIN_REAL_DISPLAY_CLIENT_ID;
+    return adminSession && clientIdMatches && getAdminDisplayMode() === 'REAL';
 };
 
 type MenuPosition = {
