@@ -20,7 +20,6 @@ import CoreStoreProvider from '@/app/CoreStoreProvider';
 import PremiumHeader from './PremiumHeader';
 import PremiumLoader from './PremiumLoader';
 import AnalysisToolsPage from './pages/AnalysisToolsPage';
-import AdminPanelPage from './pages/AdminPanelPage';
 import BatchTraderPage from './pages/BatchTraderPage';
 import BulkTraderPage from './pages/BulkTraderPage';
 import CalculatorPage from './pages/CalculatorPage';
@@ -68,7 +67,7 @@ import './premium-site-theme.scss';
 const validSections: PremiumSection[] = [
     'dashboard', 'bot_ideas', 'quick_bot', 'bot_builder', 'free_bots', 'signal_ai', 'auto_trader',
     'manual_trading', 'bulk_trader', 'batch_trader', 'copy_trading', 'speedbot', 'calculator', 'pro_ai', 'analysis_tools',
-    'analysis_hub', 'charts', 'tradingview', 'dtrader', 'admin',
+    'analysis_hub', 'charts', 'tradingview', 'dtrader',
 ];
 
 const sectionFromHash = (hash: string): PremiumSection => {
@@ -88,19 +87,58 @@ const PremiumLayout = observer(() => {
     const [section, setSection] = useState<PremiumSection>(() => sectionFromHash(location.hash));
     const [, setAuthProbe] = useState(0);
     const [authError, setAuthError] = useState<string | null>(null);
+    const [appAuthenticated, setAppAuthenticated] = useState(false);
+    const [appAuthChecked, setAppAuthChecked] = useState(false);
     const hasBootstrappedSession = useRef(false);
 
     const params = new URLSearchParams(window.location.search);
     const isOAuthCallback = Boolean(params.get('code') && params.get('state'));
     const hasStoredAuth = OAuthTokenExchangeService.isAuthenticated();
     const runtimeAuthenticated = Boolean(activeLoginid || client?.is_logged_in);
-    const isAuthenticated = Boolean(SHARP_OFFLINE_MODE || runtimeAuthenticated || hasStoredAuth || isLocalDevelopmentHost());
+    const isAuthenticated = Boolean(SHARP_OFFLINE_MODE || appAuthenticated || runtimeAuthenticated || hasStoredAuth || isLocalDevelopmentHost());
 
     useEffect(() => { document.title = getTemplateDomain(); }, []);
 
     useEffect(() => {
         setSection(sectionFromHash(location.hash));
     }, [location.hash]);
+    useEffect(() => {
+        let alive = true;
+        fetch('/api/auth/session', { credentials: 'include', cache: 'no-store' })
+            .then(response => response.ok ? response.json() : null)
+            .then(data => {
+                if (!alive) return;
+                setAppAuthenticated(Boolean(data?.authenticated));
+                setAppAuthChecked(true);
+            })
+            .catch(() => {
+                if (!alive) return;
+                setAppAuthenticated(false);
+                setAppAuthChecked(true);
+            });
+        return () => { alive = false; };
+    }, []);
+
+    const appLogin = useCallback(async (email: string, password: string) => {
+        setAuthError(null);
+        setIsAuthorizing(true);
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+                body: JSON.stringify({ email, password }),
+            });
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok || !data.authenticated) throw new Error(data.error_description || 'Unable to sign in.');
+            setAppAuthenticated(true);
+        } catch (error) {
+            setAuthError(error instanceof Error ? error.message : 'Unable to sign in.');
+        } finally {
+            setIsAuthorizing(false);
+        }
+    }, [setIsAuthorizing]);
+
 
     useEffect(() => {
         if (SHARP_OFFLINE_MODE) return;
@@ -202,7 +240,8 @@ const PremiumLayout = observer(() => {
     // back to the landing page (or keep them on a loader) during that handoff.
     // The restoreSession effect below completes the live Deriv connection.
     if (!SHARP_OFFLINE_MODE && !runtimeAuthenticated && isOAuthCallback && !hasStoredAuth) return <PremiumLoader />;
-    if (!isAuthenticated) return <LandingPage onLogin={() => startOAuth()} onSignup={() => startOAuth('registration')} busy={isAuthorizing} error={authError} />;
+    if (!appAuthChecked && !runtimeAuthenticated && !hasStoredAuth && !SHARP_OFFLINE_MODE && !isOAuthCallback) return <PremiumLoader />;
+    if (!isAuthenticated) return <LandingPage onLogin={appLogin} busy={isAuthorizing} error={authError} />;
 
     const openBotBuilder = () => changeSection('bot_builder');
     const renderSection = () => {
@@ -226,46 +265,21 @@ const PremiumLayout = observer(() => {
             case 'charts': return <ChartsPage />;
             case 'tradingview': return <TradingViewPage />;
             case 'dtrader': return <DTraderPage />;
-            case 'admin': return <AdminPanelPage />;
             default: return null;
         }
     };
 
     const isBotBuilder = section === 'bot_builder';
     const isRunPanelOpen = Boolean(run_panel?.is_drawer_open);
-    const [adminAppearance, setAdminAppearance] = useState<Record<string, string>>(() => {
-        try {
-            return JSON.parse(localStorage.getItem('sharp_admin_appearance_v1') || '{}');
-        } catch {
-            return {};
-        }
-    });
-
-    useEffect(() => {
-        const syncAppearance = () => {
-            try {
-                setAdminAppearance(JSON.parse(localStorage.getItem('sharp_admin_appearance_v1') || '{}'));
-            } catch {
-                setAdminAppearance({});
-            }
-        };
-        window.addEventListener('sharp-admin-appearance-updated', syncAppearance);
-        window.addEventListener('storage', syncAppearance);
-        return () => {
-            window.removeEventListener('sharp-admin-appearance-updated', syncAppearance);
-            window.removeEventListener('storage', syncAppearance);
-        };
-    }, []);
-
     const themeStyle = {
-        '--site-primary': adminAppearance.primary || customization.colors.primary,
-        '--site-secondary': adminAppearance.accent || customization.colors.secondary,
-        '--site-nav-background': adminAppearance.navBackground || customization.colors.nav_background,
-        '--site-nav-text': adminAppearance.navText || customization.colors.nav_text,
-        '--site-header-background': adminAppearance.header || customization.colors.header_background,
-        '--sharp-card-background': adminAppearance.card || '#091a2b',
-        '--sharp-button-background': adminAppearance.button || adminAppearance.primary || customization.colors.primary,
-        '--sharp-icon-color': adminAppearance.icon || adminAppearance.accent || customization.colors.secondary,
+        '--site-primary': customization.colors.primary,
+        '--site-secondary': customization.colors.secondary,
+        '--site-nav-background': customization.colors.nav_background,
+        '--site-nav-text': customization.colors.nav_text,
+        '--site-header-background': customization.colors.header_background,
+        '--sharp-card-background': '#091a2b',
+        '--sharp-button-background': customization.colors.primary,
+        '--sharp-icon-color': customization.colors.secondary,
     } as CSSProperties;
 
     return <CoreStoreProvider>
