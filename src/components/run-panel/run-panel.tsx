@@ -389,6 +389,104 @@ const RunPanel = observer(() => {
                 {!isDesktop && <MobileDrawerFooter />}
             </div>
 
+
+            <style>{`
+                @media (max-width: 767px) {
+                    .run-panel__container--mobile,
+                    .run-panel__container--mobile .run-panel,
+                    .run-panel__container--mobile .run-panel__content {
+                        height: 100dvh !important;
+                        min-height: 0 !important;
+                        max-height: 100dvh !important;
+                    }
+
+                    .run-panel__mobile-header {
+                        flex: 0 0 auto !important;
+                        height: auto !important;
+                        min-height: 0 !important;
+                        padding: 0 !important;
+                        background: var(--general-main-1, #1f2330) !important;
+                        position: relative !important;
+                        z-index: 5 !important;
+                    }
+
+                    .run-panel__mobile-balance {
+                        width: 100% !important;
+                        min-height: 72px !important;
+                        box-sizing: border-box !important;
+                        display: flex !important;
+                        align-items: center !important;
+                        justify-content: space-between !important;
+                        padding: 12px 16px !important;
+                        background: var(--general-main-2, var(--general-main-1, #1f2330)) !important;
+                        border-bottom: 1px solid rgba(255,255,255,.10) !important;
+                    }
+
+                    .run-panel__mobile-balance-account {
+                        display: flex !important;
+                        align-items: center !important;
+                        min-width: 0 !important;
+                    }
+
+                    .run-panel__mobile-balance-account small,
+                    .run-panel__mobile-balance-account strong {
+                        display: block !important;
+                    }
+
+                    .run-panel__mobile-balance-account strong {
+                        margin-top: 3px !important;
+                    }
+
+                    .run-panel__mobile-balance-chevron {
+                        display: none !important;
+                    }
+
+                    .run-panel__mobile-header-actions {
+                        display: flex !important;
+                        align-items: center !important;
+                        justify-content: space-between !important;
+                        width: 100% !important;
+                        box-sizing: border-box !important;
+                        min-height: 52px !important;
+                        padding: 6px 12px !important;
+                        background: var(--general-main-1, #1f2330) !important;
+                    }
+
+                    .run-panel__mobile-header + * {
+                        min-height: 0 !important;
+                    }
+
+                    .run-panel__container--mobile .dc-tabs,
+                    .run-panel__container--mobile .tabs {
+                        display: flex !important;
+                        flex-direction: column !important;
+                        flex: 1 1 auto !important;
+                        min-height: 0 !important;
+                        height: auto !important;
+                        background: var(--general-main-1, #1f2330) !important;
+                    }
+
+                    .run-panel__container--mobile .dc-tabs__content,
+                    .run-panel__container--mobile .tabs__content {
+                        flex: 1 1 auto !important;
+                        min-height: 0 !important;
+                        height: auto !important;
+                        overflow: hidden !important;
+                        background: var(--general-main-1, #1f2330) !important;
+                    }
+
+                    .run-panel__container--mobile .transactions,
+                    .run-panel__container--mobile [class*="transactions"] {
+                        background: var(--general-main-1, #1f2330) !important;
+                    }
+
+                    .run-panel__container--mobile .run-panel__content {
+                        background: var(--general-main-1, #1f2330) !important;
+                        overflow: hidden !important;
+                    }
+                }
+            `}</style>
+
             <StatisticsInfoModal
                 is_mobile={!isDesktop}
                 is_statistics_info_modal_open={is_statistics_info_modal_open}
