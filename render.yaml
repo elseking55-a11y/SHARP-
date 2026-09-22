@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: sharp
+    runtime: node
+    plan: free
+    buildCommand: npm install --legacy-peer-deps && npm run build
+    startCommand: node server.cjs
+    healthCheckPath: /
+    autoDeploy: true
