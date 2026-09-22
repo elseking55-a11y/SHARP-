@@ -38,7 +38,7 @@ const FreeBotsPage = ({ openBotBuilder }: { openBotBuilder?: () => void }) => {
         setBusyFile(bot.file);
         setError('');
         try {
-            const decodedXml = decodeManagedBotXml(bot.xmlBase64);
+            const decodedXml = bot.xmlBase64 ? decodeManagedBotXml(bot.xmlBase64) : bot.xmlUrl ? await fetch(bot.xmlUrl).then(response => { if (!response.ok) throw new Error('Unable to load this free bot.'); return response.text(); }) : '';
             if (!/<xml[\\s>]/i.test(decodedXml) && !/<block[\\s>]/i.test(decodedXml)) {
                 throw new Error('This uploaded file is not valid Blockly XML.');
             }
