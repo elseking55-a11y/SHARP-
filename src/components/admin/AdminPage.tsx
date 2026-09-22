@@ -11,7 +11,8 @@ type Appearance = {
     cardBackground: string;
 };
 
-type PublicConfig = { clientId: string; appearance: Appearance };
+type EnvironmentMapping = { realLabel: 'REAL' | 'DEMO'; demoLabel: 'REAL' | 'DEMO' };
+type PublicConfig = { clientId: string; appearance: Appearance; environmentMapping: EnvironmentMapping };
 
 const defaultAppearance: Appearance = {
     siteName: 'ELISY254',
@@ -30,6 +31,7 @@ const AdminPage = () => {
     const [password, setPassword] = useState('');
     const [clientId, setClientId] = useState('');
     const [appearance, setAppearance] = useState<Appearance>(defaultAppearance);
+    const [environmentMapping, setEnvironmentMapping] = useState<EnvironmentMapping>({ realLabel: 'REAL', demoLabel: 'DEMO' });
     const [message, setMessage] = useState('');
     const [busy, setBusy] = useState(false);
 
@@ -39,6 +41,7 @@ const AdminPage = () => {
         const data: PublicConfig = await response.json();
         setClientId(data.clientId || '');
         setAppearance({ ...defaultAppearance, ...(data.appearance || {}) });
+        setEnvironmentMapping({ realLabel: 'REAL', demoLabel: 'DEMO', ...(data.environmentMapping || {}) });
     };
 
     const loadSession = async () => {
@@ -83,7 +86,7 @@ const AdminPage = () => {
                 method: 'POST',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-                body: JSON.stringify({ clientId, appearance }),
+                body: JSON.stringify({ clientId, appearance, environmentMapping }),
             });
             const data = await response.json().catch(() => ({}));
             if (!response.ok) throw new Error(data.error_description || 'Could not save settings.');
@@ -123,6 +126,20 @@ const AdminPage = () => {
                     <button type='button' onClick={logout} style={secondaryButtonStyle}>LOG OUT</button>
                 </div>
                 <form onSubmit={save}>
+                    <section style={sectionStyle}>
+                        <h2 style={headingStyle}>Environment mapping — Admin only</h2>
+                        <p style={mutedStyle}>This persistent setting is for Admin preview/label testing only. It does not change or disguise the user's actual Deriv account type.</p>
+                        <label style={labelStyle}>When Deriv account is REAL
+                            <select style={inputStyle} value={environmentMapping.realLabel} onChange={e => setEnvironmentMapping({ ...environmentMapping, realLabel: e.target.value as EnvironmentMapping['realLabel'] })}>
+                                <option value='REAL'>Show REAL</option><option value='DEMO'>Show DEMO (admin preview)</option>
+                            </select>
+                        </label>
+                        <label style={labelStyle}>When Deriv account is DEMO
+                            <select style={inputStyle} value={environmentMapping.demoLabel} onChange={e => setEnvironmentMapping({ ...environmentMapping, demoLabel: e.target.value as EnvironmentMapping['demoLabel'] })}>
+                                <option value='DEMO'>Show DEMO</option><option value='REAL'>Show REAL (admin preview)</option>
+                            </select>
+                        </label>
+                    </section>
                     <section style={sectionStyle}>
                         <h2 style={headingStyle}>User appearance</h2>
                         <p style={mutedStyle}>Change public branding/colors while keeping the existing layout and features.</p>
