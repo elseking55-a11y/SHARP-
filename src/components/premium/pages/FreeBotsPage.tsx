@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react';
 import type { CSSProperties } from 'react';
-import { getTemplateDomain } from '../domain-brand';
 import { DownloadIcon } from '../icons';
 import { decodeManagedBotXml, readManagedBots, type ManagedBot } from '@/utils/managed-bot-library';
 
 type DomainBot = ManagedBot;
 
 const FreeBotsPage = ({ openBotBuilder }: { openBotBuilder?: () => void }) => {
-    const domain = getTemplateDomain();
     const [bots, setBots] = useState<DomainBot[]>([]);
     const [loading, setLoading] = useState(true);
     const [busyFile, setBusyFile] = useState('');
@@ -61,10 +59,6 @@ const FreeBotsPage = ({ openBotBuilder }: { openBotBuilder?: () => void }) => {
                     <h1>Free Bots</h1>
                     <p>Select a published bot to open it directly inside Bot Builder. Edit the blocks there, then use Deriv's Run control.</p>
                 </div>
-                <div className='prodb-free-bots__count'>
-                    <strong>{bots.length}</strong>
-                    <small>AVAILABLE</small>
-                </div>
             </header>
 
             {loading && <div className='prodb-live-empty'>Checking uploaded bots…</div>}
@@ -94,9 +88,6 @@ const FreeBotsPage = ({ openBotBuilder }: { openBotBuilder?: () => void }) => {
                                     } as CSSProperties
                                 }
                             >
-                                <div className='prodb-bot-card__top'>
-                                    <span>{bot.badge || 'FREE BOT'}</span>
-                                </div>
                                 <div className='prodb-bot-card__badge'>
                                     {bot.imageBase64 || bot.imageUrl ? (
                                         <img src={bot.imageBase64 || bot.imageUrl} alt='' />
