@@ -1,6 +1,20 @@
 {
-  "version": 3,
-  "source": "Admin-uploaded bots only",
-  "count": 0,
-  "bots": []
+  "version": 4,
+  "source": "SHARP built-in Free Bots",
+  "count": 1,
+  "bots": [
+    {
+      "id": "elisy234sharp-alpha-martingale",
+      "name": "ELISY234 SHARP — Alpha Martingale",
+      "file": "Elisy234sharp.xml",
+      "description": "Alpha Version Martingale strategy for R_100 Digit Over.",
+      "emoji": "🧠",
+      "badge": "FREE BOT",
+      "category": "Martingale",
+      "priority": 0,
+      "imageUrl": "/free-bots/elisy234sharp-bot.svg",
+      "published": true,
+      "comingSoon": false
+    }
+  ]
 }
