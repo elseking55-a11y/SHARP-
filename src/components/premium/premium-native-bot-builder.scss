@@ -118,3 +118,31 @@
         top: 0 !important;
     }
 }
+
+
+/* SHARP BUILDER FIX — keep native Blockly visible inside the premium shell */
+.prodb-premium-shell--builder .prodb-bot-builder-host,
+.prodb-premium-shell--builder .prodb-bot-builder-host .bot-dashboard,
+.prodb-premium-shell--builder .prodb-bot-builder-host .bot-builder {
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+.prodb-premium-shell--builder .prodb-bot-builder-host .bot-builder {
+    display: block !important;
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: 20 !important;
+    background: var(--general-main-1, #fff) !important;
+}
+.prodb-premium-shell--builder .prodb-bot-builder-host #scratch_div {
+    position: relative;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0;
+}
+.prodb-premium-shell--builder .prodb-bot-builder-host .injectionDiv,
+.prodb-premium-shell--builder .prodb-bot-builder-host .blocklyWorkspace,
+.prodb-premium-shell--builder .prodb-bot-builder-host .blocklySvg {
+    width: 100% !important;
+    height: 100% !important;
+}
