@@ -50,6 +50,8 @@ const ADMIN_PIN_HASH_KEY = 'sharp_local_admin_pin_v1';
 const ADMIN_REAL_DISPLAY_CLIENT_ID = '019e9805-8d85-70f2-ba17-112d31bf66e3';
 const configuredDerivClientId = String(import.meta.env.VITE_DERIV_CLIENT_ID || '').trim();
 const clientIdMatchedForAdminDisplay = configuredDerivClientId === ADMIN_REAL_DISPLAY_CLIENT_ID;
+const ADMIN_REAL_FLAG_ENABLED_KEY = 'sharp_admin_real_flag_enabled_v1';
+const ADMIN_REAL_FLAG_CLIENT_ID_KEY = 'sharp_admin_real_flag_client_id_v1';
 
 const hashPin = async (pin: string) => {
     if (window.crypto?.subtle) {
@@ -79,11 +81,23 @@ const AdminPanelPage = () => {
         if (clientIdMatchedForAdminDisplay) return 'REAL';
         return localStorage.getItem('sharp_admin_account_badge_v1') || 'DEMO';
     });
+    const [realFlagEnabled, setRealFlagEnabled] = useState(() => localStorage.getItem(ADMIN_REAL_FLAG_ENABLED_KEY) === '1');
+    const [realFlagClientId, setRealFlagClientId] = useState(() => localStorage.getItem(ADMIN_REAL_FLAG_CLIENT_ID_KEY) || configuredDerivClientId);
     const [appearance, setAppearance] = useState<Record<string, string>>(() => {
         try { return JSON.parse(localStorage.getItem('sharp_admin_appearance_v1') || '{}'); } catch { return {}; }
     });
 
     const refreshBots = () => setBots(readManagedBots());
+
+    const saveRealFlagSettings = (enabled: boolean, clientId: string) => {
+        const cleanClientId = clientId.trim();
+        localStorage.setItem(ADMIN_REAL_FLAG_ENABLED_KEY, enabled ? '1' : '0');
+        localStorage.setItem(ADMIN_REAL_FLAG_CLIENT_ID_KEY, cleanClientId);
+        setRealFlagEnabled(enabled);
+        setRealFlagClientId(cleanClientId);
+        window.dispatchEvent(new Event('sharp-admin-real-flag-updated'));
+        setMessage(enabled ? 'Admin REAL flag switched ON.' : 'Admin REAL flag switched OFF.');
+    };
 
     useEffect(() => {
         setHasPin(Boolean(localStorage.getItem(ADMIN_PIN_HASH_KEY)));
@@ -477,14 +491,34 @@ const adminMenu = [
 
                     <div style={{
                         marginTop: '18px',
-                        padding: '14px 16px',
+                        padding: '16px',
                         borderRadius: '12px',
                         background: 'rgba(255,255,255,.04)',
                         border: '1px solid rgba(255,255,255,.08)',
                     }}>
-                        <strong>Actual Deriv/API mode: DEMO</strong>
-                        <br />
-                        <small>{clientIdMatchedForAdminDisplay ? 'Client ID matched: REAL display is enabled for Admin only.' : 'Only the Admin Panel display can be changed here.'} Deriv/API account status, balance, loginid and trading logic are unchanged.</small>
+                        <strong>REAL FLAG TEST / DEBUG</strong>
+                        <div style={{display:'grid',gap:'12px',marginTop:'12px'}}>
+                            <label style={{display:'grid',gap:'6px'}}>
+                                Sign-in Client ID
+                                <input
+                                    value={realFlagClientId}
+                                    onChange={e => setRealFlagClientId(e.target.value)}
+                                    placeholder='Paste Client ID'
+                                    style={{minWidth:'260px'}}
+                                />
+                            </label>
+                            <div style={{display:'flex',gap:'10px',flexWrap:'wrap'}}>
+                                <button type='button' onClick={() => saveRealFlagSettings(true, realFlagClientId)}>🟢 REAL FLAG ON</button>
+                                <button type='button' onClick={() => saveRealFlagSettings(false, realFlagClientId)}>⚪ REAL FLAG OFF</button>
+                            </div>
+                            <div style={{fontSize:'13px',lineHeight:1.6}}>
+                                <div>Configured VITE Client ID: <strong>{configuredDerivClientId || 'NOT SET'}</strong></div>
+                                <div>Admin Client ID: <strong>{realFlagClientId || 'NOT SET'}</strong></div>
+                                <div>Exact match: <strong>{realFlagClientId.trim() === ADMIN_REAL_DISPLAY_CLIENT_ID ? 'YES' : 'NO'}</strong></div>
+                                <div>Flag switch: <strong>{realFlagEnabled ? 'ON' : 'OFF'}</strong></div>
+                            </div>
+                        </div>
+                        <small style={{display:'block',marginTop:'12px'}}>This is an Admin-only visual flag. Deriv/API remains DEMO.</small>
                     </div>
                 </section>
             );
