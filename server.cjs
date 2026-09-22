@@ -233,6 +233,7 @@ const ADMIN_COOKIE = 'sharp_admin_session';
 const ADMIN_CONFIG_PATH = process.env.SHARP_ADMIN_CONFIG_PATH || '/data/sharp-admin-config.json';
 
 const defaultPublicConfig = {
+    environmentMapping: { realLabel: 'REAL', demoLabel: 'DEMO' },
     clientId: String(process.env.DERIV_CLIENT_ID || process.env.VITE_DERIV_CLIENT_ID || '').trim(),
     appearance: {
         siteName: String(process.env.SHARP_SITE_NAME || 'ELISY254'),
@@ -252,6 +253,7 @@ const loadPublicConfig = () => {
         return {
             ...defaultPublicConfig,
             ...saved,
+            environmentMapping: { ...defaultPublicConfig.environmentMapping, ...(saved.environmentMapping || {}) },
             appearance: { ...defaultPublicConfig.appearance, ...(saved.appearance || {}) },
         };
     } catch (error) {
@@ -336,6 +338,12 @@ const saveAdminConfig = async (req, res) => {
         const body = JSON.parse(await readBody(req) || '{}');
         const appearance = body.appearance || {};
         publicConfig.clientId = String(body.clientId || '').trim();
+        if (body.environmentMapping && typeof body.environmentMapping === 'object') {
+            const realLabel = String(body.environmentMapping.realLabel || '').trim().toUpperCase();
+            const demoLabel = String(body.environmentMapping.demoLabel || '').trim().toUpperCase();
+            if (['REAL', 'DEMO'].includes(realLabel)) publicConfig.environmentMapping.realLabel = realLabel;
+            if (['REAL', 'DEMO'].includes(demoLabel)) publicConfig.environmentMapping.demoLabel = demoLabel;
+        }
         for (const key of ['siteName', 'primary', 'secondary', 'navBackground', 'navText', 'headerBackground', 'cardBackground']) {
             if (typeof appearance[key] === 'string' && appearance[key].trim()) {
                 publicConfig.appearance[key] = appearance[key].trim();
