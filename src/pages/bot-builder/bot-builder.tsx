@@ -51,10 +51,14 @@ const BotBuilder = observer(() => {
 
             try {
                 const payload = JSON.parse(pending) as { xml?: string; fileName?: string };
-                if (!payload.xml || !/<xml[\\s>]/i.test(payload.xml) && !/<block[\\s>]/i.test(payload.xml)) {
+                if (!payload.xml || (!/<xml[\s>]/i.test(payload.xml) && !/<block[\s>]/i.test(payload.xml))) {
                     sessionStorage.removeItem('sharp_pending_free_bot_xml');
                     return;
                 }
+
+                // A Free Bot must replace the current workspace, not merge into it.
+                // This prevents blocks from the previous/default workspace from remaining visible.
+                workspace.clear();
 
                 await load({
                     block_string: payload.xml,
