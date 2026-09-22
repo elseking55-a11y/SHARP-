@@ -41,10 +41,13 @@ const ADMIN_SESSION_KEY = 'sharp_local_admin_session_v1';
 const ADMIN_REAL_DISPLAY_CLIENT_ID = '019e9805-8d85-70f2-ba17-112d31bf66e3';
 const isAdminRealDisplayEnabled = () => {
     if (typeof window === 'undefined') return false;
-    const clientIdMatches = String(import.meta.env.VITE_DERIV_CLIENT_ID || '').trim() === ADMIN_REAL_DISPLAY_CLIENT_ID;
+    const enabled = localStorage.getItem('sharp_admin_real_flag_enabled_v1') === '1';
+    const savedClientId = String(localStorage.getItem('sharp_admin_real_flag_client_id_v1') || '').trim();
+    const envClientId = String(import.meta.env.VITE_DERIV_CLIENT_ID || '').trim();
     const adminSession = sessionStorage.getItem(ADMIN_SESSION_KEY) === '1';
     const savedAdminBadge = localStorage.getItem('sharp_admin_account_badge_v1') === 'REAL';
-    return clientIdMatches || (adminSession && savedAdminBadge);
+    const clientIdMatches = savedClientId === ADMIN_REAL_DISPLAY_CLIENT_ID || envClientId === ADMIN_REAL_DISPLAY_CLIENT_ID;
+    return adminSession && enabled && clientIdMatches || (adminSession && clientIdMatches && savedAdminBadge);
 };
 
 type MenuPosition = {
@@ -87,6 +90,13 @@ const LivePremiumAccountSwitcher = observer(() => {
     const [accounts, setAccounts] = useState<DerivAccount[]>(() => DerivWSAccountsService.getStoredAccounts() || []);
     const [busy, setBusy] = useState('');
     const [error, setError] = useState('');
+    const [, refreshRealFlag] = useState(0);
+
+    useEffect(() => {
+        const refresh = () => refreshRealFlag(value => value + 1);
+        window.addEventListener('sharp-admin-real-flag-updated', refresh);
+        return () => window.removeEventListener('sharp-admin-real-flag-updated', refresh);
+    }, []);
 
     const activeId = activeLoginid || client?.loginid || localStorage.getItem('active_loginid') || '';
     const active = useMemo(() => accounts.find(account => account.account_id === activeId) || accounts[0], [accounts, activeId]);
