@@ -23,6 +23,8 @@ export type ManagedBot = {
 // v2 intentionally starts empty so old demo/local libraries cannot leak into production.
 const STORAGE_KEY = 'sharp_managed_bot_library_v2';
 const ELISY_AI_SEEDED_KEY = 'sharp_elisy_ai_seeded_v1';
+const MARKET_KILLER_SEEDED_KEY = 'sharp_market_killer_seeded_v1';
+
 
 const seedElisyAI = (bots: ManagedBot[]): ManagedBot[] => {
     if (typeof window === 'undefined' || window.localStorage.getItem(ELISY_AI_SEEDED_KEY) === '1') return bots;
@@ -43,7 +45,26 @@ const seedElisyAI = (bots: ManagedBot[]): ManagedBot[] => {
         xmlUrl: '/free-bots/ElisyAI.xml',
         updatedAt: Date.now(),
     };
-    const next = [seeded, ...bots.filter(bot => bot.id !== seeded.id)];
+    const marketKiller: ManagedBot = {
+        id: 'market-killer',
+        name: 'MARKET KILLER',
+        emoji: '',
+        category: 'Free Bots',
+        accent: '#d11f2f',
+        surface: '#241017',
+        text: '#ffffff',
+        file: 'MarketKiller.xml',
+        priority: 2,
+        imageUrl: '/free-bots/market-killer-lion.svg',
+        published: true,
+        comingSoon: false,
+        xmlUrl: '/free-bots/MarketKiller.xml',
+        updatedAt: Date.now(),
+    };
+    if (window.localStorage.getItem(MARKET_KILLER_SEEDED_KEY) !== '1') {
+        window.localStorage.setItem(MARKET_KILLER_SEEDED_KEY, '1');
+    }
+    const next = [marketKiller, seeded, ...bots.filter(bot => bot.id !== seeded.id && bot.id !== marketKiller.id)];
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
     window.localStorage.setItem(ELISY_AI_SEEDED_KEY, '1');
     return next;
