@@ -277,7 +277,7 @@ const PremiumLayout = observer(() => {
         <PremiumHeader active={section} navigation={customization.navigation} onChange={changeSection} />
         <main className='prodb-premium-content'>
             {!isBotBuilder && renderSection()}
-            {true && (
+            {
                 <div className={`prodb-bot-builder-host ${isBotBuilder ? 'is-active' : 'is-hidden'}`} data-premium-builder-active={isBotBuilder ? 'true' : 'false'} aria-hidden={!isBotBuilder}>
                     <Outlet />
                 </div>
