@@ -139,7 +139,9 @@ const MobileBalanceBar = observer(() => {
 const DrawerHeader = ({ is_clear_stat_disabled, is_mobile, is_drawer_open, onClearStatClick, onClosePanel }: TDrawerHeader) =>
     is_mobile &&
     is_drawer_open && (
-        <div className='run-panel__mobile-header-actions'>
+        <div className='run-panel__mobile-header'>
+            <MobileBalanceBar />
+            <div className='run-panel__mobile-header-actions'>
             <Button
                 id='db-run-panel__close-button'
                 className='run-panel__close-button'
@@ -155,6 +157,7 @@ const DrawerHeader = ({ is_clear_stat_disabled, is_mobile, is_drawer_open, onCle
             onClick={onClearStatClick}
             secondary
             />
+            </div>
         </div>
     );
 
@@ -366,7 +369,7 @@ const RunPanel = observer(() => {
 
     return (
         <>
-            <div className={!isDesktop && is_drawer_open ? 'run-panel__container--mobile' : 'run-panel'}>\n                {!isDesktop && is_drawer_open && <MobileBalanceBar />}
+            <div className={!isDesktop && is_drawer_open ? 'run-panel__container--mobile' : 'run-panel'}>
                 <Drawer
                     anchor='right'
                     className={classNames('run-panel', {
