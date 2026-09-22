@@ -81,13 +81,33 @@ const AccountIcon = ({ account }: { account?: DerivAccount }) => {
                         borderRadius: '50%',
                         overflow: 'hidden',
                         display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '42px',
-                        lineHeight: 1,
                         flexShrink: 0,
                     }}
-                >🇺🇸</span>
+                >
+                    <svg viewBox='0 0 100 100' width='48' height='48' aria-hidden='true' focusable='false'>
+                        <defs>
+                            <clipPath id='sharp-real-flag-circle'><circle cx='50' cy='50' r='50' /></clipPath>
+                        </defs>
+                        <g clipPath='url(#sharp-real-flag-circle)'>
+                            <rect width='100' height='100' fill='#fff' />
+                            <rect y='0' width='100' height='7.7' fill='#e31b23' />
+                            <rect y='15.4' width='100' height='7.7' fill='#e31b23' />
+                            <rect y='30.8' width='100' height='7.7' fill='#e31b23' />
+                            <rect y='46.2' width='100' height='7.7' fill='#e31b23' />
+                            <rect y='61.6' width='100' height='7.7' fill='#e31b23' />
+                            <rect y='77' width='100' height='7.7' fill='#e31b23' />
+                            <rect y='92.3' width='100' height='7.7' fill='#e31b23' />
+                            <rect width='48' height='54' fill='#1b3f95' />
+                            <g fill='#fff' fontSize='8' fontFamily='Arial' textAnchor='middle'>
+                                <text x='7' y='10'>★</text><text x='17' y='10'>★</text><text x='27' y='10'>★</text><text x='37' y='10'>★</text>
+                                <text x='12' y='20'>★</text><text x='22' y='20'>★</text><text x='32' y='20'>★</text><text x='42' y='20'>★</text>
+                                <text x='7' y='30'>★</text><text x='17' y='30'>★</text><text x='27' y='30'>★</text><text x='37' y='30'>★</text>
+                                <text x='12' y='40'>★</text><text x='22' y='40'>★</text><text x='32' y='40'>★</text><text x='42' y='40'>★</text>
+                                <text x='7' y='50'>★</text><text x='17' y='50'>★</text><text x='27' y='50'>★</text><text x='37' y='50'>★</text>
+                            </g>
+                        </g>
+                    </svg>
+                </span>
             ) : (
                 <IconComponent iconSize='sm' />
             )}
