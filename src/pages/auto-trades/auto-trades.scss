@@ -2345,3 +2345,138 @@ $at-text-faint: var(--auto-trades-text-faint);
         padding: 1rem;
     }
 }
+
+
+/* SHARP UI POLISH v3 — AUTO TRADES COLOUR + BOX SYSTEM */
+.auto-trades-page {
+    background:
+        radial-gradient(circle at 0% 0%, rgba(37, 99, 235, 0.16), transparent 28%),
+        radial-gradient(circle at 100% 0%, rgba(168, 85, 247, 0.14), transparent 26%),
+        linear-gradient(180deg, #07111f 0%, #091525 100%);
+}
+
+.auto-trades-page .auto-trades__inner,
+.auto-trades-page .auto-trades-page__inner {
+    color: #f8fbff;
+}
+
+.auto-trades-page .auto-trades-card {
+    border: 1px solid rgba(96, 165, 250, 0.24);
+    border-top: 3px solid #3b82f6;
+    border-radius: 16px;
+    background: linear-gradient(145deg, rgba(15, 31, 52, 0.98), rgba(8, 19, 34, 0.98));
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.28);
+}
+
+.auto-trades-page .auto-trades-card:nth-child(2n) {
+    border-top-color: #8b5cf6;
+}
+
+.auto-trades-page .auto-trades-card:nth-child(3n) {
+    border-top-color: #06b6d4;
+}
+
+.auto-trades-page .auto-trades-card__title {
+    color: #f8fbff;
+}
+
+.auto-trades-page .auto-trades-card__title::after {
+    background: linear-gradient(90deg, rgba(59,130,246,.55), rgba(139,92,246,.12));
+}
+
+.auto-trades-page .auto-trades-config__group {
+    padding: 12px;
+    border: 1px solid rgba(148,163,184,.16);
+    border-radius: 12px;
+    background: rgba(255,255,255,.025);
+}
+
+.auto-trades-page .auto-trades-config__group-label,
+.auto-trades-page .auto-trades-config__field label {
+    color: #a9bdd5;
+}
+
+.auto-trades-page .auto-trades-config__select,
+.auto-trades-page .auto-trades-config input {
+    border-color: #294563;
+    border-radius: 10px;
+    background: #081a2c;
+    color: #f8fbff;
+}
+
+.auto-trades-page .auto-trades-config__select:focus,
+.auto-trades-page .auto-trades-config input:focus {
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 3px rgba(56,189,248,.12);
+}
+
+.auto-trades-page .auto-trades-buttons-grid button,
+.auto-trades-page .auto-trades-strategy-btn {
+    border: 1px solid rgba(96,165,250,.25);
+    border-radius: 11px;
+    background: linear-gradient(145deg,#122944,#0b1b2e);
+    color: #eaf4ff;
+    box-shadow: 0 6px 15px rgba(0,0,0,.18);
+}
+
+.auto-trades-page .auto-trades-buttons-grid button:hover,
+.auto-trades-page .auto-trades-strategy-btn:hover {
+    border-color: #38bdf8;
+    background: linear-gradient(145deg,#173b61,#10243d);
+}
+
+.auto-trades-page .auto-trades-market {
+    border: 1px solid rgba(96,165,250,.24);
+    border-top: 3px solid #06b6d4;
+    border-radius: 14px;
+    background: linear-gradient(145deg,#10253d,#091827);
+    box-shadow: 0 10px 24px rgba(0,0,0,.24);
+}
+
+.auto-trades-page .auto-trades-market:nth-child(3n) { border-top-color: #22c55e; }
+.auto-trades-page .auto-trades-market:nth-child(3n+1) { border-top-color: #3b82f6; }
+.auto-trades-page .auto-trades-market:nth-child(3n+2) { border-top-color: #a855f7; }
+
+.auto-trades-page .auto-trades-market__name { color: #f8fbff; }
+.auto-trades-page .auto-trades-market__symbol { color: #8fb0cf; }
+.auto-trades-page .auto-trades-market__quote { color: #67e8f9; }
+.auto-trades-page .auto-trades-market__footer {
+    border-top-color: rgba(148,163,184,.16);
+}
+
+.auto-trades-page .auto-trades-controls__run {
+    background: linear-gradient(135deg,#16a34a,#0f766e);
+    box-shadow: 0 10px 24px rgba(22,163,74,.24);
+}
+
+.auto-trades-page .auto-trades-controls__stop {
+    background: linear-gradient(135deg,#dc2626,#991b1b);
+    box-shadow: 0 10px 24px rgba(220,38,38,.22);
+}
+
+.auto-trades-page .auto-trades-hint,
+.auto-trades-page .auto-trades-data-loader {
+    border: 1px solid rgba(56,189,248,.2);
+    border-radius: 12px;
+    background: rgba(14,35,57,.78);
+    color: #a9bdd5;
+}
+
+@media (max-width: 700px) {
+    .auto-trades-page {
+        background: linear-gradient(180deg,#07111f 0%,#091525 100%);
+    }
+
+    .auto-trades-page .auto-trades-card {
+        border-radius: 13px;
+        padding: 12px;
+    }
+
+    .auto-trades-page .auto-trades-config__group {
+        padding: 10px;
+    }
+
+    .auto-trades-page .auto-trades-market {
+        border-radius: 12px;
+    }
+}
