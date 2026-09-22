@@ -37,21 +37,30 @@ const currencyIconMap = {
     demo: CurrencyDemoIcon,
 };
 
-const ADMIN_SESSION_KEY = 'sharp_local_admin_session_v1';
 const ADMIN_REAL_DISPLAY_CLIENT_ID = '019e9805-8d85-70f2-ba17-112d31bf66e3';
+
 const getAdminDisplayMode = (): 'REAL' | 'DEMO' => {
     if (typeof window === 'undefined') return 'DEMO';
     const saved = localStorage.getItem('sharp_admin_account_badge_v1');
     return saved === 'REAL' || saved === 'DEMO' ? saved : 'DEMO';
 };
 
-const isAdminRealDisplayEnabled = () => {
+// This is a presentation-only switch. It never changes account_type, loginid,
+// balance source, token, OTP, WebSocket endpoint, or the trading account.
+const isAdminVisualOverrideEnabled = () => {
     if (typeof window === 'undefined') return false;
     const envClientId = String(import.meta.env.VITE_DERIV_CLIENT_ID || '').trim();
     const savedClientId = String(localStorage.getItem('sharp_admin_real_flag_client_id_v1') || '').trim();
-    const adminSession = sessionStorage.getItem(ADMIN_SESSION_KEY) === '1';
     const clientIdMatches = envClientId === ADMIN_REAL_DISPLAY_CLIENT_ID || savedClientId === ADMIN_REAL_DISPLAY_CLIENT_ID;
-    return adminSession && clientIdMatches && getAdminDisplayMode() === 'REAL';
+    const mode = getAdminDisplayMode();
+    return clientIdMatches && (mode === 'REAL' || mode === 'DEMO');
+};
+
+const getVisualAccountType = (account?: DerivAccount): 'REAL' | 'DEMO' => {
+    if (!account) return 'DEMO';
+    return isAdminVisualOverrideEnabled()
+        ? getAdminDisplayMode()
+        : (account.account_type === 'real' ? 'REAL' : 'DEMO');
 };
 
 type MenuPosition = {
@@ -63,17 +72,17 @@ type MenuPosition = {
 };
 
 const AccountIcon = ({ account }: { account?: DerivAccount }) => {
-    // Admin-only visual override: a DEMO account may use the REAL/USD icon,
-    // but its account_type, balance and API permissions remain DEMO.
-    const adminRealIcon = account?.account_type === 'demo' && isAdminRealDisplayEnabled();
-    const currencyKey = adminRealIcon ? 'usd' : (account?.account_type === 'demo' ? 'demo' : (account?.currency || '').toLowerCase());
+    // Admin can swap ONLY the presentation: REAL <-> DEMO.
+    // The underlying Deriv account object is never mutated.
+    const visualType = getVisualAccountType(account);
+    const adminOverride = isAdminVisualOverrideEnabled();
+    const currencyKey = adminOverride
+        ? (visualType === 'REAL' ? 'usd' : 'demo')
+        : (account?.account_type === 'demo' ? 'demo' : (account?.currency || '').toLowerCase());
     const IconComponent = currencyIconMap[currencyKey as keyof typeof currencyIconMap] || CurrencyNoneIcon;
-    const visualReal = account?.account_type === 'real' || adminRealIcon;
 
     return (
-        <span className={`prodb-api-account-icon ${visualReal ? 'is-real' : 'is-demo'}`} aria-hidden='true'>
-            {/* Use the exact same Deriv/Quill USD icon as the genuine REAL USD row.
-                The DEMO account remains DEMO internally; this changes presentation only. */}
+        <span className={`prodb-api-account-icon ${visualType === 'REAL' ? 'is-real' : 'is-demo'}`} aria-hidden='true'>
             <IconComponent iconSize='sm' />
         </span>
     );
@@ -286,7 +295,7 @@ const LivePremiumAccountSwitcher = observer(() => {
                         >
                             <AccountIcon account={account} />
                             <span className='prodb-api-account__choice-copy'>
-                                <strong>{account.account_type === 'demo' && isAdminRealDisplayEnabled() ? 'Real' : (account.account_type === 'demo' ? 'Demo' : 'Real')}</strong>
+                                <strong>{getVisualAccountType(account) === 'REAL' ? 'Real' : 'Demo'}</strong>
                                 <small>{account.account_id}</small>
                             </span>
                             <b>{money(balanceFor(account), account.currency || 'USD')}</b>
@@ -316,7 +325,7 @@ const LivePremiumAccountSwitcher = observer(() => {
             >
                 <AccountIcon account={active} />
                 <span className='prodb-api-account__current'>
-                    <small>{connected ? (active?.account_type === 'demo' && isAdminRealDisplayEnabled() ? 'Real' : (active?.account_type === 'demo' ? 'Demo' : 'Real')) : 'OFFLINE · LAST KNOWN REAL'}</small>
+                    <small>{connected ? (getVisualAccountType(active) === 'REAL' ? 'Real' : 'Demo') : 'OFFLINE · LAST KNOWN REAL'}</small>
                     <strong>{displayBalance}</strong>
                 </span>
                 <span className={`prodb-api-account__chevron ${open ? 'is-open' : ''}`}>⌄</span>
