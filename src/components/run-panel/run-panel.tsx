@@ -156,7 +156,9 @@ const DrawerContent = ({ active_index, is_drawer_open, active_tour, setActiveTab
                     <Journal />
                 </div>
             </Tabs>
-            {((is_drawer_open && active_index !== 2) || active_tour) && <StatisticsSummary {...props} />}
+            {((is_drawer_open && active_index !== 1 && active_index !== 2) || active_tour) && (
+                <StatisticsSummary {...props} />
+            )}
         </>
     );
 };
