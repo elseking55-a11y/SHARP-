@@ -39,7 +39,9 @@ import { ChartsPage } from './pages/LiveTradingPages';
 import PatCopyTradingPage from './pages/PatCopyTradingPage';
 import SpeedBotPage from './pages/SpeedBotPage';
 import { isCustomizableSection, useSiteCustomization } from './site-customization';
-import { SHARP_OFFLINE_MODE } from '@/config/runtime-mode';
+import { getSharpTradingMode, getStoredDerivApiToken, setSharpTradingMode, SHARP_OFFLINE_MODE } from '@/config/runtime-mode';
+import SettingsPage from './pages/SettingsPage';
+import { api_base } from '@/external/bot-skeleton/services/api/api-base';
 import type { PremiumSection } from './types';
 import './premium-base.scss';
 import './premium-app.scss';
@@ -67,7 +69,7 @@ import './premium-site-theme.scss';
 const validSections: PremiumSection[] = [
     'dashboard', 'bot_ideas', 'quick_bot', 'bot_builder', 'free_bots', 'signal_ai', 'auto_trader',
     'manual_trading', 'bulk_trader', 'batch_trader', 'copy_trading', 'speedbot', 'calculator', 'pro_ai', 'analysis_tools',
-    'analysis_hub', 'charts', 'tradingview', 'dtrader',
+    'analysis_hub', 'charts', 'tradingview', 'dtrader', 'settings',
 ];
 
 const sectionFromHash = (hash: string): PremiumSection => {
@@ -89,15 +91,68 @@ const PremiumLayout = observer(() => {
     const [authError, setAuthError] = useState<string | null>(null);
     const [appAuthenticated, setAppAuthenticated] = useState(false);
     const [appAuthChecked, setAppAuthChecked] = useState(false);
+    const [tradingMode, setTradingMode] = useState(() => getSharpTradingMode());
     const hasBootstrappedSession = useRef(false);
 
     const params = new URLSearchParams(window.location.search);
     const isOAuthCallback = Boolean(params.get('code') && params.get('state'));
     const hasStoredAuth = OAuthTokenExchangeService.isAuthenticated();
     const runtimeAuthenticated = Boolean(activeLoginid || client?.is_logged_in);
-    const isAuthenticated = Boolean(SHARP_OFFLINE_MODE || appAuthenticated || runtimeAuthenticated || hasStoredAuth || isLocalDevelopmentHost());
+    const isAuthenticated = Boolean(SHARP_OFFLINE_MODE || appAuthenticated || runtimeAuthenticated || hasStoredAuth || isLocalDevelopmentHost() || Boolean(getStoredDerivApiToken()));
 
     useEffect(() => { document.title = getTemplateDomain(); }, []);
+
+    useEffect(() => {
+        // Restore a user-supplied Deriv API token after refresh when Real/Demo
+        // mode is selected. No fake account or balance is created.
+        const token = getStoredDerivApiToken();
+        if (!token || hasStoredAuth || runtimeAuthenticated || SHARP_OFFLINE_MODE) return;
+
+        let cancelled = false;
+        void (async () => {
+            try {
+                await api_base.init(true);
+                const api = api_base.api as any;
+                if (!api) throw new Error('Deriv API connection is unavailable.');
+                await new Promise<void>((resolve, reject) => {
+                    if (api.connection?.readyState === WebSocket.OPEN) return resolve();
+                    const timeout = window.setTimeout(() => reject(new Error('Deriv connection timed out.')), 10000);
+                    const onOpen = () => { window.clearTimeout(timeout); api.connection.removeEventListener('open', onOpen); resolve(); };
+                    api.connection.addEventListener('open', onOpen);
+                });
+                const result = await api.authorize(token);
+                if (result?.error) throw new Error(result.error.message || 'Deriv API token authorization failed.');
+                api_base.token = token;
+                await api_base.authorizeAndSubscribe();
+                if (!cancelled) setAuthProbe(value => value + 1);
+            } catch (error) {
+                console.warn('[SHARP] Saved Deriv API token could not be restored:', error);
+            }
+        })();
+
+        return () => { cancelled = true; };
+    }, [hasStoredAuth, runtimeAuthenticated]);
+
+    const applyTradingMode = useCallback(async (mode: 'demo' | 'real') => {
+        setSharpTradingMode(mode);
+        setTradingMode(mode);
+
+        const accounts = DerivWSAccountsService.getStoredAccounts();
+        const wanted = mode === 'demo'
+            ? accounts.find(account => account.account_type === 'demo')
+            : accounts.find(account => account.account_type === 'real');
+
+        if (wanted?.account_id) {
+            localStorage.setItem('active_loginid', wanted.account_id);
+            localStorage.setItem('account_type', mode);
+            try {
+                await api_base.init(true);
+            } catch (error) {
+                console.warn('[SHARP] Account mode reconnect failed:', error);
+            }
+        }
+    }, []);
+
 
     useEffect(() => {
         setSection(sectionFromHash(location.hash));
@@ -265,6 +320,7 @@ const PremiumLayout = observer(() => {
             case 'charts': return <ChartsPage />;
             case 'tradingview': return <TradingViewPage />;
             case 'dtrader': return <DTraderPage />;
+            case 'settings': return <SettingsPage mode={tradingMode} onModeChange={applyTradingMode} />;
             default: return null;
         }
     };
@@ -284,7 +340,7 @@ const PremiumLayout = observer(() => {
 
     return <CoreStoreProvider>
         <div
-        className={`prodb-premium-shell ${isBotBuilder ? 'prodb-premium-shell--builder' : ''} ${isRunPanelOpen ? 'prodb-premium-shell--run-open' : ''} ${adminAppearance.theme === 'light' ? 'sharp-theme-light' : 'sharp-theme-dark'}`}
+        className={`prodb-premium-shell ${isBotBuilder ? 'prodb-premium-shell--builder' : ''} ${isRunPanelOpen ? 'prodb-premium-shell--run-open' : ''}`}
         style={themeStyle}
     >
         {!SHARP_OFFLINE_MODE && <GlobalContractBridge />}
