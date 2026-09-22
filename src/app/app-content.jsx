@@ -115,6 +115,9 @@ const AppContent = observer(() => {
         ServerTime.init(common);
         app.setDBotEngineStores();
         ApiHelpers.setInstance(app.api_helpers_store);
+        // BotBuilder mounts before the authenticated WebSocket observable may
+        // flip. Re-run the DBot workspace mount after its stores are available.
+        void app.onMount();
         import('@/utils/gtm').then(({ default: GTM }) => {
             GTM.init(store);
         });
