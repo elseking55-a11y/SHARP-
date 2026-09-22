@@ -254,7 +254,7 @@ const AdminPanelPage = () => {
         setAppearance(next);
         localStorage.setItem('sharp_admin_appearance_v1', JSON.stringify(next));
         window.dispatchEvent(new CustomEvent('sharp-admin-appearance-updated'));
-        setMessage('Appearance updated. The live app preview uses this colour now.');
+        setMessage('');
     };
 
     const deleteBot = (bot: ManagedBot) => {
@@ -272,14 +272,6 @@ const AdminPanelPage = () => {
                     <div className='prodb-admin-logo'>🛡️</div>
                     <span>ELISY254 SHARP • LOCAL CONTROL</span>
                     <h1>{hasPin ? 'Admin Panel' : 'Create Admin PIN'}</h1>
-                    <p>
-                        {hasPin
-                            ? 'Enter your local admin PIN to manage bots and their appearance.'
-                            : 'This no-server admin stores its bot library on this device. Create a PIN to protect the local panel.'}
-                    </p>
-                    <div className='prodb-admin-warning'>
-                        Local mode does not provide server-side security or cross-device publishing. It is designed for your current device while live backend publishing is disabled.
-                    </div>
                     {error && <div className='prodb-admin-error'>{error}</div>}
                     {message && <div className='prodb-admin-success'>{message}</div>}
                     <form onSubmit={authenticate}>
