@@ -229,7 +229,9 @@ const ADMIN_PASSWORD = String(process.env.ADMIN_PASSWORD || '');
 const ADMIN_SESSION_SECRET = String(process.env.ADMIN_SESSION_SECRET || ADMIN_PASSWORD || '').trim();
 const ADMIN_COOKIE = 'sharp_admin_session';
 
-const publicConfig = {
+const ADMIN_CONFIG_PATH = process.env.SHARP_ADMIN_CONFIG_PATH || '/data/sharp-admin-config.json';
+
+const defaultPublicConfig = {
     clientId: String(process.env.DERIV_CLIENT_ID || process.env.VITE_DERIV_CLIENT_ID || '').trim(),
     appearance: {
         siteName: String(process.env.SHARP_SITE_NAME || 'ELISY254'),
@@ -240,6 +242,36 @@ const publicConfig = {
         headerBackground: String(process.env.SHARP_HEADER_BACKGROUND || '#06111c'),
         cardBackground: String(process.env.SHARP_CARD_BACKGROUND || '#091a2b'),
     },
+};
+
+const loadPublicConfig = () => {
+    try {
+        if (!fs.existsSync(ADMIN_CONFIG_PATH)) return structuredClone(defaultPublicConfig);
+        const saved = JSON.parse(fs.readFileSync(ADMIN_CONFIG_PATH, 'utf8'));
+        return {
+            ...defaultPublicConfig,
+            ...saved,
+            appearance: { ...defaultPublicConfig.appearance, ...(saved.appearance || {}) },
+        };
+    } catch (error) {
+        console.warn('[Admin config] Could not load persistent config:', error.message);
+        return structuredClone(defaultPublicConfig);
+    }
+};
+
+const publicConfig = loadPublicConfig();
+
+const savePublicConfig = () => {
+    try {
+        fs.mkdirSync(path.dirname(ADMIN_CONFIG_PATH), { recursive: true });
+        const tempPath = ADMIN_CONFIG_PATH + '.tmp';
+        fs.writeFileSync(tempPath, JSON.stringify(publicConfig, null, 2), 'utf8');
+        fs.renameSync(tempPath, ADMIN_CONFIG_PATH);
+        return true;
+    } catch (error) {
+        console.error('[Admin config] Could not save persistent config:', error);
+        return false;
+    }
 };
 
 const signAdminSession = () => {
@@ -308,7 +340,12 @@ const saveAdminConfig = async (req, res) => {
                 publicConfig.appearance[key] = appearance[key].trim();
             }
         }
-        return send(res, 200, JSON.stringify({ saved: true, ...publicConfig }));
+        const persisted = savePublicConfig();
+        return send(res, persisted ? 200 : 507, JSON.stringify({
+            saved: persisted,
+            error_description: persisted ? undefined : 'Render persistent storage is not mounted. Add a persistent disk or set SHARP_ADMIN_CONFIG_PATH to a writable persistent path.',
+            ...publicConfig,
+        }));
     } catch (error) {
         return send(res, 400, JSON.stringify({ saved: false, error_description: error.message }));
     }
