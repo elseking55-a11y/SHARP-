@@ -19,6 +19,7 @@ export type SiteCustomization = {
 export const NAVIGATION_CATALOG: Array<{ id: PremiumSection; label: string; required?: boolean }> = [
     { id: 'dashboard', label: 'Dashboard', required: true },
     { id: 'bot_builder', label: 'Bot Builder' },
+    { id: 'free_bots', label: 'Free Bot' },
     { id: 'auto_trader', label: 'Auto Trades' },
     { id: 'manual_trading', label: 'Manual Trading' },
     { id: 'tradingview', label: 'TradingView' },
