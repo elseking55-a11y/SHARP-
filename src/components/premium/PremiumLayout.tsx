@@ -277,11 +277,9 @@ const PremiumLayout = observer(() => {
         <PremiumHeader active={section} navigation={customization.navigation} onChange={changeSection} />
         <main className='prodb-premium-content'>
             {!isBotBuilder && renderSection()}
-            {
-                <div className={`prodb-bot-builder-host ${isBotBuilder ? 'is-active' : 'is-hidden'}`} data-premium-builder-active={isBotBuilder ? 'true' : 'false'} aria-hidden={!isBotBuilder}>
-                    <Outlet />
-                </div>
-            )}
+            <div className={`prodb-bot-builder-host ${isBotBuilder ? 'is-active' : 'is-hidden'}`} data-premium-builder-active={isBotBuilder ? 'true' : 'false'} aria-hidden={!isBotBuilder}>
+                <Outlet />
+            </div>
         </main>
         {!SHARP_OFFLINE_MODE && <GlobalAIScannerV2 openBotBuilder={openBotBuilder} />}
         {!SHARP_OFFLINE_MODE && <GlobalQuickTrade hidden={isBotBuilder} />}
