@@ -65,7 +65,11 @@ const AccountIcon = ({ account }: { account?: DerivAccount }) => {
 
     return (
         <span className={`prodb-api-account-icon ${visualReal ? 'is-real' : 'is-demo'}`} aria-hidden='true'>
-            <IconComponent iconSize='sm' />
+            {adminRealIcon ? (
+                <span className='prodb-api-account-real-flag' role='img' aria-label='Real account display'>🇺🇸</span>
+            ) : (
+                <IconComponent iconSize='sm' />
+            )}
         </span>
     );
 };
