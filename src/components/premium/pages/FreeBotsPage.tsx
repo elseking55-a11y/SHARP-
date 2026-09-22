@@ -104,9 +104,7 @@ const FreeBotsPage = ({ openBotBuilder }: { openBotBuilder?: () => void }) => {
                                         bot.emoji || '🤖'
                                     )}
                                 </div>
-                                <small>{domain}</small>
                                 <h2>{name}</h2>
-                                <p>{bot.description || 'Uploaded Blockly strategy ready for Bot Builder.'}</p>
                                 <div className='prodb-bot-card__actions'>
                                     <button
                                         className='prodb-load-bot'
@@ -114,7 +112,7 @@ const FreeBotsPage = ({ openBotBuilder }: { openBotBuilder?: () => void }) => {
                                         onClick={() => void loadBot(bot)}
                                         type='button'
                                     >
-                                        {busyFile === bot.file ? 'LOADING…' : 'EDIT IN BOT BUILDER'}
+                                        {busyFile === bot.file ? 'LOADING…' : 'LOAD'}
                                         <DownloadIcon />
                                     </button>
                                 </div>
