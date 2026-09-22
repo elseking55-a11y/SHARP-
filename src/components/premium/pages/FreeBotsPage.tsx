@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import type { CSSProperties } from 'react';
-import { load, save_types } from '@/external/bot-skeleton';
 import { getTemplateDomain } from '../domain-brand';
 import { DownloadIcon } from '../icons';
 import { decodeManagedBotXml, readManagedBots, type ManagedBot } from '@/utils/managed-bot-library';
@@ -43,17 +42,14 @@ const FreeBotsPage = ({ openBotBuilder }: { openBotBuilder?: () => void }) => {
             if (!/<xml[\\s>]/i.test(decodedXml) && !/<block[\\s>]/i.test(decodedXml)) {
                 throw new Error('This uploaded file is not valid Blockly XML.');
             }
+            // Store the selected XML before switching sections. The native
+            // Deriv Bot Builder consumes this only after Blockly is ready.
+            sessionStorage.setItem(
+                'sharp_pending_free_bot_xml',
+                JSON.stringify({ xml: decodedXml, fileName: bot.file, botId: bot.id, botName: bot.name })
+            );
+            sessionStorage.removeItem('sharp_loaded_free_bot');
             openBotBuilder();
-            const workspace = await waitForWorkspace();
-            await load({
-                block_string: decodedXml,
-                file_name: bot.file,
-                workspace,
-                from: save_types.LOCAL,
-                drop_event: {},
-                strategy_id: null,
-                showIncompatibleStrategyDialog: false,
-            });
         } catch (err) {
             setError(err instanceof Error ? err.message : String(err));
         } finally {
@@ -65,7 +61,7 @@ const FreeBotsPage = ({ openBotBuilder }: { openBotBuilder?: () => void }) => {
     return (
         <div className='prodb-free-bots prodb-free-bots--app'>
             <header className='prodb-free-bots__header'>
-                <div><h1>Free Bots</h1><p>Only bots uploaded and published from Admin Panel appear here.</p></div>
+                <div><h1>Free Bots</h1><p>Select a published bot to open it directly inside Bot Builder. Edit the blocks there, then use Deriv's Run control.</p></div>
                 <div className='prodb-free-bots__count'><strong>{bots.length}</strong><small>AVAILABLE</small></div>
             </header>
 
@@ -89,7 +85,7 @@ const FreeBotsPage = ({ openBotBuilder }: { openBotBuilder?: () => void }) => {
                         <div className='prodb-bot-card__top'><span>{bot.badge || 'FREE BOT'}</span></div>
                         <div className='prodb-bot-card__badge'>{bot.imageBase64 || bot.imageUrl ? <img src={bot.imageBase64 || bot.imageUrl} alt='' /> : (bot.emoji || '🤖')}</div>
                         <small>{domain}</small><h2>{name}</h2><p>{bot.description || 'Uploaded Blockly strategy ready for Bot Builder.'}</p>
-                        <div className='prodb-bot-card__actions'><button className='prodb-load-bot' disabled={Boolean(busyFile)} onClick={() => setRiskBot(bot)}>{busyFile === bot.file ? 'LOADING…' : 'LOAD BOT'} <DownloadIcon /></button></div>
+                        <div className='prodb-bot-card__actions'><button className='prodb-load-bot' disabled={Boolean(busyFile)} onClick={() => setRiskBot(bot)}>{busyFile === bot.file ? 'LOADING…' : 'EDIT IN BOT BUILDER'} <DownloadIcon /></button></div>
                     </article>;
                 })}
             </div>}
