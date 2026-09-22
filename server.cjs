@@ -222,6 +222,100 @@ const appLogout = (req, res) => {
     res.end(JSON.stringify({ authenticated: false }));
 };
 
+
+
+const ADMIN_EMAIL = String(process.env.ADMIN_EMAIL || '').trim().toLowerCase();
+const ADMIN_PASSWORD = String(process.env.ADMIN_PASSWORD || '');
+const ADMIN_SESSION_SECRET = String(process.env.ADMIN_SESSION_SECRET || ADMIN_PASSWORD || '').trim();
+const ADMIN_COOKIE = 'sharp_admin_session';
+
+const publicConfig = {
+    clientId: String(process.env.DERIV_CLIENT_ID || process.env.VITE_DERIV_CLIENT_ID || '').trim(),
+    appearance: {
+        siteName: String(process.env.SHARP_SITE_NAME || 'ELISY254'),
+        primary: String(process.env.SHARP_PRIMARY || '#00a884'),
+        secondary: String(process.env.SHARP_SECONDARY || '#ffffff'),
+        navBackground: String(process.env.SHARP_NAV_BACKGROUND || '#071521'),
+        navText: String(process.env.SHARP_NAV_TEXT || '#ffffff'),
+        headerBackground: String(process.env.SHARP_HEADER_BACKGROUND || '#06111c'),
+        cardBackground: String(process.env.SHARP_CARD_BACKGROUND || '#091a2b'),
+    },
+};
+
+const signAdminSession = () => {
+    const payload = 'admin.' + String(Date.now() + 8 * 60 * 60 * 1000);
+    const signature = crypto.createHmac('sha256', ADMIN_SESSION_SECRET).update(payload).digest('hex');
+    return payload + '.' + signature;
+};
+
+const hasAdminSession = req => {
+    if (!ADMIN_SESSION_SECRET) return false;
+    const header = String(req.headers.cookie || '');
+    const token = header.split(';').map(item => item.trim()).find(item => item.startsWith(ADMIN_COOKIE + '='))?.slice(ADMIN_COOKIE.length + 1);
+    if (!token) return false;
+    const parts = token.split('.');
+    if (parts.length !== 3 || parts[0] !== 'admin') return false;
+    const expires = Number(parts[1]);
+    if (!Number.isFinite(expires) || expires < Date.now()) return false;
+    const expected = crypto.createHmac('sha256', ADMIN_SESSION_SECRET).update(parts[0] + '.' + parts[1]).digest('hex');
+    try { return crypto.timingSafeEqual(Buffer.from(parts[2]), Buffer.from(expected)); } catch { return false; }
+};
+
+const adminLogin = async (req, res) => {
+    if (!ADMIN_EMAIL || !ADMIN_PASSWORD || !ADMIN_SESSION_SECRET) {
+        return send(res, 503, JSON.stringify({ authenticated: false, error_description: 'Set ADMIN_EMAIL, ADMIN_PASSWORD and ADMIN_SESSION_SECRET in Render.' }));
+    }
+    try {
+        const body = JSON.parse(await readBody(req) || '{}');
+        const email = String(body.email || '').trim().toLowerCase();
+        const password = String(body.password || '');
+        if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
+            return send(res, 401, JSON.stringify({ authenticated: false, error_description: 'Incorrect admin email or password.' }));
+        }
+        res.writeHead(200, {
+            'Content-Type': 'application/json; charset=utf-8',
+            'Cache-Control': 'no-store',
+            'Set-Cookie': ADMIN_COOKIE + '=' + signAdminSession() + '; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=28800',
+        });
+        return res.end(JSON.stringify({ authenticated: true }));
+    } catch (error) {
+        return send(res, 400, JSON.stringify({ authenticated: false, error_description: error.message }));
+    }
+};
+
+const adminLogout = (req, res) => {
+    res.writeHead(200, {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Cache-Control': 'no-store',
+        'Set-Cookie': ADMIN_COOKIE + '=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0',
+    });
+    res.end(JSON.stringify({ authenticated: false }));
+};
+
+const adminConfig = (req, res) => {
+    if (!hasAdminSession(req)) return send(res, 401, JSON.stringify({ error: 'admin_required' }));
+    return send(res, 200, JSON.stringify(publicConfig));
+};
+
+const saveAdminConfig = async (req, res) => {
+    if (!hasAdminSession(req)) return send(res, 401, JSON.stringify({ error: 'admin_required' }));
+    try {
+        const body = JSON.parse(await readBody(req) || '{}');
+        const appearance = body.appearance || {};
+        publicConfig.clientId = String(body.clientId || '').trim();
+        for (const key of ['siteName', 'primary', 'secondary', 'navBackground', 'navText', 'headerBackground', 'cardBackground']) {
+            if (typeof appearance[key] === 'string' && appearance[key].trim()) {
+                publicConfig.appearance[key] = appearance[key].trim();
+            }
+        }
+        return send(res, 200, JSON.stringify({ saved: true, ...publicConfig }));
+    } catch (error) {
+        return send(res, 400, JSON.stringify({ saved: false, error_description: error.message }));
+    }
+};
+
+const publicConfigEndpoint = (req, res) => send(res, 200, JSON.stringify(publicConfig));
+
 const mime = {
     '.html': 'text/html; charset=utf-8',
     '.js': 'text/javascript; charset=utf-8',
@@ -271,6 +365,13 @@ const serveFile = (res, pathname) => {
 
 const server = http.createServer(async (req, res) => {
     const url = new URL(req.url || '/', `http://${req.headers.host || 'localhost'}`);
+
+    if (req.method === 'POST' && url.pathname === '/api/admin/login') return adminLogin(req, res);
+    if (req.method === 'POST' && url.pathname === '/api/admin/logout') return adminLogout(req, res);
+    if (req.method === 'GET' && url.pathname === '/api/admin/session') return send(res, 200, JSON.stringify({ authenticated: hasAdminSession(req), configured: Boolean(ADMIN_EMAIL && ADMIN_PASSWORD && ADMIN_SESSION_SECRET) }));
+    if (req.method === 'GET' && url.pathname === '/api/admin/config') return adminConfig(req, res);
+    if (req.method === 'POST' && url.pathname === '/api/admin/config') return saveAdminConfig(req, res);
+    if (req.method === 'GET' && url.pathname === '/api/public-config') return publicConfigEndpoint(req, res);
 
     if (req.method === 'POST' && url.pathname === '/api/auth/login') return appLogin(req, res);
     if (req.method === 'POST' && url.pathname === '/api/auth/logout') return appLogout(req, res);
