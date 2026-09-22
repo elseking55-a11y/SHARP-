@@ -49,6 +49,7 @@ import './premium-imported.scss';
 import './premium-imported-library.scss';
 import './premium-token-panel.scss';
 import './premium-native-bot-builder.scss';
+import './premium-bot-builder-polish.scss';
 import './premium-account.scss';
 import './premium-global-trading.scss';
 import './premium-mobile-shell.scss';
@@ -71,7 +72,7 @@ const validSections: PremiumSection[] = [
 ];
 
 const sectionFromHash = (hash: string): PremiumSection => {
-    const value = hash.replace(/^#\/?/, '').split('?')[0] as PremiumSection;
+    const value = hash.replace(/^#\\/?/, '').split('?')[0] as PremiumSection;
     return validSections.includes(value) ? value : 'dashboard';
 };
 
