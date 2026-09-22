@@ -54,23 +54,8 @@ const FreeBotsPage = ({ openBotBuilder }: { openBotBuilder?: () => void }) => {
 
     return (
         <div className='prodb-free-bots prodb-free-bots--app'>
-            <header className='prodb-free-bots__header'>
-                <div>
-                    <h1>Free Bots</h1>
-                    <p>Select a published bot to open it directly inside Bot Builder. Edit the blocks there, then use Deriv's Run control.</p>
-                </div>
-            </header>
-
             {loading && <div className='prodb-live-empty'>Checking uploaded bots…</div>}
             {error && <div className='prodb-live-error'>{error}</div>}
-
-            {!loading && !bots.length && !error && (
-                <section className='prodb-free-bots-empty'>
-                    <div className='prodb-free-bots-empty__icon'>🤖</div>
-                    <h2>No free bots uploaded</h2>
-                    <p>Free Bots stays empty until you upload a Blockly XML bot in Admin Panel → Bot Management.</p>
-                </section>
-            )}
 
             {!loading && bots.length > 0 && (
                 <div className='prodb-bot-grid prodb-bot-grid--imported prodb-bot-grid--app'>
