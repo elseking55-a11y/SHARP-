@@ -19,7 +19,8 @@ export type ManagedBot = {
     updatedAt: number;
 };
 
-const STORAGE_KEY = 'sharp_managed_bot_library_v1';
+// v2 intentionally starts empty so old demo/local libraries cannot leak into production.
+const STORAGE_KEY = 'sharp_managed_bot_library_v2';
 
 const safeParse = (value: string | null): ManagedBot[] => {
     if (!value) return [];
@@ -59,7 +60,6 @@ export const removeManagedBot = (id: string) => {
 export const decodeManagedBotXml = (encoded: string): string => {
     const binary = window.atob(encoded.replace(/\\s+/g, ''));
     const bytes = Uint8Array.from(binary, char => char.charCodeAt(0));
-
     try {
         return new TextDecoder().decode(bytes);
     } catch {
