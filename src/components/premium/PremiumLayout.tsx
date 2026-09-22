@@ -72,7 +72,7 @@ const validSections: PremiumSection[] = [
 ];
 
 const sectionFromHash = (hash: string): PremiumSection => {
-    const value = hash.replace(/^#\\/?/, '').split('?')[0] as PremiumSection;
+    const value = hash.replace(/^#\/?/, '').split('?')[0] as PremiumSection;
     return validSections.includes(value) ? value : 'dashboard';
 };
 
