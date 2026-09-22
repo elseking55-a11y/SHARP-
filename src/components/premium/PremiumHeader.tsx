@@ -117,7 +117,7 @@ const PremiumHeader = observer(
                         const label = NAV_LABELS[id];
                         if (!Icon || !label) return null;
                         return (
-                            <button key={id} className={active === id ? 'is-active' : ''} onClick={() => onNavClick(id)}>
+                            <button key={id} className={`prodb-nav__item prodb-nav__item--${id} ${active === id ? 'is-active' : ''}`} onClick={() => onNavClick(id)}>
                                 <Icon />
                                 <span>{label}</span>
                             </button>
