@@ -15,7 +15,6 @@ import useThemeSwitcher from '@/hooks/useThemeSwitcher';
 import { ThemeProvider } from '@deriv-com/quill-ui';
 import { setSmartChartsPublicPath } from '@deriv-com/smartcharts-champion';
 import { localize } from '@deriv-com/translations';
-import { SHARP_OFFLINE_MODE } from '@/config/runtime-mode';
 import Audio from '../components/audio';
 import BlocklyLoading from '../components/blockly-loading';
 import BotStopped from '../components/bot-stopped';
@@ -27,7 +26,7 @@ import '../components/bot-notification/bot-notification.scss';
 
 const AppContent = observer(() => {
     const [is_api_initialized, setIsApiInitialized] = React.useState(false);
-    const [is_loading, setIsLoading] = React.useState(true);
+    const [is_loading, setIsLoading] = React.useState(false);
 
     const store = useStore();
     const { app, transactions, common, client } = store;
@@ -154,24 +153,20 @@ const AppContent = observer(() => {
     };
 
     React.useEffect(() => {
-        if (SHARP_OFFLINE_MODE) {
-            init();
+        // Public users should see the landing page immediately. The authenticated
+        // OAuth flow initializes api_base and then this effect prepares the bot engine.
+        if (!is_api_initialized) return;
+        if (!client.is_logged_in) {
             setIsLoading(false);
             return;
         }
-
-        if (is_api_initialized) {
-            init();
-            setIsLoading(true);
-            if (!client.is_logged_in) {
-                changeActiveSymbolLoadingState();
-            }
-        }
+        init();
+        setIsLoading(true);
+        changeActiveSymbolLoadingState();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [is_api_initialized]);
+    }, [is_api_initialized, client.is_logged_in]);
 
     React.useEffect(() => {
-        if (SHARP_OFFLINE_MODE) return;
         if (client.is_logged_in && is_api_initialized) {
             changeActiveSymbolLoadingState();
         }
