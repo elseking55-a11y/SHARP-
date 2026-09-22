@@ -1,4 +1,5 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import type { CSSProperties, FormEvent } from 'react';
 
 type Appearance = {
     siteName: string;
@@ -175,17 +176,17 @@ const ColorRow = ({ label, value, onChange }: { label: string; value: string; on
     </label>
 );
 
-const pageStyle: React.CSSProperties = { minHeight: '100vh', padding: 20, boxSizing: 'border-box', background: '#050d15', color: '#fff', fontFamily: 'Arial, sans-serif' };
-const cardStyle: React.CSSProperties = { maxWidth: 520, margin: '40px auto', padding: 24, borderRadius: 18, background: '#091a2b', border: '1px solid rgba(255,255,255,.12)', boxShadow: '0 18px 50px rgba(0,0,0,.35)' };
-const titleStyle: React.CSSProperties = { margin: 0, fontSize: 24, letterSpacing: 1 };
-const headingStyle: React.CSSProperties = { fontSize: 18, margin: '0 0 14px' };
-const mutedStyle: React.CSSProperties = { color: '#9fb0c0', fontSize: 13, lineHeight: 1.5 };
-const labelStyle: React.CSSProperties = { display: 'flex', flexDirection: 'column', gap: 7, margin: '14px 0', fontSize: 13, color: '#dce7ef' };
-const inputStyle: React.CSSProperties = { width: '100%', boxSizing: 'border-box', padding: '12px 13px', borderRadius: 10, border: '1px solid rgba(255,255,255,.16)', background: '#06111c', color: '#fff', outline: 'none' };
-const buttonStyle: React.CSSProperties = { width: '100%', marginTop: 16, padding: '13px 16px', border: 0, borderRadius: 10, background: '#00a884', color: '#fff', fontWeight: 800, cursor: 'pointer' };
-const secondaryButtonStyle: React.CSSProperties = { padding: '11px 14px', borderRadius: 10, border: '1px solid rgba(255,255,255,.16)', background: '#10283c', color: '#fff', fontWeight: 700, cursor: 'pointer' };
-const sectionStyle: React.CSSProperties = { marginTop: 24, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,.1)' };
-const messageStyle: React.CSSProperties = { marginTop: 14, color: '#8ff0cf' };
-const errorStyle: React.CSSProperties = { marginTop: 14, color: '#ff9b9b' };
+const pageStyle: CSSProperties = { minHeight: '100vh', padding: 20, boxSizing: 'border-box', background: '#050d15', color: '#fff', fontFamily: 'Arial, sans-serif' };
+const cardStyle: CSSProperties = { maxWidth: 520, margin: '40px auto', padding: 24, borderRadius: 18, background: '#091a2b', border: '1px solid rgba(255,255,255,.12)', boxShadow: '0 18px 50px rgba(0,0,0,.35)' };
+const titleStyle: CSSProperties = { margin: 0, fontSize: 24, letterSpacing: 1 };
+const headingStyle: CSSProperties = { fontSize: 18, margin: '0 0 14px' };
+const mutedStyle: CSSProperties = { color: '#9fb0c0', fontSize: 13, lineHeight: 1.5 };
+const labelStyle: CSSProperties = { display: 'flex', flexDirection: 'column', gap: 7, margin: '14px 0', fontSize: 13, color: '#dce7ef' };
+const inputStyle: CSSProperties = { width: '100%', boxSizing: 'border-box', padding: '12px 13px', borderRadius: 10, border: '1px solid rgba(255,255,255,.16)', background: '#06111c', color: '#fff', outline: 'none' };
+const buttonStyle: CSSProperties = { width: '100%', marginTop: 16, padding: '13px 16px', border: 0, borderRadius: 10, background: '#00a884', color: '#fff', fontWeight: 800, cursor: 'pointer' };
+const secondaryButtonStyle: CSSProperties = { padding: '11px 14px', borderRadius: 10, border: '1px solid rgba(255,255,255,.16)', background: '#10283c', color: '#fff', fontWeight: 700, cursor: 'pointer' };
+const sectionStyle: CSSProperties = { marginTop: 24, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,.1)' };
+const messageStyle: CSSProperties = { marginTop: 14, color: '#8ff0cf' };
+const errorStyle: CSSProperties = { marginTop: 14, color: '#ff9b9b' };
 
 export default AdminPage;
