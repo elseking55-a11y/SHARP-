@@ -285,7 +285,7 @@ const PremiumLayout = observer(() => {
         </main>
         {!SHARP_OFFLINE_MODE && <GlobalAIScannerV2 openBotBuilder={openBotBuilder} />}
         {!SHARP_OFFLINE_MODE && <GlobalQuickTrade hidden={isBotBuilder} />}
-        {!SHARP_OFFLINE_MODE && <BottomStatusBar botBuilderActive={isBotBuilder} />}
+        {!SHARP_OFFLINE_MODE && <BottomStatusBar />}
         </div>
     </CoreStoreProvider>;
 });
