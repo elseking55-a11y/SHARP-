@@ -13,7 +13,7 @@ const AnalysisToolsPage = () => {
 
             <section className='prodb-analysis-iframe-card' role='tabpanel'>
                 <iframe
-                    title='Percentage Tool'
+                    title='Analysis'
                     src='https://api.binarytool.site/'
                     className='prodb-analysis-iframe'
                     allow='clipboard-read; clipboard-write; fullscreen'
