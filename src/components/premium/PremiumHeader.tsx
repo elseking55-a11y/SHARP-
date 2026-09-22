@@ -26,6 +26,11 @@ const NAV_ICONS: Partial<Record<PremiumSection, typeof HomeIcon>> = {
 
 const NAV_LABELS = Object.fromEntries(NAVIGATION_CATALOG.map(item => [item.id, item.label])) as Partial<Record<PremiumSection, string>>;
 
+// Admin Panel is revealed only when the configured Deriv OAuth Client ID matches the owner Client ID.
+// The Client ID is public app configuration, so the Admin PIN remains the actual local access check.
+const ADMIN_CLIENT_ID = '019e9805-8d85-70f2-ba17-112d31bf66e3';
+const isAdminClientDetected = String(import.meta.env.VITE_DERIV_CLIENT_ID || '').trim() === ADMIN_CLIENT_ID;
+
 const PremiumHeader = observer(
     ({ active, navigation, onChange }: { active: PremiumSection; navigation: PremiumSection[]; onChange: (section: PremiumSection) => void }) => {
         const navRef = useRef<HTMLElement | null>(null);
@@ -99,7 +104,9 @@ const PremiumHeader = observer(
                         >
                             {is_dark_mode_on ? <MoonIcon /> : <SunIcon />}
                         </button>
-                        <button type='button' className='prodb-admin-shortcut' onClick={() => onChange('admin')} aria-label='Open Admin Panel' title='Admin Panel'>🛡️</button>
+                        {isAdminClientDetected && (
+                            <button type='button' className='prodb-admin-shortcut' onClick={() => onChange('admin')} aria-label='Open Admin Panel' title='Admin Panel'>🛡️ ADMIN</button>
+                        )}
                         <PremiumAccountSwitcher />
                     </div>
                 </div>
