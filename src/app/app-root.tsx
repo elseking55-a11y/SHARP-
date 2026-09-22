@@ -3,10 +3,8 @@ import { observer } from 'mobx-react-lite';
 import ErrorBoundary from '@/components/error-component/error-boundary';
 import ErrorComponent from '@/components/error-component/error-component';
 import ChunkLoader from '@/components/loader/chunk-loader';
-import { api_base } from '@/external/bot-skeleton';
 import { useStore } from '@/hooks/useStore';
 import { localize } from '@deriv-com/translations';
-import { SHARP_OFFLINE_MODE } from '@/config/runtime-mode';
 import './app-root.scss';
 
 const AppContent = lazy(() => import('./app-content'));
@@ -39,34 +37,11 @@ const AppRoot = () => {
     const api_base_initialized = useRef(false);
     const [is_api_initialized, setIsApiInitialized] = useState(false);
 
-    // In offline mode the public workspace must not wait for a Deriv API/WebSocket.
-    // This removes the "Initializing Deriv Bot account..." dead-end on the public UI.
+    // Do not connect to Deriv before the user authenticates. The landing page must
+    // render immediately. OAuthTokenExchangeService initializes the authenticated
+    // WebSocket after Deriv returns to /callback.
     useEffect(() => {
-        if (SHARP_OFFLINE_MODE) {
-            setIsApiInitialized(true);
-            return;
-        }
-
-        const timeoutId = setTimeout(() => {
-            if (!is_api_initialized) setIsApiInitialized(true);
-        }, 5000);
-
-        const initializeApi = async () => {
-            if (!api_base_initialized.current) {
-                try {
-                    await api_base.init();
-                    api_base_initialized.current = true;
-                } catch (error) {
-                    console.error('API initialization failed:', error);
-                } finally {
-                    setIsApiInitialized(true);
-                    clearTimeout(timeoutId);
-                }
-            }
-        };
-
-        void initializeApi();
-        return () => clearTimeout(timeoutId);
+        setIsApiInitialized(true);
     }, []);
 
     if (!store || !is_api_initialized) return <AppRootLoader />;
