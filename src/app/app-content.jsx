@@ -120,11 +120,6 @@ const AppContent = observer(() => {
     const changeActiveSymbolLoadingState = () => {
         init();
 
-        if (SHARP_OFFLINE_MODE) {
-            setIsLoading(false);
-            return;
-        }
-
         const retrieveActiveSymbols = () => {
             const { active_symbols } = ApiHelpers.instance;
 
