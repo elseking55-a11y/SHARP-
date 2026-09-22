@@ -42,6 +42,7 @@ import { isCustomizableSection, useSiteCustomization } from './site-customizatio
 import { getSharpTradingMode, getStoredDerivApiToken, setSharpTradingMode, SHARP_OFFLINE_MODE } from '@/config/runtime-mode';
 import SettingsPage from './pages/SettingsPage';
 import { api_base } from '@/external/bot-skeleton/services/api/api-base';
+import { DerivWSAccountsService } from '@/services/derivws-accounts.service';
 import type { PremiumSection } from './types';
 import './premium-base.scss';
 import './premium-app.scss';
