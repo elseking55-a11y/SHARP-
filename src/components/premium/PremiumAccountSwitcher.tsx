@@ -39,10 +39,10 @@ const currencyIconMap = {
 
 const ADMIN_REAL_DISPLAY_CLIENT_ID = '019e9805-8d85-70f2-ba17-112d31bf66e3';
 
-const getAdminDisplayMode = (): 'REAL' | 'DEMO' => {
-    if (typeof window === 'undefined') return 'DEMO';
+const getAdminDisplayMode = (): 'REAL' | 'DEMO' | 'ACTUAL' => {
+    if (typeof window === 'undefined') return 'ACTUAL';
     const saved = localStorage.getItem('sharp_admin_account_badge_v1');
-    return saved === 'REAL' || saved === 'DEMO' ? saved : 'DEMO';
+    return saved === 'REAL' || saved === 'DEMO' || saved === 'ACTUAL' ? saved : 'ACTUAL';
 };
 
 // This is a presentation-only switch. It never changes account_type, loginid,
