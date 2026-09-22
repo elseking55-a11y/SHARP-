@@ -1733,7 +1733,7 @@
 /* Keep the native Deriv builder mounted so its real workspace/run state survives navigation. */
 .prodb-premium-shell .prodb-bot-builder-host.is-hidden{
  position:fixed!important;inset:134px 0 0!important;width:100%!important;height:calc(100vh - 134px)!important;
- opacity:0!important;visibility:hidden!important;pointer-events:none!important;z-index:1!important;
+ opacity:1!important;visibility:hidden!important;pointer-events:none!important;z-index:1!important;
 }
 .prodb-premium-shell .prodb-bot-builder-host.is-hidden .bot-builder--active{visibility:hidden!important;pointer-events:none!important}
 .prodb-premium-shell .prodb-bot-builder-host.is-hidden .run-panel,
