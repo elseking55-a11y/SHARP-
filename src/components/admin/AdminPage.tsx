@@ -29,7 +29,6 @@ const AdminPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [clientId, setClientId] = useState('');
-    const [apiToken, setApiToken] = useState('');
     const [appearance, setAppearance] = useState<Appearance>(defaultAppearance);
     const [message, setMessage] = useState('');
     const [busy, setBusy] = useState(false);
@@ -96,26 +95,6 @@ const AdminPage = () => {
         }
     };
 
-    const validateToken = async () => {
-        if (!apiToken.trim()) return;
-        setBusy(true);
-        setMessage('');
-        try {
-            const response = await fetch('/api/deriv/pat/validate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-                body: JSON.stringify({ token: apiToken.trim() }),
-            });
-            const data = await response.json().catch(() => ({}));
-            if (!response.ok || !data.valid) throw new Error(data.error_description || 'API token is invalid.');
-            setMessage('API token verified for ' + (data.account_id || 'the Deriv account') + '. It is not published to users.');
-        } catch (error) {
-            setMessage(error instanceof Error ? error.message : 'API token validation failed.');
-        } finally {
-            setBusy(false);
-        }
-    };
-
     const logout = async () => {
         await fetch('/api/admin/logout', { method: 'POST', credentials: 'include' });
         setAuthenticated(false);
@@ -144,13 +123,6 @@ const AdminPage = () => {
                     <button type='button' onClick={logout} style={secondaryButtonStyle}>LOG OUT</button>
                 </div>
                 <form onSubmit={save}>
-                    <section style={sectionStyle}>
-                        <h2 style={headingStyle}>Deriv connection</h2>
-                        <label style={labelStyle}>Public Deriv Client ID<input style={inputStyle} value={clientId} onChange={e => setClientId(e.target.value)} placeholder='Client ID' /></label>
-                        <label style={labelStyle}>API Token (validation only)<input style={inputStyle} type='password' value={apiToken} onChange={e => setApiToken(e.target.value)} placeholder='Paste token to verify' /></label>
-                        <button type='button' onClick={validateToken} style={secondaryButtonStyle} disabled={busy}>VERIFY API TOKEN</button>
-                        <p style={mutedStyle}>The API token is never published. Users can enter their own token in Settings.</p>
-                    </section>
                     <section style={sectionStyle}>
                         <h2 style={headingStyle}>User appearance</h2>
                         <p style={mutedStyle}>Change public branding/colors while keeping the existing layout and features.</p>
