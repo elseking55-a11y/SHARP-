@@ -15,7 +15,6 @@ import useThemeSwitcher from '@/hooks/useThemeSwitcher';
 import { ThemeProvider } from '@deriv-com/quill-ui';
 import { setSmartChartsPublicPath } from '@deriv-com/smartcharts-champion';
 import { localize } from '@deriv-com/translations';
-import { SHARP_OFFLINE_MODE } from '@/config/runtime-mode';
 import Audio from '../components/audio';
 import BlocklyLoading from '../components/blockly-loading';
 import BotStopped from '../components/bot-stopped';
@@ -27,7 +26,7 @@ import '../components/bot-notification/bot-notification.scss';
 
 const AppContent = observer(() => {
     const [is_api_initialized, setIsApiInitialized] = React.useState(false);
-    const [is_loading, setIsLoading] = React.useState(true);
+    const [is_loading, setIsLoading] = React.useState(false);
 
     const store = useStore();
     const { app, transactions, common, client } = store;
@@ -36,6 +35,7 @@ const AppContent = observer(() => {
     const { recovered_transactions, recoverPendingContracts } = transactions;
     const is_subscribed_to_msg_listener = React.useRef(false);
     const msg_listener = React.useRef(null);
+    const dbot_workspace_initialized = React.useRef(false);
     const { connectionStatus } = useApiBase();
 
     // Initialize dev mode keyboard shortcuts
@@ -62,8 +62,11 @@ const AppContent = observer(() => {
         if (connectionStatus === CONNECTION_STATUS.OPENED) {
             setIsApiInitialized(true);
             common.setSocketOpened(true);
-        } else if (connectionStatus !== CONNECTION_STATUS.OPENED) {
+        } else {
             common.setSocketOpened(false);
+            // The premium shell can open Bot Builder as soon as an authenticated
+            // client exists. Do not make the editor wait for the WebSocket status.
+            if (client.is_logged_in) setIsApiInitialized(true);
         }
     }, [common, connectionStatus]);
 
@@ -113,6 +116,12 @@ const AppContent = observer(() => {
         ServerTime.init(common);
         app.setDBotEngineStores();
         ApiHelpers.setInstance(app.api_helpers_store);
+        // BotBuilder mounts before the authenticated WebSocket observable may
+        // flip. Mount the DBot workspace once its stores are available.
+        if (!dbot_workspace_initialized.current) {
+            dbot_workspace_initialized.current = true;
+            void app.onMount();
+        }
         import('@/utils/gtm').then(({ default: GTM }) => {
             GTM.init(store);
         });
@@ -120,11 +129,6 @@ const AppContent = observer(() => {
 
     const changeActiveSymbolLoadingState = () => {
         init();
-
-        if (SHARP_OFFLINE_MODE) {
-            setIsLoading(false);
-            return;
-        }
 
         const retrieveActiveSymbols = () => {
             const { active_symbols } = ApiHelpers.instance;
@@ -154,24 +158,21 @@ const AppContent = observer(() => {
     };
 
     React.useEffect(() => {
-        if (SHARP_OFFLINE_MODE) {
-            init();
+        // Public users should see the landing page immediately. The authenticated
+        // OAuth flow initializes api_base and then this effect prepares the bot engine.
+        if (!client.is_logged_in) {
             setIsLoading(false);
             return;
         }
-
-        if (is_api_initialized) {
-            init();
-            setIsLoading(true);
-            if (!client.is_logged_in) {
-                changeActiveSymbolLoadingState();
-            }
-        }
+        // Initialise the DBot stores immediately after OAuth login. Market/account
+        // data can finish in the background, but the Blockly editor must mount now.
+        init();
+        setIsLoading(true);
+        changeActiveSymbolLoadingState();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [is_api_initialized]);
+    }, [is_api_initialized, client.is_logged_in]);
 
     React.useEffect(() => {
-        if (SHARP_OFFLINE_MODE) return;
         if (client.is_logged_in && is_api_initialized) {
             changeActiveSymbolLoadingState();
         }
@@ -180,9 +181,10 @@ const AppContent = observer(() => {
 
     if (common?.error) return null;
 
-    return is_loading ? (
-        <ChunkLoader message={localize('Initializing Deriv Bot account...')} />
-    ) : (
+    // Never block the application shell on active-symbol/account initialization.
+    // After OAuth login, the Deriv services can initialize in the background while
+    // Dashboard, Bot Builder and the rest of the authenticated UI render immediately.
+    return (
         <AuthLoadingWrapper>
             <ThemeProvider theme={is_dark_mode_on ? 'dark' : 'light'}>
                 <BlocklyLoading />

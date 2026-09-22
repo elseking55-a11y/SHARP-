@@ -167,3 +167,13 @@
         min-height: 50px;
     }
 }
+
+/* SHARP UI POLISH v4 — CALCULATOR BOXES + COLOUR */
+.prodb-calculator-page{background:radial-gradient(circle at 8% 8%,rgba(37,99,235,.16),transparent 25%),radial-gradient(circle at 92% 15%,rgba(139,92,246,.13),transparent 24%),linear-gradient(180deg,#07111f 0%,#0b1727 100%)}
+.prodb-calculator-card{border:1px solid rgba(96,165,250,.25);border-top:3px solid #3b82f6;background:linear-gradient(145deg,#10243a,#091726);box-shadow:0 18px 48px rgba(0,0,0,.30)}
+.prodb-calculator-heading{border-bottom-color:#38bdf8}.prodb-calculator-heading h1,.prodb-calculator-results h2{color:#f7fbff}.prodb-calculator-heading p{color:#9fb5cc}
+.prodb-calculator-plan{border:1px solid rgba(139,92,246,.25);border-left:4px solid #8b5cf6;background:linear-gradient(145deg,#172b48,#101e33);color:#eef6ff}.prodb-calculator-plan ul{color:#a9bdd5}
+.prodb-calculator-grid label{padding:11px;border:1px solid rgba(96,165,250,.18);border-radius:12px;background:rgba(255,255,255,.025)}
+.prodb-calculator-grid span{color:#9fc0df}.prodb-calculator-grid input{border-color:#2b4969;background:#081a2c;color:#f8fbff;line-height:44px;text-align:left}
+.prodb-calculator-results>div{padding:10px 12px;margin-top:8px;border:1px solid rgba(96,165,250,.16);border-radius:10px;background:rgba(255,255,255,.025);color:#c5d7e9;line-height:1.2}
+.prodb-calculator-results strong{color:#67e8f9;white-space:nowrap}

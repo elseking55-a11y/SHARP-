@@ -477,3 +477,58 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
+
+/* SHARP UI POLISH v4 — BATCH TRADER BOXES + COLOUR */
+.prodb-batch-page{background:radial-gradient(circle at 8% 6%,rgba(59,130,246,.15),transparent 25%),radial-gradient(circle at 92% 8%,rgba(168,85,247,.13),transparent 25%),linear-gradient(180deg,#07111f 0%,#0a1727 100%)}
+.prodb-batch-card{border-color:rgba(96,165,250,.24);border-top:3px solid #06b6d4;background:linear-gradient(145deg,#10263e,#091827);box-shadow:0 18px 48px rgba(0,0,0,.30)}
+.prodb-batch-card__heading h1{color:#f8fbff}.prodb-batch-card__heading p{color:#9fb5cc}
+.prodb-batch-grid label,.prodb-batch-tick{padding:11px;border:1px solid rgba(96,165,250,.18);border-radius:12px;background:rgba(255,255,255,.025)}
+.prodb-batch-grid label{color:#a9c2dc}.prodb-batch-grid select,.prodb-batch-grid input{box-sizing:border-box;border-color:#2b4969;background:#081a2c;color:#f8fbff;line-height:44px;white-space:nowrap;text-overflow:ellipsis}
+.prodb-batch-grid select:focus,.prodb-batch-grid input:focus{border-color:#38bdf8}.prodb-batch-summary{border-color:rgba(56,189,248,.3);background:rgba(14,42,67,.9);color:#9fe7ff}
+.prodb-batch-actions{padding:8px;border:1px solid rgba(96,165,250,.18);border-radius:13px;background:rgba(255,255,255,.025)}
+.prodb-batch-fire{background:linear-gradient(135deg,#2563eb,#0891b2)}.prodb-batch-stop{background:linear-gradient(135deg,#dc2626,#991b1b)}
+.prodb-batch-stats>div,.prodb-batch-log{border-color:rgba(96,165,250,.16);background:#0d2035}.prodb-batch-stats span,.prodb-batch-log header span{color:#8fa9c2}.prodb-batch-stats strong,.prodb-batch-log header strong{color:#f2f8ff}.prodb-batch-log>div{border-bottom-color:rgba(148,163,184,.12);color:#aac0d5}
+
+
+/* SHARP UI POLISH v5 — Batch Trader straight boxed text */
+.prodb-premium-shell .prodb-batch-grid label,
+.prodb-premium-shell .prodb-batch-tick,
+.prodb-premium-shell .prodb-batch-summary,
+.prodb-premium-shell .prodb-batch-actions button,
+.prodb-premium-shell .prodb-batch-status,
+.prodb-premium-shell .prodb-batch-profit,
+.prodb-premium-shell .prodb-batch-stats > div,
+.prodb-premium-shell .prodb-batch-log > div {
+    box-sizing: border-box;
+    min-width: 0;
+}
+.prodb-premium-shell .prodb-batch-grid label,
+.prodb-premium-shell .prodb-batch-tick,
+.prodb-premium-shell .prodb-batch-summary,
+.prodb-premium-shell .prodb-batch-status,
+.prodb-premium-shell .prodb-batch-stats > div {
+    line-height: 1.2;
+}
+.prodb-premium-shell .prodb-batch-grid select,
+.prodb-premium-shell .prodb-batch-grid input,
+.prodb-premium-shell .prodb-batch-tick strong,
+.prodb-premium-shell .prodb-batch-tick small,
+.prodb-premium-shell .prodb-batch-summary strong,
+.prodb-premium-shell .prodb-batch-summary span,
+.prodb-premium-shell .prodb-batch-profit strong,
+.prodb-premium-shell .prodb-batch-stats span,
+.prodb-premium-shell .prodb-batch-stats strong,
+.prodb-premium-shell .prodb-batch-log > div {
+    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
+}
+.prodb-premium-shell .prodb-batch-grid select,
+.prodb-premium-shell .prodb-batch-grid input,
+.prodb-premium-shell .prodb-batch-tick strong,
+.prodb-premium-shell .prodb-batch-tick small,
+.prodb-premium-shell .prodb-batch-summary span,
+.prodb-premium-shell .prodb-batch-stats strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

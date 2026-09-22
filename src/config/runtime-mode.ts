@@ -1,7 +1,7 @@
 /**
  * SHARP runtime mode.
  *
- * SHARP uses the real Deriv OAuth/WebSocket session when a client logs in.
- * Public users stay on the landing page until they authenticate with Deriv.
+ * Production uses the authenticated Deriv OAuth + account WebSocket session.
+ * The public landing page is shown until the user authenticates with Deriv.
  */
-export const SHARP_OFFLINE_MODE = true;
+export const SHARP_OFFLINE_MODE = false;

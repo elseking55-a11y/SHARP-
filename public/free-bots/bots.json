@@ -1,77 +1,20 @@
 {
-  "version": 2,
-  "source": "Uploaded custom Blockly strategies",
-  "count": 7,
+  "version": 4,
+  "source": "SHARP built-in Free Bots",
+  "count": 1,
   "bots": [
     {
-      "id": "speedhack-mrduke",
-      "name": "Speedhack by mrduke.site",
-      "file": "Speedhack by mrduke.site.xml",
-      "asset": "uploads/speedhack-by-mrduke-site.xml.gz.b64",
-      "encoding": "gzip-base64",
-      "description": "Uploaded Digit Over strategy for Volatility 100 Index.",
-      "emoji": "CUSTOM",
-      "priority": 1
-    },
-    {
-      "id": "wealth-g3-village-trader",
-      "name": "Wealth G3 by The Village Trader",
-      "file": "Wealth G3 by The Village Trader.xml",
-      "asset": "uploads/wealth-g3-by-the-village-trader.xml.gz.b64",
-      "encoding": "gzip-base64",
-      "description": "Uploaded Digit Under strategy for Volatility 10 (1s) Index.",
-      "emoji": "CUSTOM",
-      "priority": 2
-    },
-    {
-      "id": "even-odd-killer-village-trader",
-      "name": "Even Odd Killer by The Village Trader",
-      "file": "Even Odd Killer by The Village Trader.xml",
-      "asset": "uploads/even-odd-killer-by-the-village-trader.xml.gz.b64",
-      "encoding": "gzip-base64",
-      "description": "Uploaded Even/Odd strategy for Volatility 100 Index.",
-      "emoji": "CUSTOM",
-      "priority": 3
-    },
-    {
-      "id": "grffy-updated-premium",
-      "name": "GRFFY Updated Premium Bot",
-      "file": "grffy upated premium bot.xml",
-      "asset": "uploads/grffy-updated-premium-bot.xml.gz.b64",
-      "encoding": "gzip-base64",
-      "description": "Uploaded Over/Under strategy for Volatility 100 Index.",
-      "emoji": "CUSTOM",
-      "priority": 4
-    },
-    {
-      "id": "poverty-destroyer-22",
-      "name": "Poverty Destroyer 22",
-      "file": "Poverty destroyer 22.xml",
-      "asset": "uploads/poverty-destroyer-22.xml.gz.b64",
-      "encoding": "gzip-base64",
-      "description": "Uploaded Over/Under strategy for Volatility 50 (1s) Index.",
-      "emoji": "CUSTOM",
-      "priority": 5
-    },
-    {
-      "id": "14-bora-v2",
-      "name": "14 Bora V2",
-      "file": "14 bora v2.xml",
-      "asset": "uploads/14-bora-v2.xml.gz.b64",
-      "encoding": "gzip-base64",
-      "description": "Uploaded Matches/Differs strategy for Volatility 30 (1s) Index.",
-      "emoji": "CUSTOM",
-      "priority": 6
-    },
-    {
-      "id": "speed-bot",
-      "name": "Speed Bot",
-      "file": "speed bot.xml",
-      "asset": "uploads/speed-bot.xml.gz.b64",
-      "encoding": "gzip-base64",
-      "description": "Uploaded Digit Under / Under 6 signal strategy for Volatility 100 Index.",
-      "emoji": "CUSTOM",
-      "priority": 7
+      "id": "elisy234sharp-alpha-martingale",
+      "name": "ELISY234 SHARP — Alpha Martingale",
+      "file": "Elisy234sharp.xml",
+      "description": "Alpha Version Martingale strategy for R_100 Digit Over.",
+      "emoji": "🧠",
+      "badge": "FREE BOT",
+      "category": "Martingale",
+      "priority": 0,
+      "imageUrl": "/free-bots/elisy234sharp-bot.svg",
+      "published": true,
+      "comingSoon": false
     }
   ]
 }

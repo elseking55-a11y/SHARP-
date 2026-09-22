@@ -16,6 +16,7 @@ import GlobalAIScannerV2 from './GlobalAIScannerV2';
 import GlobalContractBridge from './GlobalContractBridge';
 import GlobalQuickTrade from './GlobalQuickTrade';
 import LandingPage from './LandingPage';
+import CoreStoreProvider from '@/app/CoreStoreProvider';
 import PremiumHeader from './PremiumHeader';
 import PremiumLoader from './PremiumLoader';
 import AnalysisToolsPage from './pages/AnalysisToolsPage';
@@ -48,6 +49,7 @@ import './premium-imported.scss';
 import './premium-imported-library.scss';
 import './premium-token-panel.scss';
 import './premium-native-bot-builder.scss';
+import './premium-bot-builder-polish.scss';
 import './premium-account.scss';
 import './premium-global-trading.scss';
 import './premium-mobile-shell.scss';
@@ -266,7 +268,8 @@ const PremiumLayout = observer(() => {
         '--sharp-icon-color': adminAppearance.icon || adminAppearance.accent || customization.colors.secondary,
     } as CSSProperties;
 
-    return <div
+    return <CoreStoreProvider>
+        <div
         className={`prodb-premium-shell ${isBotBuilder ? 'prodb-premium-shell--builder' : ''} ${isRunPanelOpen ? 'prodb-premium-shell--run-open' : ''} ${adminAppearance.theme === 'light' ? 'sharp-theme-light' : 'sharp-theme-dark'}`}
         style={themeStyle}
     >
@@ -274,16 +277,15 @@ const PremiumLayout = observer(() => {
         <PremiumHeader active={section} navigation={customization.navigation} onChange={changeSection} />
         <main className='prodb-premium-content'>
             {!isBotBuilder && renderSection()}
-            {isBotBuilder && (
-                <div className='prodb-bot-builder-host is-active' data-premium-builder-active='true'>
-                    <Outlet />
-                </div>
-            )}
+            <div className={`prodb-bot-builder-host ${isBotBuilder ? 'is-active' : 'is-hidden'}`} data-premium-builder-active={isBotBuilder ? 'true' : 'false'} aria-hidden={!isBotBuilder}>
+                <Outlet />
+            </div>
         </main>
         {!SHARP_OFFLINE_MODE && <GlobalAIScannerV2 openBotBuilder={openBotBuilder} />}
         {!SHARP_OFFLINE_MODE && <GlobalQuickTrade hidden={isBotBuilder} />}
-        {!SHARP_OFFLINE_MODE && !isBotBuilder && <BottomStatusBar />}
-    </div>;
+        {!SHARP_OFFLINE_MODE && <BottomStatusBar />}
+        </div>
+    </CoreStoreProvider>;
 });
 
 export default PremiumLayout;

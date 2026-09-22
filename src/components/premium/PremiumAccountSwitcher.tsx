@@ -58,7 +58,7 @@ const AccountIcon = ({ account }: { account?: DerivAccount }) => {
 
 const LivePremiumAccountSwitcher = observer(() => {
 
-    const { activeLoginid, accountList } = useApiBase();
+    const { activeLoginid, accountList, connectionStatus, isAuthorized } = useApiBase();
     const { client } = useStore() ?? {};
     const rootRef = useRef<HTMLDivElement>(null);
     const triggerRef = useRef<HTMLButtonElement>(null);
@@ -171,6 +171,20 @@ const LivePremiumAccountSwitcher = observer(() => {
 
     const activeBalance = client?.balance ?? active?.balance ?? 0;
     const activeCurrency = client?.currency || active?.currency || 'USD';
+    const connected = String(connectionStatus).toLowerCase().includes('open') || isAuthorized;
+    const lastKnownRealBalance = localStorage.getItem('sharp_last_real_balance') || '';
+    const lastKnownRealCurrency = localStorage.getItem('sharp_last_real_currency') || activeCurrency || 'USD';
+    const displayBalance = connected ? money(activeBalance, activeCurrency) : lastKnownRealBalance ? money(lastKnownRealBalance, lastKnownRealCurrency) : '— USD';
+
+    // Keep only the last confirmed Deriv real balance locally so the header can
+    // display a clearly labelled last-known value while the WebSocket is offline.
+    useEffect(() => {
+        const numericBalance = Number(activeBalance);
+        if (!activeId || !Number.isFinite(numericBalance) || active?.account_type === 'demo') return;
+        localStorage.setItem('sharp_last_real_balance', String(numericBalance));
+        localStorage.setItem('sharp_last_real_currency', activeCurrency || 'USD');
+        window.dispatchEvent(new Event('sharp-real-balance-updated'));
+    }, [activeBalance, activeCurrency, activeId, active?.account_type]);
 
     useEffect(() => {
         if (!activeId) return;
@@ -272,8 +286,8 @@ const LivePremiumAccountSwitcher = observer(() => {
             >
                 <AccountIcon account={active} />
                 <span className='prodb-api-account__current'>
-                    <small>{active?.account_type === 'demo' ? 'Demo' : 'Real'}</small>
-                    <strong>{money(activeBalance, activeCurrency)}</strong>
+                    <small>{connected ? (active?.account_type === 'demo' ? 'Demo' : 'Real') : 'OFFLINE · LAST KNOWN REAL'}</small>
+                    <strong>{displayBalance}</strong>
                 </span>
                 <span className={`prodb-api-account__chevron ${open ? 'is-open' : ''}`}>⌄</span>
             </button>
@@ -283,26 +297,44 @@ const LivePremiumAccountSwitcher = observer(() => {
 });
 
 const OfflinePremiumAccountSwitcher = () => {
-    const [mode, setMode] = useState<'demo' | 'real'>(() => (localStorage.getItem('sharp_account_mode') as 'demo' | 'real') || 'demo');
+    const [mode, setMode] = useState<'demo' | 'real'>(() => (localStorage.getItem('sharp_account_mode') as 'demo' | 'real') || 'real');
+    const [cachedBalance, setCachedBalance] = useState(() => localStorage.getItem('sharp_last_real_balance') || '');
+    const [cachedCurrency, setCachedCurrency] = useState(() => localStorage.getItem('sharp_last_real_currency') || 'USD');
+
+    useEffect(() => {
+        const syncCachedBalance = () => {
+            setCachedBalance(localStorage.getItem('sharp_last_real_balance') || '');
+            setCachedCurrency(localStorage.getItem('sharp_last_real_currency') || 'USD');
+        };
+        window.addEventListener('sharp-real-balance-updated', syncCachedBalance);
+        window.addEventListener('storage', syncCachedBalance);
+        return () => {
+            window.removeEventListener('sharp-real-balance-updated', syncCachedBalance);
+            window.removeEventListener('storage', syncCachedBalance);
+        };
+    }, []);
+
     const selectMode = (next: 'demo' | 'real') => {
         setMode(next);
         localStorage.setItem('sharp_account_mode', next);
     };
+
+    const displayBalance = cachedBalance ? money(cachedBalance, cachedCurrency) : '— USD';
 
     return (
         <div className='prodb-api-account prodb-api-account--offline'>
             <button
                 type='button'
                 className='prodb-api-account__trigger'
-                aria-label={`Account mode: ${mode === 'demo' ? 'Demo' : 'Real'}`}
+                aria-label={`Offline account. Last known real balance: ${displayBalance}`}
                 onClick={() => selectMode(mode === 'demo' ? 'real' : 'demo')}
             >
                 <span className={`prodb-api-account-icon ${mode === 'demo' ? 'is-demo' : 'is-real'}`} aria-hidden='true'>
                     <CurrencyDemoIcon iconSize='sm' />
                 </span>
                 <span className='prodb-api-account__current'>
-                    <small>{mode === 'demo' ? 'Demo' : 'Real'}</small>
-                    <strong>— USD</strong>
+                    <small>OFFLINE · LAST KNOWN REAL</small>
+                    <strong>{displayBalance}</strong>
                 </span>
                 <span className='prodb-api-account__chevron'>⌄</span>
             </button>

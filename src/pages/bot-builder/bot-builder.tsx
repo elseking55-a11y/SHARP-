@@ -2,6 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { botNotification } from '@/components/bot-notification/bot-notification';
+import { load, save_types } from '@/external/bot-skeleton';
 import { notification_message } from '@/components/bot-notification/bot-notification-utils';
 import { useStore } from '@/hooks/useStore';
 import { localize } from '@deriv-com/translations';
@@ -34,6 +35,65 @@ const BotBuilder = observer(() => {
         onMount();
         return () => onUnmount();
     }, [onMount, onUnmount]);
+
+    // Free Bots -> Bot Builder handoff.
+    // The Free Bots page stores the selected XML before navigation so the
+    // native Deriv Blockly workspace can load it only after Blockly is ready.
+    React.useEffect(() => {
+        let cancelled = false;
+
+        const loadPendingFreeBot = async () => {
+            const pending = sessionStorage.getItem('sharp_pending_free_bot_xml');
+            if (!pending) return;
+
+            const workspace = window.Blockly?.derivWorkspace;
+            if (!workspace) return;
+
+            try {
+                const payload = JSON.parse(pending) as { xml?: string; fileName?: string };
+                if (!payload.xml || !/<xml[\\s>]/i.test(payload.xml) && !/<block[\\s>]/i.test(payload.xml)) {
+                    sessionStorage.removeItem('sharp_pending_free_bot_xml');
+                    return;
+                }
+
+                await load({
+                    block_string: payload.xml,
+                    file_name: payload.fileName || 'free-bot.xml',
+                    workspace,
+                    from: save_types.LOCAL,
+                    drop_event: {},
+                    strategy_id: null,
+                    showIncompatibleStrategyDialog: false,
+                });
+
+                if (!cancelled) {
+                    sessionStorage.removeItem('sharp_pending_free_bot_xml');
+                    sessionStorage.setItem('sharp_loaded_free_bot', payload.fileName || 'free-bot.xml');
+                }
+            } catch (error) {
+                console.error('Failed to load selected Free Bot into Bot Builder:', error);
+                sessionStorage.removeItem('sharp_pending_free_bot_xml');
+            }
+        };
+
+        let attempts = 0;
+        let timer: number | undefined;
+
+        const tryLoad = () => {
+            if (cancelled) return;
+            attempts += 1;
+            void loadPendingFreeBot();
+            if (!sessionStorage.getItem('sharp_pending_free_bot_xml') || attempts >= 120) return;
+            timer = window.setTimeout(tryLoad, 100);
+        };
+
+        tryLoad();
+
+        return () => {
+            cancelled = true;
+            if (timer) window.clearTimeout(timer);
+        };
+    }, [is_loading]);
 
     React.useEffect(() => {
         const workspace = window.Blockly?.derivWorkspace;
