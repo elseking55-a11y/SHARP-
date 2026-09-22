@@ -328,15 +328,39 @@ const PremiumLayout = observer(() => {
 
     const isBotBuilder = section === 'bot_builder';
     const isRunPanelOpen = Boolean(run_panel?.is_drawer_open);
+    const [publicAppearance, setPublicAppearance] = useState<{
+        siteName?: string;
+        primary?: string;
+        secondary?: string;
+        navBackground?: string;
+        navText?: string;
+        headerBackground?: string;
+        cardBackground?: string;
+    } | null>(null);
+
+    useEffect(() => {
+        let alive = true;
+        fetch('/api/public-config', { cache: 'no-store' })
+            .then(response => response.ok ? response.json() : null)
+            .then(config => {
+                if (!alive || !config) return;
+                if (config.clientId) localStorage.setItem('sharp_deriv_client_id', String(config.clientId));
+                if (config.appearance) setPublicAppearance(config.appearance);
+                if (config.appearance?.siteName) document.title = String(config.appearance.siteName);
+            })
+            .catch(() => undefined);
+        return () => { alive = false; };
+    }, []);
+
     const themeStyle = {
-        '--site-primary': customization.colors.primary,
-        '--site-secondary': customization.colors.secondary,
-        '--site-nav-background': customization.colors.nav_background,
-        '--site-nav-text': customization.colors.nav_text,
-        '--site-header-background': customization.colors.header_background,
-        '--sharp-card-background': '#091a2b',
-        '--sharp-button-background': customization.colors.primary,
-        '--sharp-icon-color': customization.colors.secondary,
+        '--site-primary': publicAppearance?.primary || customization.colors.primary,
+        '--site-secondary': publicAppearance?.secondary || customization.colors.secondary,
+        '--site-nav-background': publicAppearance?.navBackground || customization.colors.nav_background,
+        '--site-nav-text': publicAppearance?.navText || customization.colors.nav_text,
+        '--site-header-background': publicAppearance?.headerBackground || customization.colors.header_background,
+        '--sharp-card-background': publicAppearance?.cardBackground || '#091a2b',
+        '--sharp-button-background': publicAppearance?.primary || customization.colors.primary,
+        '--sharp-icon-color': publicAppearance?.secondary || customization.colors.secondary,
     } as CSSProperties;
 
     return <CoreStoreProvider>
