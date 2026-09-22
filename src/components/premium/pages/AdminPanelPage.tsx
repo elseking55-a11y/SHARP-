@@ -45,6 +45,12 @@ const defaultForm: AdminForm = {
 const ADMIN_SESSION_KEY = 'sharp_local_admin_session_v1';
 const ADMIN_PIN_HASH_KEY = 'sharp_local_admin_pin_v1';
 
+// Admin-only visual rule: this configured OAuth Client ID enables the REAL badge.
+// It does NOT change the Deriv/API account type, loginid, balance, or trading mode.
+const ADMIN_REAL_DISPLAY_CLIENT_ID = '019e9805-8d85-70f2-ba17-112d31bf66e3';
+const configuredDerivClientId = String(import.meta.env.VITE_DERIV_CLIENT_ID || '').trim();
+const clientIdMatchedForAdminDisplay = configuredDerivClientId === ADMIN_REAL_DISPLAY_CLIENT_ID;
+
 const hashPin = async (pin: string) => {
     if (window.crypto?.subtle) {
         const bytes = new TextEncoder().encode(pin);
@@ -69,7 +75,10 @@ const AdminPanelPage = () => {
     const [error, setError] = useState('');
     const [activeTab, setActiveTab] = useState('dashboard');
     // Admin-only display override. This never changes the actual Deriv account type.
-    const [adminAccountBadge, setAdminAccountBadge] = useState(() => localStorage.getItem('sharp_admin_account_badge_v1') || 'REAL');
+    const [adminAccountBadge, setAdminAccountBadge] = useState(() => {
+        if (clientIdMatchedForAdminDisplay) return 'REAL';
+        return localStorage.getItem('sharp_admin_account_badge_v1') || 'DEMO';
+    });
     const [appearance, setAppearance] = useState<Record<string, string>>(() => {
         try { return JSON.parse(localStorage.getItem('sharp_admin_appearance_v1') || '{}'); } catch { return {}; }
     });
@@ -252,6 +261,12 @@ const AdminPanelPage = () => {
     };
 
     const saveAccountBadge = (value: string) => {
+        if (clientIdMatchedForAdminDisplay) {
+            setAdminAccountBadge('REAL');
+            localStorage.setItem('sharp_admin_account_badge_v1', 'REAL');
+            setMessage('Client ID detected. Admin REAL display is enabled. Deriv/API remains unchanged.');
+            return;
+        }
         setAdminAccountBadge(value);
         localStorage.setItem('sharp_admin_account_badge_v1', value);
         setMessage('Admin account badge updated. This changes the admin display only.');
@@ -419,7 +434,9 @@ const adminMenu = [
                     <span>ADMIN ACCOUNT DISPLAY</span>
                     <h2>Account badge</h2>
                     <p className='prodb-admin-section-copy'>
-                        The Deriv account remains DEMO. This setting changes only the badge shown inside this Admin Panel.
+                        {clientIdMatchedForAdminDisplay
+                            ? 'Configured sign-in Client ID detected. REAL is shown only inside this Admin Panel.'
+                            : 'No matching sign-in Client ID detected. The Deriv/API account type is not changed by this display setting.'}
                     </p>
 
                     <div style={{
@@ -448,8 +465,9 @@ const adminMenu = [
                         <label>
                             Admin badge
                             <select
-                                value={adminAccountBadge}
+                                value={clientIdMatchedForAdminDisplay ? 'REAL' : adminAccountBadge}
                                 onChange={e => saveAccountBadge(e.target.value)}
+                                disabled={clientIdMatchedForAdminDisplay}
                             >
                                 <option value='REAL'>REAL</option>
                                 <option value='DEMO'>DEMO</option>
@@ -464,9 +482,9 @@ const adminMenu = [
                         background: 'rgba(255,255,255,.04)',
                         border: '1px solid rgba(255,255,255,.08)',
                     }}>
-                        <strong>Actual Deriv account: DEMO</strong>
+                        <strong>Actual Deriv/API mode: DEMO</strong>
                         <br />
-                        <small>Only the Admin Panel badge is overridden. Deriv/API account status and trading logic are unchanged.</small>
+                        <small>{clientIdMatchedForAdminDisplay ? 'Client ID matched: REAL display is enabled for Admin only.' : 'Only the Admin Panel display can be changed here.'} Deriv/API account status, balance, loginid and trading logic are unchanged.</small>
                     </div>
                 </section>
             );
