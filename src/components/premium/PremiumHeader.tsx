@@ -12,6 +12,7 @@ import type { PremiumSection } from './types';
 const NAV_ICONS: Partial<Record<PremiumSection, typeof HomeIcon>> = {
     dashboard: HomeIcon,
     bot_builder: GearIcon,
+    free_bots: RobotIcon,
     auto_trader: RobotIcon,
     manual_trading: BoltIcon,
     tradingview: SearchIcon,
