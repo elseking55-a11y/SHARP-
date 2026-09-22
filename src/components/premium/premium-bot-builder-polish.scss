@@ -302,3 +302,45 @@
 .prodb-premium-shell.sharp-theme-dark .prodb-bot-builder-host .transactions__cell {
     color: var(--sharp-text) !important;
 }
+
+/* =========================================================
+   SHARP LARGE BOT CARDS
+   ========================================================= */
+.prodb-premium-shell .prodb-free-bots{padding:22px 18px 90px;background:#07111f}
+.prodb-premium-shell .prodb-free-bots__header{margin-bottom:16px}
+.prodb-premium-shell .prodb-free-bots__header h1{font-size:26px;line-height:1.1;font-weight:950}
+.prodb-premium-shell .prodb-free-bots__header p{font-size:12px;line-height:1.5;max-width:760px}
+.prodb-premium-shell .prodb-bot-grid--app{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:16px!important;align-items:stretch}
+.prodb-premium-shell .prodb-bot-card--app{position:relative;min-height:350px!important;padding:16px!important;border:1px solid rgba(255,255,255,.20)!important;border-top-width:1px!important;border-radius:22px!important;overflow:hidden;box-shadow:0 14px 34px rgba(0,0,0,.25)!important;justify-content:flex-start}
+.prodb-premium-shell .prodb-bot-card--app::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,.08),transparent 36%,rgba(0,0,0,.10))}
+.prodb-premium-shell .prodb-bot-card--app>*{position:relative;z-index:1}
+.prodb-premium-shell .prodb-bot-card--app .prodb-bot-card__top{min-height:38px}
+.prodb-premium-shell .prodb-bot-card--app .prodb-bot-card__top>span{min-height:30px;display:inline-flex;align-items:center;padding:0 12px;font-size:9px;letter-spacing:.4px}
+.prodb-premium-shell .prodb-bot-card--app .prodb-bot-card__badge{width:94px;height:94px;margin:8px auto 12px;display:grid;place-items:center;border-radius:50%;border:2px solid rgba(255,255,255,.35);background:rgba(0,0,0,.28);box-shadow:0 0 0 7px rgba(255,255,255,.06),0 10px 25px rgba(0,0,0,.25);overflow:hidden;font-size:38px}
+.prodb-premium-shell .prodb-bot-card--app .prodb-bot-card__badge img{width:100%;height:100%;object-fit:cover;display:block}
+.prodb-premium-shell .prodb-bot-card--app>small{margin:2px 0 7px;color:rgba(255,255,255,.75);font-size:8px;letter-spacing:1px}
+.prodb-premium-shell .prodb-bot-card--app h2{min-height:46px;display:flex;align-items:center;justify-content:center;margin:0;color:#fff!important;font-size:18px!important;line-height:1.15!important;font-weight:950!important;text-shadow:0 2px 8px rgba(0,0,0,.28)}
+.prodb-premium-shell .prodb-bot-card--app p{min-height:46px;margin:10px 2px 15px;color:rgba(255,255,255,.86)!important;font-size:11px!important;line-height:1.45!important;text-align:center}
+.prodb-premium-shell .prodb-bot-card--app .prodb-bot-card__actions{margin-top:auto}
+.prodb-premium-shell .prodb-bot-card--app .prodb-load-bot{width:100%;height:52px!important;justify-content:center;gap:8px;border-radius:15px!important;font-size:13px!important;font-weight:950!important;box-shadow:0 8px 20px rgba(0,0,0,.20)!important}
+.prodb-premium-shell .prodb-bot-card--app .prodb-load-bot svg{width:22px;height:22px}
+.prodb-premium-shell .prodb-bot-builder-host .transactions__item-wrapper{min-height:68px!important;height:68px!important;margin:7px 10px!important;border-radius:13px!important}
+.prodb-premium-shell .prodb-bot-builder-host .transactions__cell{font-size:13px!important}
+.prodb-premium-shell .prodb-bot-builder-host .transactions__profit--win,.prodb-premium-shell .prodb-bot-builder-host .transactions__profit--loss{font-size:14px!important;font-weight:950!important}
+@media(max-width:768px){
+.prodb-premium-shell .prodb-free-bots{padding:14px 10px 90px}
+.prodb-premium-shell .prodb-free-bots__header h1{font-size:22px}
+.prodb-premium-shell .prodb-bot-grid--app{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+.prodb-premium-shell .prodb-bot-card--app{min-height:330px!important;padding:11px!important;border-radius:18px!important}
+.prodb-premium-shell .prodb-bot-card--app .prodb-bot-card__badge{width:72px;height:72px;font-size:30px;margin:5px auto 9px}
+.prodb-premium-shell .prodb-bot-card--app h2{min-height:48px;font-size:15px!important}
+.prodb-premium-shell .prodb-bot-card--app p{min-height:44px;font-size:9.5px!important}
+.prodb-premium-shell .prodb-bot-card--app .prodb-load-bot{height:48px!important;border-radius:13px!important;font-size:11px!important}
+.prodb-premium-shell .prodb-bot-builder-host .transactions__item-wrapper{min-height:64px!important;height:64px!important;margin:6px 7px!important}
+}
+@media(max-width:380px){
+.prodb-premium-shell .prodb-bot-card--app{min-height:300px!important}
+.prodb-premium-shell .prodb-bot-card--app .prodb-bot-card__badge{width:62px;height:62px}
+.prodb-premium-shell .prodb-bot-card--app h2{font-size:13px!important}
+.prodb-premium-shell .prodb-bot-card--app p{font-size:8.5px!important}
+}
