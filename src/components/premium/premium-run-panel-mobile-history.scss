@@ -590,3 +590,57 @@
         overflow: hidden !important;
     }
 }
+
+
+/* MOBILE: close chevron on the left, Reset on the right, same row. */
+@media (max-width: 768px) {
+    .prodb-premium-shell .prodb-bot-builder-host .dc-drawer.run-panel.dc-drawer--open
+        .dc-drawer__header .run-panel__mobile-header-actions {
+        width: 100% !important;
+        height: 100% !important;
+        min-height: 6.4rem !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        padding: 0 1.2rem !important;
+        box-sizing: border-box !important;
+    }
+
+    .prodb-premium-shell .prodb-bot-builder-host .dc-drawer.run-panel.dc-drawer--open
+        .dc-drawer__header .run-panel__close-button {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 5.4rem !important;
+        min-width: 5.4rem !important;
+        height: 4.4rem !important;
+        min-height: 4.4rem !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        font-size: 3rem !important;
+        line-height: 1 !important;
+        font-weight: 700 !important;
+        border-radius: .8rem !important;
+    }
+
+    .prodb-premium-shell .prodb-bot-builder-host .dc-drawer.run-panel.dc-drawer--open
+        .dc-drawer__header .run-panel__clear-button {
+        width: 11rem !important;
+        min-width: 11rem !important;
+        height: 4.4rem !important;
+        min-height: 4.4rem !important;
+        margin: 0 !important;
+    }
+
+    /* The new header chevron is the close control; hide the separate native
+       drawer toggle on mobile to avoid two different close buttons. */
+    .prodb-premium-shell .prodb-bot-builder-host .dc-drawer.run-panel.dc-drawer--open
+        > .dc-drawer__toggle {
+        display: none !important;
+    }
+
+    .prodb-premium-shell .prodb-bot-builder-host .dc-drawer.run-panel.dc-drawer--open
+        > .dc-drawer__container {
+        height: 100% !important;
+    }
+}
