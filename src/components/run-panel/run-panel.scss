@@ -221,6 +221,15 @@
         height: 6rem;
         display: flex;
         width: inherit;
+        gap: 0.8rem;
+
+        .controls__transactions-button {
+            height: 4rem !important;
+            min-width: 15rem;
+            border-radius: 0 4px 4px 0 !important;
+            font-weight: 700;
+            white-space: nowrap;
+        }
 
         @include tablet-screen {
             max-width: 60rem;
