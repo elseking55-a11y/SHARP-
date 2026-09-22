@@ -1992,3 +1992,15 @@
 .prodb-bot-card--app .prodb-load-bot:disabled {
     opacity: .65;
 }
+
+
+/* SHARP ENV LOGIN — private application sign-in */
+.prodb-app-login-overlay{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:20px;background:rgba(2,6,23,.78);backdrop-filter:blur(10px)}
+.prodb-app-login-card{position:relative;width:min(430px,100%);box-sizing:border-box;padding:28px;border:1px solid rgba(62,143,255,.35);border-radius:20px;background:linear-gradient(145deg,#0d2036,#07111f);color:#fff;box-shadow:0 24px 80px rgba(0,0,0,.45)}
+.prodb-app-login-kicker{display:block;margin-bottom:7px;color:#55a7ff;font-size:11px;font-weight:900;letter-spacing:.14em}
+.prodb-app-login-card h2{margin:0 0 7px;font-size:28px}.prodb-app-login-card p{margin:0 0 20px;color:#9eb1c8;line-height:1.5}
+.prodb-app-login-card label{display:block;margin-top:14px;color:#dce8f5;font-size:13px;font-weight:800}
+.prodb-app-login-card input{width:100%;box-sizing:border-box;margin-top:7px;padding:13px 14px;border:1px solid #294665;border-radius:10px;outline:none;background:#081525;color:#fff}
+.prodb-app-login-submit{width:100%;margin-top:20px;padding:13px 16px;border:0;border-radius:10px;background:linear-gradient(90deg,#1685ff,#6b4df5);color:#fff;font-weight:900}
+.prodb-app-login-close{position:absolute;top:14px;right:14px;width:36px;height:36px;border:0;border-radius:10px;background:rgba(255,255,255,.08);color:#fff;font-size:22px}
+.prodb-app-login-error{padding:10px 12px;border:1px solid #7f3434;border-radius:9px;background:rgba(80,15,15,.35);color:#ffb4b4;font-size:12px}
