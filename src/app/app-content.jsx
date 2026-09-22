@@ -170,9 +170,10 @@ const AppContent = observer(() => {
 
     if (common?.error) return null;
 
-    return is_loading ? (
-        <ChunkLoader message={localize('Initializing Deriv Bot account...')} />
-    ) : (
+    // Never block the application shell on active-symbol/account initialization.
+    // After OAuth login, the Deriv services can initialize in the background while
+    // Dashboard, Bot Builder and the rest of the authenticated UI render immediately.
+    return (
         <AuthLoadingWrapper>
             <ThemeProvider theme={is_dark_mode_on ? 'dark' : 'light'}>
                 <BlocklyLoading />
