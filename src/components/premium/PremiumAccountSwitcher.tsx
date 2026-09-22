@@ -302,7 +302,7 @@ const LivePremiumAccountSwitcher = observer(() => {
                         >
                             <AccountIcon account={account} />
                             <span className='prodb-api-account__choice-copy'>
-                                <strong>{account.account_type === 'demo' ? 'Demo' : 'Real'}</strong>
+                                <strong>{account.account_type === 'demo' && isAdminRealDisplayEnabled() ? 'Real' : (account.account_type === 'demo' ? 'Demo' : 'Real')}</strong>
                                 <small>{account.account_id}</small>
                             </span>
                             <b>{money(balanceFor(account), account.currency || 'USD')}</b>
@@ -332,7 +332,7 @@ const LivePremiumAccountSwitcher = observer(() => {
             >
                 <AccountIcon account={active} />
                 <span className='prodb-api-account__current'>
-                    <small>{connected ? (active?.account_type === 'demo' ? 'Demo' : 'Real') : 'OFFLINE · LAST KNOWN REAL'}</small>
+                    <small>{connected ? (active?.account_type === 'demo' && isAdminRealDisplayEnabled() ? 'Real' : (active?.account_type === 'demo' ? 'Demo' : 'Real')) : 'OFFLINE · LAST KNOWN REAL'}</small>
                     <strong>{displayBalance}</strong>
                 </span>
                 <span className={`prodb-api-account__chevron ${open ? 'is-open' : ''}`}>⌄</span>
