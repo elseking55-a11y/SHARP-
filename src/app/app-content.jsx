@@ -35,6 +35,7 @@ const AppContent = observer(() => {
     const { recovered_transactions, recoverPendingContracts } = transactions;
     const is_subscribed_to_msg_listener = React.useRef(false);
     const msg_listener = React.useRef(null);
+    const dbot_workspace_initialized = React.useRef(false);
     const { connectionStatus } = useApiBase();
 
     // Initialize dev mode keyboard shortcuts
@@ -116,8 +117,11 @@ const AppContent = observer(() => {
         app.setDBotEngineStores();
         ApiHelpers.setInstance(app.api_helpers_store);
         // BotBuilder mounts before the authenticated WebSocket observable may
-        // flip. Re-run the DBot workspace mount after its stores are available.
-        void app.onMount();
+        // flip. Mount the DBot workspace once its stores are available.
+        if (!dbot_workspace_initialized.current) {
+            dbot_workspace_initialized.current = true;
+            void app.onMount();
+        }
         import('@/utils/gtm').then(({ default: GTM }) => {
             GTM.init(store);
         });
