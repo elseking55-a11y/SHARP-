@@ -19,6 +19,7 @@ import LandingPage from './LandingPage';
 import CoreStoreProvider from '@/app/CoreStoreProvider';
 import PremiumHeader from './PremiumHeader';
 import PremiumLoader from './PremiumLoader';
+    'dashboard', 'bot_ideas', 'quick_bot', 'bot_builder', 'free_bots', 'signal_ai', 'auto_trader',
 import AnalysisToolsPage from './pages/AnalysisToolsPage';
 import BatchTraderPage from './pages/BatchTraderPage';
 import BulkTraderPage from './pages/BulkTraderPage';
@@ -282,6 +283,7 @@ const PremiumLayout = observer(() => {
             case 'bot_ideas': return <BotIdeasPage openBotBuilder={openBotBuilder} />;
             case 'quick_bot': return <QuickBotPage openBotBuilder={openBotBuilder} openSection={changeSection} />;
             case 'bot_builder': return null;
+            case 'free_bots': return <FreeBotsPage openBotBuilder={openBotBuilder} />;
             case 'signal_ai': return <SignalAIPage />;
             case 'auto_trader': return <AutoTradesPage />;
             case 'manual_trading': return <ManualTradingPage />;
