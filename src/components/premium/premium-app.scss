@@ -1717,3 +1717,84 @@
   .prodb-analysis-appearance-card small{font-size:8px}
   .prodb-analysis-appearance-card span{font-size:10px}
 }
+
+/* SHARP LIVE NAV + AUTO TRADES + COPY TRADING */
+.prodb-nav__item{min-width:118px;padding:0 15px!important;border-bottom:3px solid transparent!important;font-weight:900!important}
+.prodb-nav__item--auto_trader{border-bottom-color:#22c55e!important}
+.prodb-nav__item--copy_trading{border-bottom-color:#a855f7!important}
+.prodb-nav__item--analysis_tools{border-bottom-color:#06b6d4!important}
+.prodb-nav__item--bot_builder{border-bottom-color:#3b82f6!important}
+.prodb-nav__item--free_bots{border-bottom-color:#8b5cf6!important}
+.prodb-nav__item--manual_trading{border-bottom-color:#f97316!important}
+.prodb-nav__item--auto_trader.is-active{background:linear-gradient(180deg,#075b3d,#06432f)!important}
+.prodb-nav__item--copy_trading.is-active{background:linear-gradient(180deg,#5b21b6,#3b176f)!important}
+.prodb-nav__item--analysis_tools.is-active{background:linear-gradient(180deg,#0e7490,#155e75)!important}
+
+/* Keep the native Deriv builder mounted so its real workspace/run state survives navigation. */
+.prodb-premium-shell .prodb-bot-builder-host.is-hidden{
+ position:fixed!important;inset:134px 0 0!important;width:100%!important;height:calc(100vh - 134px)!important;
+ opacity:0!important;visibility:hidden!important;pointer-events:none!important;z-index:1!important;
+}
+.prodb-premium-shell .prodb-bot-builder-host.is-hidden .bot-builder--active{visibility:hidden!important;pointer-events:none!important}
+.prodb-premium-shell .prodb-bot-builder-host.is-hidden .run-panel,
+.prodb-premium-shell .prodb-bot-builder-host.is-hidden .run-panel__container,
+.prodb-premium-shell .prodb-bot-builder-host.is-hidden .run-panel__container--mobile,
+.prodb-premium-shell .prodb-bot-builder-host.is-hidden .main__run-strategy-wrapper{
+ visibility:visible!important;pointer-events:auto!important;opacity:1!important;
+}
+
+/* Auto Trades: stronger section boxes without changing trading logic. */
+.prodb-premium-shell .auto-trades__header,
+.prodb-premium-shell .auto-trades-controls,
+.prodb-premium-shell .auto-trades-markets,
+.prodb-premium-shell .auto-trades-market,
+.prodb-premium-shell .auto-trades-status{
+ border-radius:16px!important;border:1px solid rgba(255,255,255,.14)!important;
+ box-shadow:0 10px 28px rgba(0,0,0,.20)!important;
+}
+.prodb-premium-shell .auto-trades__header{background:linear-gradient(135deg,#0b2340,#12345a)!important;color:#fff!important}
+.prodb-premium-shell .auto-trades-controls{background:linear-gradient(135deg,#10263c,#122b46)!important}
+.prodb-premium-shell .auto-trades-market{background:linear-gradient(135deg,#102b25,#123d34)!important;color:#fff!important}
+.prodb-premium-shell .auto-trades-market__name,
+.prodb-premium-shell .auto-trades-market__symbol,
+.prodb-premium-shell .auto-trades-market__title{color:#fff!important}
+
+/* Copy Trading: clear master/follower/status cards. */
+.prodb-premium-shell .prodb-copy-token-page{padding:18px 18px 90px!important;background:linear-gradient(180deg,#07111f,#0a1726)!important}
+.prodb-premium-shell .prodb-copy-token-page .prodb-live-header>span{color:#c084fc!important}
+.prodb-premium-shell .prodb-copy-token-page .prodb-live-header h1{color:#fff!important;font-size:26px!important;font-weight:950!important}
+.prodb-premium-shell .prodb-copy-token-page .prodb-live-header p{color:#a9bac9!important}
+.prodb-premium-shell .prodb-copy-master{gap:12px!important;margin-bottom:14px!important}
+.prodb-premium-shell .prodb-copy-master>div{
+ min-height:105px!important;padding:16px!important;border-radius:16px!important;
+ border:1px solid rgba(255,255,255,.15)!important;background:linear-gradient(135deg,#172b45,#102038)!important;
+ box-shadow:0 10px 26px rgba(0,0,0,.22)!important;
+}
+.prodb-premium-shell .prodb-copy-master>div:nth-child(1){border-top:4px solid #3b82f6!important}
+.prodb-premium-shell .prodb-copy-master>div:nth-child(2){border-top:4px solid #a855f7!important}
+.prodb-premium-shell .prodb-copy-master>div:nth-child(3){border-top:4px solid #22c55e!important}
+.prodb-premium-shell .prodb-copy-master small{color:#7dd3fc!important;font-weight:950!important}
+.prodb-premium-shell .prodb-copy-master strong{color:#fff!important;font-size:20px!important;font-weight:950!important}
+.prodb-premium-shell .prodb-copy-master span{color:#9fb2c4!important}
+.prodb-premium-shell .prodb-copy-token-page .prodb-live-card{background:linear-gradient(135deg,#10243a,#0d1d30)!important;border-color:rgba(255,255,255,.13)!important;color:#fff!important}
+.prodb-premium-shell .prodb-copy-token-page .prodb-live-card h2{color:#fff!important;font-weight:950!important}
+.prodb-premium-shell .prodb-follower-token-box{background:#0b1726!important;border-color:#284057!important}
+.prodb-premium-shell .prodb-follower-token-input{background:#07111f!important;color:#f8fbff!important;border-color:#34516d!important}
+.prodb-premium-shell .prodb-copy-token-page .prodb-live-actions button{min-height:46px;border-radius:11px!important;font-weight:950!important}
+.prodb-premium-shell .prodb-copy-token-page .prodb-live-actions .is-primary{background:linear-gradient(135deg,#7c3aed,#5b21b6)!important}
+.prodb-premium-shell .prodb-copy-token-page .prodb-live-actions .is-danger{background:linear-gradient(135deg,#dc2626,#991b1b)!important;color:#fff!important}
+.prodb-premium-shell .prodb-copy-followers article{padding:12px!important;margin:7px 0!important;border-radius:12px!important;border:1px solid rgba(255,255,255,.12)!important;background:#12243a!important}
+.prodb-premium-shell .prodb-copy-followers article strong,.prodb-premium-shell .prodb-copy-followers article b{color:#fff!important}
+.prodb-premium-shell .prodb-copy-followers article small,.prodb-premium-shell .prodb-copy-followers article span{color:#9fb2c4!important}
+.prodb-premium-shell .prodb-copy-logs>div{padding:10px 12px!important;margin:6px 0!important;border-radius:10px!important;background:#12243a!important;border-left:4px solid #64748b!important}
+.prodb-premium-shell .prodb-copy-logs>div.is-success{border-left-color:#22c55e!important}
+.prodb-premium-shell .prodb-copy-logs>div.is-error{border-left-color:#ef4444!important}
+.prodb-premium-shell .prodb-copy-logs>div.is-warning{border-left-color:#f59e0b!important}
+
+@media(max-width:700px){
+ .prodb-nav__item{min-width:106px;padding:0 12px!important}
+ .prodb-premium-shell .prodb-copy-token-page{padding:10px 10px 86px!important}
+ .prodb-premium-shell .prodb-copy-token-page .prodb-live-header h1{font-size:22px!important}
+ .prodb-premium-shell .prodb-copy-master>div{min-height:92px!important;padding:13px!important}
+ .prodb-premium-shell .prodb-copy-master strong{font-size:17px!important}
+}
