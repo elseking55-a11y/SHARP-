@@ -138,6 +138,7 @@ const getOAuthConfig = (req, res) => {
 };
 
 const validateDerivPat = async (req, res) => {
+    if (!hasAdminSession(req)) return send(res, 401, JSON.stringify({ valid: false, error_description: 'Admin login required.' }));
     try {
         const raw = await readBody(req);
         const params = JSON.parse(raw || '{}');
@@ -429,6 +430,12 @@ const server = http.createServer(async (req, res) => {
 
     if (req.method === 'POST' && url.pathname === '/api/deriv/pat/validate') {
         return validateDerivPat(req, res);
+    }
+
+    // Always serve the SPA entry for the private admin route, including /admin/.
+    // This prevents a static-server 404 when the browser opens the route directly.
+    if ((req.method === 'GET' || req.method === 'HEAD') && (url.pathname === '/admin' || url.pathname === '/admin/')) {
+        return serveFile(res, '/admin');
     }
 
     if (req.method !== 'GET' && req.method !== 'HEAD') {
