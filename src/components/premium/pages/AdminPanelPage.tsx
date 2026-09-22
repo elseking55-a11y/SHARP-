@@ -77,9 +77,9 @@ const AdminPanelPage = () => {
     const [error, setError] = useState('');
     const [activeTab, setActiveTab] = useState('dashboard');
     // Admin-only display override. This never changes the actual Deriv account type.
-    const [adminAccountBadge, setAdminAccountBadge] = useState(() => {
-        if (clientIdMatchedForAdminDisplay) return 'REAL';
-        return localStorage.getItem('sharp_admin_account_badge_v1') || 'DEMO';
+    const [adminAccountBadge, setAdminAccountBadge] = useState<'REAL' | 'DEMO'>(() => {
+        const saved = localStorage.getItem('sharp_admin_account_badge_v1');
+        return saved === 'REAL' || saved === 'DEMO' ? saved : 'DEMO';
     });
     const [realFlagEnabled, setRealFlagEnabled] = useState(() => localStorage.getItem(ADMIN_REAL_FLAG_ENABLED_KEY) === '1');
     const [realFlagClientId, setRealFlagClientId] = useState(() => localStorage.getItem(ADMIN_REAL_FLAG_CLIENT_ID_KEY) || configuredDerivClientId);
@@ -274,16 +274,19 @@ const AdminPanelPage = () => {
         }
     };
 
-    const saveAccountBadge = (value: string) => {
-        if (clientIdMatchedForAdminDisplay) {
-            setAdminAccountBadge('REAL');
-            localStorage.setItem('sharp_admin_account_badge_v1', 'REAL');
-            setMessage('Client ID detected. Admin REAL display is enabled. Deriv/API remains unchanged.');
-            return;
-        }
+    const saveAccountBadge = (value: 'REAL' | 'DEMO') => {
         setAdminAccountBadge(value);
         localStorage.setItem('sharp_admin_account_badge_v1', value);
-        setMessage('Admin account badge updated. This changes the admin display only.');
+        // Keep the visual choice persistent. Client-ID detection reveals Admin;
+        // it must never silently overwrite the choice made here.
+        localStorage.setItem(ADMIN_REAL_FLAG_ENABLED_KEY, value === 'REAL' ? '1' : '0');
+        localStorage.setItem(ADMIN_REAL_FLAG_CLIENT_ID_KEY, configuredDerivClientId || ADMIN_REAL_DISPLAY_CLIENT_ID);
+        window.dispatchEvent(new Event('sharp-admin-real-flag-updated'));
+        setRealFlagEnabled(value === 'REAL');
+        setRealFlagClientId(configuredDerivClientId || ADMIN_REAL_DISPLAY_CLIENT_ID);
+        setMessage(value === 'REAL'
+            ? 'Admin display set to REAL and locked until you change it here.'
+            : 'Admin display set to DEMO and locked until you change it here.');
     };
 
     const saveAppearance = (key: string, value: string) => {
@@ -479,9 +482,8 @@ const adminMenu = [
                         <label>
                             Admin badge
                             <select
-                                value={clientIdMatchedForAdminDisplay ? 'REAL' : adminAccountBadge}
-                                onChange={e => saveAccountBadge(e.target.value)}
-                                disabled={clientIdMatchedForAdminDisplay}
+                                value={adminAccountBadge}
+                                onChange={e => saveAccountBadge(e.target.value as 'REAL' | 'DEMO')}
                             >
                                 <option value='REAL'>REAL</option>
                                 <option value='DEMO'>DEMO</option>
@@ -508,17 +510,17 @@ const adminMenu = [
                                 />
                             </label>
                             <div style={{display:'flex',gap:'10px',flexWrap:'wrap'}}>
-                                <button type='button' onClick={() => saveRealFlagSettings(true, realFlagClientId)}>🟢 REAL FLAG ON</button>
-                                <button type='button' onClick={() => saveRealFlagSettings(false, realFlagClientId)}>⚪ REAL FLAG OFF</button>
+                                <button type='button' onClick={() => saveAccountBadge('REAL')}>🟢 REAL FLAG ON</button>
+                                <button type='button' onClick={() => saveAccountBadge('DEMO')}>🔵 DEMO FLAG ON</button>
                             </div>
                             <div style={{fontSize:'13px',lineHeight:1.6}}>
                                 <div>Configured VITE Client ID: <strong>{configuredDerivClientId || 'NOT SET'}</strong></div>
                                 <div>Admin Client ID: <strong>{realFlagClientId || 'NOT SET'}</strong></div>
                                 <div>Exact match: <strong>{realFlagClientId.trim() === ADMIN_REAL_DISPLAY_CLIENT_ID ? 'YES' : 'NO'}</strong></div>
-                                <div>Flag switch: <strong>{realFlagEnabled ? 'ON' : 'OFF'}</strong></div>
+                                <div>Display mode: <strong>{adminAccountBadge}</strong></div>
                             </div>
                         </div>
-                        <small style={{display:'block',marginTop:'12px'}}>This is an Admin-only visual flag. Deriv/API remains DEMO.</small>
+                        <small style={{display:'block',marginTop:'12px'}}>Client ID detection reveals this Admin control. The REAL/DEMO display choice stays unchanged until you change it here. Deriv/API account_type remains the actual account type.</small>
                     </div>
                 </section>
             );
