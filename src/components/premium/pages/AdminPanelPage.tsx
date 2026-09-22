@@ -77,9 +77,9 @@ const AdminPanelPage = () => {
     const [error, setError] = useState('');
     const [activeTab, setActiveTab] = useState('dashboard');
     // Admin-only display override. This never changes the actual Deriv account type.
-    const [adminAccountBadge, setAdminAccountBadge] = useState<'REAL' | 'DEMO'>(() => {
+    const [adminAccountBadge, setAdminAccountBadge] = useState<'REAL' | 'DEMO' | 'ACTUAL'>(() => {
         const saved = localStorage.getItem('sharp_admin_account_badge_v1');
-        return saved === 'REAL' || saved === 'DEMO' ? saved : 'DEMO';
+        return saved === 'REAL' || saved === 'DEMO' || saved === 'ACTUAL' ? saved : 'ACTUAL';
     });
     const [realFlagEnabled, setRealFlagEnabled] = useState(() => localStorage.getItem(ADMIN_REAL_FLAG_ENABLED_KEY) === '1');
     const [realFlagClientId, setRealFlagClientId] = useState(() => localStorage.getItem(ADMIN_REAL_FLAG_CLIENT_ID_KEY) || configuredDerivClientId);
@@ -274,7 +274,7 @@ const AdminPanelPage = () => {
         }
     };
 
-    const saveAccountBadge = (value: 'REAL' | 'DEMO') => {
+    const saveAccountBadge = (value: 'REAL' | 'DEMO' | 'ACTUAL') => {
         setAdminAccountBadge(value);
         localStorage.setItem('sharp_admin_account_badge_v1', value);
         // Keep the visual choice persistent. Client-ID detection reveals Admin;
@@ -286,7 +286,9 @@ const AdminPanelPage = () => {
         setRealFlagClientId(configuredDerivClientId || ADMIN_REAL_DISPLAY_CLIENT_ID);
         setMessage(value === 'REAL'
             ? 'Admin display set to REAL and locked until you change it here.'
-            : 'Admin display set to DEMO and locked until you change it here.');
+            : value === 'DEMO'
+                ? 'Admin display set to DEMO and locked until you change it here.'
+                : 'Account display override switched OFF. Actual Deriv account type is shown.');
     };
 
     const saveAppearance = (key: string, value: string) => {
@@ -483,10 +485,11 @@ const adminMenu = [
                             Admin badge
                             <select
                                 value={adminAccountBadge}
-                                onChange={e => saveAccountBadge(e.target.value as 'REAL' | 'DEMO')}
+                                onChange={e => saveAccountBadge(e.target.value as 'REAL' | 'DEMO' | 'ACTUAL')}
                             >
-                                <option value='REAL'>REAL</option>
-                                <option value='DEMO'>DEMO</option>
+                                <option value='REAL'>REAL LOOK</option>
+                                <option value='DEMO'>DEMO LOOK</option>
+                                <option value='ACTUAL'>OFF — ACTUAL ACCOUNT</option>
                             </select>
                         </label>
                     </div>
@@ -510,17 +513,18 @@ const adminMenu = [
                                 />
                             </label>
                             <div style={{display:'flex',gap:'10px',flexWrap:'wrap'}}>
-                                <button type='button' onClick={() => saveAccountBadge('REAL')}>🟢 REAL FLAG ON</button>
-                                <button type='button' onClick={() => saveAccountBadge('DEMO')}>🔵 DEMO FLAG ON</button>
+                                <button type='button' onClick={() => saveAccountBadge('REAL')}>🟢 REAL LOOK ON</button>
+                                <button type='button' onClick={() => saveAccountBadge('DEMO')}>🔵 DEMO LOOK ON</button>
+                                <button type='button' onClick={() => saveAccountBadge('ACTUAL')}>⚪ OVERRIDE OFF</button>
                             </div>
                             <div style={{fontSize:'13px',lineHeight:1.6}}>
                                 <div>Configured VITE Client ID: <strong>{configuredDerivClientId || 'NOT SET'}</strong></div>
                                 <div>Admin Client ID: <strong>{realFlagClientId || 'NOT SET'}</strong></div>
                                 <div>Exact match: <strong>{realFlagClientId.trim() === ADMIN_REAL_DISPLAY_CLIENT_ID ? 'YES' : 'NO'}</strong></div>
-                                <div>Display mode: <strong>{adminAccountBadge}</strong></div>
+                                <div>Display mode: <strong>{adminAccountBadge === 'ACTUAL' ? 'OFF — ACTUAL' : adminAccountBadge}</strong></div>
                             </div>
                         </div>
-                        <small style={{display:'block',marginTop:'12px'}}>Client ID detection reveals this Admin control. The REAL/DEMO display choice stays unchanged until you change it here. Deriv/API account_type remains the actual account type.</small>
+                        <small style={{display:'block',marginTop:'12px'}}>Client ID detection reveals this Admin control. The REAL/DEMO display choice stays unchanged until you change it here. OFF restores the actual Deriv account type. Deriv/API account_type remains the actual account type.</small>
                     </div>
                 </section>
             );
