@@ -39,6 +39,7 @@ type TDrawerHeader = {
     is_mobile: boolean;
     is_drawer_open: boolean;
     onClearStatClick: () => void;
+    onClosePanel: () => void;
 };
 
 type TDrawerContent = {
@@ -135,17 +136,26 @@ const MobileBalanceBar = observer(() => {
     );
 });
 
-const DrawerHeader = ({ is_clear_stat_disabled, is_mobile, is_drawer_open, onClearStatClick }: TDrawerHeader) =>
+const DrawerHeader = ({ is_clear_stat_disabled, is_mobile, is_drawer_open, onClearStatClick, onClosePanel }: TDrawerHeader) =>
     is_mobile &&
     is_drawer_open && (
-        <Button
+        <div className='run-panel__mobile-header-actions'>
+            <Button
+                id='db-run-panel__close-button'
+                className='run-panel__close-button'
+                text='⌄'
+                onClick={onClosePanel}
+                secondary
+            />
+            <Button
             id='db-run-panel__clear-button'
             className='run-panel__clear-button'
             disabled={is_clear_stat_disabled}
             text={localize('Reset')}
             onClick={onClearStatClick}
             secondary
-        />
+            />
+        </div>
     );
 
 const DrawerContent = ({ active_index, is_drawer_open, active_tour, setActiveTabIndex, ...props }: TDrawerContent) => {
@@ -344,6 +354,7 @@ const RunPanel = observer(() => {
             is_mobile={!isDesktop}
             is_drawer_open={is_drawer_open}
             onClearStatClick={onClearStatClick}
+            onClosePanel={() => toggleDrawer(false)}
         />
     );
 
