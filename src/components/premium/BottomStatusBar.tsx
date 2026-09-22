@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api_base } from '@/external/bot-skeleton/services/api/api-base';
 import { useApiBase } from '@/hooks/useApiBase';
 import { useStore } from '@/hooks/useStore';
+import { DerivWSAccountsService } from '@/services/derivws-accounts.service';
 import { PlayIcon } from './icons';
 
 const formatUTC = (d: Date) => {
@@ -13,7 +14,11 @@ const BottomStatusBar = ({ botBuilderActive = false }: { botBuilderActive?: bool
     const [now, setNow] = useState(new Date());
     const [busy, setBusy] = useState(false);
     const { connectionStatus, isAuthorized } = useApiBase();
-    const { run_panel } = useStore() ?? {};
+    const { run_panel, client } = useStore() ?? {};
+    const storedAccount = DerivWSAccountsService.getDefaultAccount();
+    const liveBalance = Number(client?.balance ?? storedAccount?.balance);
+    const balanceCurrency = client?.currency || storedAccount?.currency || 'USD';
+    const hasRealBalance = Number.isFinite(liveBalance);
     const isRunning = Boolean(run_panel?.is_running || api_base.is_running);
     const canStop = Boolean(run_panel?.is_stop_button_visible || isRunning);
     const connected = String(connectionStatus).toLowerCase().includes('open') || isAuthorized;
@@ -40,7 +45,7 @@ const BottomStatusBar = ({ botBuilderActive = false }: { botBuilderActive?: bool
         <button className='prodb-risk' onClick={() => window.alert('Trading involves risk. Use demo trading to test strategies before risking real funds.')}>Risk Disclaimer</button>
         <div className='prodb-run-status'>
             <button className={`prodb-run ${botBuilderActive ? 'is-enabled' : ''}`} onClick={handleRunControl} disabled={!botBuilderActive || busy} title={botBuilderActive ? 'Run or stop the current Bot Builder strategy' : 'Open Bot Builder to run a bot'}><PlayIcon /> {runLabel}</button>
-            <div className='prodb-execution'><small>DERIV WS</small><strong>{connected ? 'LIVE' : 'OFFLINE'}</strong><span className='prodb-switch'><i /></span></div>
+            <div className='prodb-execution'><small>DERIV BALANCE</small><strong>{connected ? `${liveBalance.toFixed(2)} ${balanceCurrency}` : hasRealBalance && isAuthorized ? `OFFLINE · ${liveBalance.toFixed(2)} ${balanceCurrency}` : 'OFFLINE · —'}</strong><span className='prodb-switch'><i /></span></div>
             <div className='prodb-bot-state'><strong>{isRunning ? 'Bot is running' : 'Bot is not running'}</strong><span /></div>
         </div>
         <div className='prodb-bottom-meta'><i className={`prodb-online-dot ${connected ? '' : 'is-offline'}`} /><span>{formatUTC(now)}</span><button>☼</button><button>⇥</button><button>⛶</button></div>
