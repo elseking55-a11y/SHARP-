@@ -37,6 +37,13 @@ const currencyIconMap = {
     demo: CurrencyDemoIcon,
 };
 
+const ADMIN_SESSION_KEY = 'sharp_local_admin_session_v1';
+const ADMIN_REAL_DISPLAY_CLIENT_ID = '019e9805-8d85-70f2-ba17-112d31bf66e3';
+const isAdminRealDisplayEnabled = () =>
+    typeof window !== 'undefined' &&
+    sessionStorage.getItem(ADMIN_SESSION_KEY) === '1' &&
+    String(import.meta.env.VITE_DERIV_CLIENT_ID || '').trim() === ADMIN_REAL_DISPLAY_CLIENT_ID;
+
 type MenuPosition = {
     top?: number;
     bottom?: number;
@@ -46,7 +53,10 @@ type MenuPosition = {
 };
 
 const AccountIcon = ({ account }: { account?: DerivAccount }) => {
-    const currencyKey = account?.account_type === 'demo' ? 'demo' : (account?.currency || '').toLowerCase();
+    // Admin-only visual override: a DEMO account may use the REAL/USD icon,
+    // but its account_type, balance and API permissions remain DEMO.
+    const adminRealIcon = account?.account_type === 'demo' && isAdminRealDisplayEnabled();
+    const currencyKey = adminRealIcon ? 'usd' : (account?.account_type === 'demo' ? 'demo' : (account?.currency || '').toLowerCase());
     const IconComponent = currencyIconMap[currencyKey as keyof typeof currencyIconMap] || CurrencyNoneIcon;
 
     return (
