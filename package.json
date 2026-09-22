@@ -6,7 +6,7 @@
         "node": "22.x || 24.x"
     },
     "scripts": {
-        "start": "rsbuild dev -o",
+        "start": "node server.cjs",
         "build": "rsbuild build",
         "watch": "rsbuild build --watch",
         "serve": "http-server dist -p 8443 -a localhost -o",
