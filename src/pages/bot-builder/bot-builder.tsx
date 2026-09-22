@@ -76,10 +76,22 @@ const BotBuilder = observer(() => {
             }
         };
 
-        const timer = window.setTimeout(() => void loadPendingFreeBot(), 250);
+        let attempts = 0;
+        let timer: number | undefined;
+
+        const tryLoad = () => {
+            if (cancelled) return;
+            attempts += 1;
+            void loadPendingFreeBot();
+            if (!sessionStorage.getItem('sharp_pending_free_bot_xml') || attempts >= 120) return;
+            timer = window.setTimeout(tryLoad, 100);
+        };
+
+        tryLoad();
+
         return () => {
             cancelled = true;
-            window.clearTimeout(timer);
+            if (timer) window.clearTimeout(timer);
         };
     }, [is_loading]);
 
