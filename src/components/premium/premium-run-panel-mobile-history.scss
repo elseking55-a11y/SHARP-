@@ -644,3 +644,51 @@
         height: 100% !important;
     }
 }
+
+
+/* Keep live balance INSIDE the Run Panel header so it cannot disappear
+   behind the drawer overlay. Balance remains above the close/Reset row. */
+@media (max-width: 768px) {
+    .prodb-premium-shell .prodb-bot-builder-host .dc-drawer.run-panel.dc-drawer--open
+        > .dc-drawer__container > .dc-drawer__header {
+        height: 12.2rem !important;
+        min-height: 12.2rem !important;
+        flex: 0 0 12.2rem !important;
+        padding: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        justify-content: flex-start !important;
+    }
+
+    .prodb-premium-shell .prodb-bot-builder-host .dc-drawer.run-panel.dc-drawer--open
+        > .dc-drawer__container > .dc-drawer__header .run-panel__mobile-header {
+        width: 100% !important;
+        height: 12.2rem !important;
+        min-height: 12.2rem !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    .prodb-premium-shell .prodb-bot-builder-host .dc-drawer.run-panel.dc-drawer--open
+        > .dc-drawer__container > .dc-drawer__header .run-panel__mobile-balance {
+        flex: 0 0 5.8rem !important;
+        height: 5.8rem !important;
+        min-height: 5.8rem !important;
+        position: relative !important;
+        z-index: 2 !important;
+    }
+
+    .prodb-premium-shell .prodb-bot-builder-host .dc-drawer.run-panel.dc-drawer--open
+        > .dc-drawer__container > .dc-drawer__header .run-panel__mobile-header-actions {
+        flex: 0 0 6.4rem !important;
+        height: 6.4rem !important;
+        min-height: 6.4rem !important;
+        width: 100% !important;
+        padding: 0 1.2rem !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        box-sizing: border-box !important;
+    }
+}
