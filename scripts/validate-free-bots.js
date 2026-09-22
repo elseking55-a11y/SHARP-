@@ -91,7 +91,7 @@ const validateManifestFile = (manifestPath, { allowEmpty = false, expectedSiteId
 
 const sharedManifestPath = path.join(libraryDir, 'bots.json');
 let manifestCount = 1;
-let botReferenceCount = validateManifestFile(sharedManifestPath);
+// The shared manifest is intentionally allowed to be empty: Free Bots are published from the in-app Admin Panel.\nlet botReferenceCount = validateManifestFile(sharedManifestPath, { allowEmpty: true });
 
 if (fs.existsSync(domainDir)) {
     const domainManifests = fs.readdirSync(domainDir)
