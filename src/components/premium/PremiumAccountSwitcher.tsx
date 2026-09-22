@@ -172,6 +172,16 @@ const LivePremiumAccountSwitcher = observer(() => {
     const activeBalance = client?.balance ?? active?.balance ?? 0;
     const activeCurrency = client?.currency || active?.currency || 'USD';
 
+    // Keep only the last confirmed Deriv real balance locally so the header can
+    // display a clearly labelled last-known value while the WebSocket is offline.
+    useEffect(() => {
+        const numericBalance = Number(activeBalance);
+        if (!activeId || !Number.isFinite(numericBalance) || active?.account_type === 'demo') return;
+        localStorage.setItem('sharp_last_real_balance', String(numericBalance));
+        localStorage.setItem('sharp_last_real_currency', activeCurrency || 'USD');
+        window.dispatchEvent(new Event('sharp-real-balance-updated'));
+    }, [activeBalance, activeCurrency, activeId, active?.account_type]);
+
     useEffect(() => {
         if (!activeId) return;
 
