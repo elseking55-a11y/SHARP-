@@ -486,3 +486,43 @@
     .prodb-premium-shell .prodb-speed-card{padding:12px!important;border-radius:16px!important}
     .prodb-premium-shell .prodb-speed-grid label{padding:9px!important}
 }
+
+
+/* SHARP UI POLISH v5 — Speed Bot straight boxed text */
+.prodb-premium-shell .prodb-speed-grid label,
+.prodb-premium-shell .prodb-speed-summary,
+.prodb-premium-shell .prodb-speed-actions button,
+.prodb-premium-shell .prodb-speed-status,
+.prodb-premium-shell .prodb-speed-stats > div,
+.prodb-premium-shell .prodb-speed-log > div {
+    box-sizing: border-box;
+    min-width: 0;
+}
+.prodb-premium-shell .prodb-speed-grid label {
+    justify-content: space-between;
+    line-height: 1.2;
+}
+.prodb-premium-shell .prodb-speed-grid label small,
+.prodb-premium-shell .prodb-speed-grid select,
+.prodb-premium-shell .prodb-speed-grid input,
+.prodb-premium-shell .prodb-speed-summary b,
+.prodb-premium-shell .prodb-speed-summary span,
+.prodb-premium-shell .prodb-speed-actions button,
+.prodb-premium-shell .prodb-speed-status,
+.prodb-premium-shell .prodb-speed-stats small,
+.prodb-premium-shell .prodb-speed-stats strong,
+.prodb-premium-shell .prodb-speed-log > div b,
+.prodb-premium-shell .prodb-speed-log > div span,
+.prodb-premium-shell .prodb-speed-log > div strong {
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+}
+.prodb-premium-shell .prodb-speed-grid select,
+.prodb-premium-shell .prodb-speed-grid input,
+.prodb-premium-shell .prodb-speed-summary span,
+.prodb-premium-shell .prodb-speed-status,
+.prodb-premium-shell .prodb-speed-stats strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
