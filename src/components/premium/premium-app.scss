@@ -1613,3 +1613,107 @@
 
 /* Cache-safe visual revision marker */
 .prodb-premium-shell{--sharp-ui-revision:"2026-09-21-clean-ui-v1";}
+
+
+/* =========================================================
+   SHARP ANALYSIS — SECOND APPEARANCE SIGNALS
+   Blue = second-highest distinct frequency
+   Yellow = second-lowest distinct frequency
+   Large, mobile-friendly presentation
+   ========================================================= */
+.prodb-analysis-appearance-cards{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+  margin:16px 0;
+}
+.prodb-analysis-appearance-card{
+  min-height:118px;
+  display:flex;
+  align-items:center;
+  gap:16px;
+  padding:18px 20px;
+  box-sizing:border-box;
+  border:2px solid;
+  border-radius:16px;
+  background:#fff;
+  box-shadow:0 8px 24px rgba(15,32,45,.08);
+}
+.prodb-analysis-appearance-card--high{
+  border-color:#2f6fed;
+  background:#eef4ff;
+}
+.prodb-analysis-appearance-card--low{
+  border-color:#e0b400;
+  background:#fff9dc;
+}
+.prodb-analysis-appearance-card__icon{
+  flex:0 0 auto;
+  min-width:86px;
+  height:54px;
+  display:grid;
+  place-items:center;
+  border-radius:12px;
+  font-size:13px;
+  font-weight:950;
+  letter-spacing:.6px;
+}
+.prodb-analysis-appearance-card--high .prodb-analysis-appearance-card__icon{
+  background:#2f6fed;
+  color:#fff;
+}
+.prodb-analysis-appearance-card--low .prodb-analysis-appearance-card__icon{
+  background:#f0c000;
+  color:#211900;
+}
+.prodb-analysis-appearance-card>div:last-child{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.prodb-analysis-appearance-card small{
+  font-size:9px;
+  font-weight:950;
+  letter-spacing:.7px;
+}
+.prodb-analysis-appearance-card--high small{color:#245bc7}
+.prodb-analysis-appearance-card--low small{color:#8b6a00}
+.prodb-analysis-appearance-card strong{
+  font-size:32px;
+  line-height:1;
+  font-weight:950;
+}
+.prodb-analysis-appearance-card--high strong{color:#1857c7}
+.prodb-analysis-appearance-card--low strong{color:#8b6a00}
+.prodb-analysis-appearance-card span{
+  font-size:11px;
+  font-weight:800;
+}
+.prodb-analysis-appearance-card--high span{color:#4169ad}
+.prodb-analysis-appearance-card--low span{color:#8a7430}
+
+.prodb-analysis-digits>div>span.is-second-high{
+  border:4px solid #2f6fed;
+  background:#eaf1ff;
+  color:#1857c7;
+  box-shadow:0 0 0 4px rgba(47,111,237,.12);
+}
+.prodb-analysis-digits>div>span.is-second-low{
+  border:4px solid #e0b400;
+  background:#fff7c9;
+  color:#806200;
+  box-shadow:0 0 0 4px rgba(224,180,0,.12);
+}
+@media(max-width:700px){
+  .prodb-analysis-appearance-cards{grid-template-columns:1fr;gap:10px;margin:13px 0}
+  .prodb-analysis-appearance-card{min-height:105px;padding:15px;gap:12px}
+  .prodb-analysis-appearance-card strong{font-size:30px}
+  .prodb-analysis-appearance-card__icon{min-width:82px;height:50px;font-size:12px}
+}
+@media(max-width:420px){
+  .prodb-analysis-appearance-card{padding:13px}
+  .prodb-analysis-appearance-card strong{font-size:27px}
+  .prodb-analysis-appearance-card small{font-size:8px}
+  .prodb-analysis-appearance-card span{font-size:10px}
+}
