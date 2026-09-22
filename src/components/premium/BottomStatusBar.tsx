@@ -10,7 +10,7 @@ const formatUTC = (d: Date) => {
     return `${d.getUTCFullYear()}-${p(d.getUTCMonth()+1)}-${p(d.getUTCDate())} ${p(d.getUTCHours())}:${p(d.getUTCMinutes())}:${p(d.getUTCSeconds())} GMT`;
 };
 
-const BottomStatusBar = ({ botBuilderActive = false }: { botBuilderActive?: boolean }) => {
+const BottomStatusBar = () => {
     const [now, setNow] = useState(new Date());
     const [busy, setBusy] = useState(false);
     const { connectionStatus, isAuthorized } = useApiBase();
@@ -42,7 +42,7 @@ const BottomStatusBar = ({ botBuilderActive = false }: { botBuilderActive?: bool
     const runLabel = busy ? 'Please wait' : canStop ? 'Stop' : 'Run';
 
     return <div className='prodb-bottom-bar'>
-        <button className='prodb-risk' onClick={() => window.alert('Trading involves risk. Use demo trading to test strategies before risking real funds.')}>Risk Disclaimer</button>
+        <button className='prodb-risk' onClick={() => window.alert('Trading involves risk. Use a configured and authorized Deriv account before placing real trades.')}>Risk Disclaimer</button>
         <div className='prodb-run-status'>
             <button className='prodb-run is-enabled' onClick={handleRunControl} disabled={busy} title='Run or stop the current configured Deriv strategy'><PlayIcon /> {runLabel}</button>
             <div className='prodb-execution'><small>DERIV BALANCE</small><strong>{connected ? `${liveBalance.toFixed(2)} ${balanceCurrency}` : hasRealBalance && isAuthorized ? `OFFLINE · ${liveBalance.toFixed(2)} ${balanceCurrency}` : 'OFFLINE · —'}</strong><span className='prodb-switch'><i /></span></div>
