@@ -16,6 +16,7 @@ export type ManagedBot = {
     published?: boolean;
     comingSoon?: boolean;
     xmlBase64: string;
+    xmlUrl?: string;
     updatedAt: number;
 };
 
@@ -35,9 +36,30 @@ const safeParse = (value: string | null): ManagedBot[] => {
     }
 };
 
+const BUILT_IN_FREE_BOTS: ManagedBot[] = [{
+    id: 'elisy234sharp-alpha-martingale',
+    name: 'ELISY234 SHARP — Alpha Martingale',
+    description: 'Alpha Version Martingale strategy for R_100 Digit Over. Open it in Bot Builder to edit the blocks before running.',
+    emoji: '🧠',
+    badge: 'FREE BOT',
+    category: 'Martingale',
+    accent: '#5b5cff',
+    surface: '#0b1020',
+    text: '#ffffff',
+    file: 'Elisy234sharp.xml',
+    priority: 0,
+    imageUrl: '/free-bots/elisy234sharp-bot.svg',
+    xmlUrl: '/free-bots/Elisy234sharp.xml',
+    published: true,
+    comingSoon: false,
+    xmlBase64: '',
+    updatedAt: 0,
+}];
+
 export const readManagedBots = (): ManagedBot[] => {
     if (typeof window === 'undefined') return [];
-    return safeParse(window.localStorage.getItem(STORAGE_KEY)).sort(
+    const builtIns = BUILT_IN_FREE_BOTS;
+    return [...builtIns, ...safeParse(window.localStorage.getItem(STORAGE_KEY)).filter(item => !builtIns.some(builtIn => builtIn.id === item.id))].sort(
         (a, b) => Number(a.priority ?? 999) - Number(b.priority ?? 999)
     );
 };
