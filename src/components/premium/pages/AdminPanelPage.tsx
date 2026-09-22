@@ -68,6 +68,8 @@ const AdminPanelPage = () => {
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
     const [activeTab, setActiveTab] = useState('dashboard');
+    // Admin-only display override. This never changes the actual Deriv account type.
+    const [adminAccountBadge, setAdminAccountBadge] = useState(() => localStorage.getItem('sharp_admin_account_badge_v1') || 'REAL');
     const [appearance, setAppearance] = useState<Record<string, string>>(() => {
         try { return JSON.parse(localStorage.getItem('sharp_admin_appearance_v1') || '{}'); } catch { return {}; }
     });
@@ -249,6 +251,12 @@ const AdminPanelPage = () => {
         }
     };
 
+    const saveAccountBadge = (value: string) => {
+        setAdminAccountBadge(value);
+        localStorage.setItem('sharp_admin_account_badge_v1', value);
+        setMessage('Admin account badge updated. This changes the admin display only.');
+    };
+
     const saveAppearance = (key: string, value: string) => {
         const next = { ...appearance, [key]: value };
         setAppearance(next);
@@ -291,6 +299,7 @@ const adminMenu = [
         { id: 'bot_management', icon: '🤖', label: 'Bot Management' },
         { id: 'bot_files', icon: '📁', label: 'Bot Files' },
         { id: 'appearance', icon: '🎨', label: 'App Appearance' },
+        { id: 'account_status', icon: '🟢', label: 'Account Display' },
         { id: 'users', icon: '👥', label: 'Users' },
         { id: 'trading', icon: '📈', label: 'Trading Activity' },
         { id: 'content', icon: '📢', label: 'Tutorials / Content' },
@@ -400,6 +409,65 @@ const adminMenu = [
                             <button onClick={() => setActiveTab('content')}>📢 Content</button>
                         </div>
                     </section>
+                </section>
+            );
+        }
+
+        if (activeTab === 'account_status') {
+            return (
+                <section className='prodb-admin-wide-card'>
+                    <span>ADMIN ACCOUNT DISPLAY</span>
+                    <h2>Account badge</h2>
+                    <p className='prodb-admin-section-copy'>
+                        The Deriv account remains DEMO. This setting changes only the badge shown inside this Admin Panel.
+                    </p>
+
+                    <div style={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: '16px',
+                        alignItems: 'center',
+                        marginTop: '20px',
+                    }}>
+                        <div style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '10px',
+                            padding: '12px 18px',
+                            borderRadius: '14px',
+                            background: '#0b241d',
+                            border: '1px solid #20b98d',
+                            color: '#20b98d',
+                            fontWeight: 800,
+                            letterSpacing: '.08em',
+                        }}>
+                            <span style={{ fontSize: '20px' }}>🟢</span>
+                            {adminAccountBadge}
+                        </div>
+
+                        <label>
+                            Admin badge
+                            <select
+                                value={adminAccountBadge}
+                                onChange={e => saveAccountBadge(e.target.value)}
+                            >
+                                <option value='REAL'>REAL</option>
+                                <option value='DEMO'>DEMO</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <div style={{
+                        marginTop: '18px',
+                        padding: '14px 16px',
+                        borderRadius: '12px',
+                        background: 'rgba(255,255,255,.04)',
+                        border: '1px solid rgba(255,255,255,.08)',
+                    }}>
+                        <strong>Actual Deriv account: DEMO</strong>
+                        <br />
+                        <small>Only the Admin Panel badge is overridden. Deriv/API account status and trading logic are unchanged.</small>
+                    </div>
                 </section>
             );
         }
