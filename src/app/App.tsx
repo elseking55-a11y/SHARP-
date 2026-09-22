@@ -1,6 +1,6 @@
 import { lazy, Suspense } from 'react';
 import React from 'react';
-import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, createRoutesFromElements, Outlet, Route, RouterProvider } from 'react-router-dom';
 import LocalStorageSyncWrapper from '@/components/localStorage-sync-wrapper';
 import RoutePromptDialog from '@/components/route-prompt-dialog';
 import { useAccountSwitching } from '@/hooks/useAccountSwitching';
@@ -27,6 +27,7 @@ const AppShell = () => (
                 <LocalStorageSyncWrapper>
                     <RoutePromptDialog />
                     <PremiumLayout />
+                    <Outlet />
                 </LocalStorageSyncWrapper>
             </StoreProvider>
         </LanguageHandler>
