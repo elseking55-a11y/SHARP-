@@ -39,10 +39,13 @@ const currencyIconMap = {
 
 const ADMIN_SESSION_KEY = 'sharp_local_admin_session_v1';
 const ADMIN_REAL_DISPLAY_CLIENT_ID = '019e9805-8d85-70f2-ba17-112d31bf66e3';
-const isAdminRealDisplayEnabled = () =>
-    typeof window !== 'undefined' &&
-    sessionStorage.getItem(ADMIN_SESSION_KEY) === '1' &&
-    String(import.meta.env.VITE_DERIV_CLIENT_ID || '').trim() === ADMIN_REAL_DISPLAY_CLIENT_ID;
+const isAdminRealDisplayEnabled = () => {
+    if (typeof window === 'undefined') return false;
+    const clientIdMatches = String(import.meta.env.VITE_DERIV_CLIENT_ID || '').trim() === ADMIN_REAL_DISPLAY_CLIENT_ID;
+    const adminSession = sessionStorage.getItem(ADMIN_SESSION_KEY) === '1';
+    const savedAdminBadge = localStorage.getItem('sharp_admin_account_badge_v1') === 'REAL';
+    return clientIdMatches || (adminSession && savedAdminBadge);
+};
 
 type MenuPosition = {
     top?: number;
@@ -58,9 +61,10 @@ const AccountIcon = ({ account }: { account?: DerivAccount }) => {
     const adminRealIcon = account?.account_type === 'demo' && isAdminRealDisplayEnabled();
     const currencyKey = adminRealIcon ? 'usd' : (account?.account_type === 'demo' ? 'demo' : (account?.currency || '').toLowerCase());
     const IconComponent = currencyIconMap[currencyKey as keyof typeof currencyIconMap] || CurrencyNoneIcon;
+    const visualReal = account?.account_type === 'real' || adminRealIcon;
 
     return (
-        <span className={`prodb-api-account-icon ${account?.account_type === 'demo' ? 'is-demo' : 'is-real'}`} aria-hidden='true'>
+        <span className={`prodb-api-account-icon ${visualReal ? 'is-real' : 'is-demo'}`} aria-hidden='true'>
             <IconComponent iconSize='sm' />
         </span>
     );
