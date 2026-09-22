@@ -184,7 +184,8 @@ export class OAuthTokenExchangeService {
             }
 
             DerivWSAccountsService.storeAccounts(accounts);
-            const firstAccount = accounts[0];
+            const preferredMode = typeof window !== 'undefined' && localStorage.getItem('sharp_trading_mode') === 'real' ? 'real' : 'demo';
+            const firstAccount = accounts.find(account => account.account_type === preferredMode) || accounts[0];
             localStorage.setItem('active_loginid', firstAccount.account_id);
             localStorage.setItem('account_type', firstAccount.account_type === 'demo' ? 'demo' : 'real');
 
@@ -276,7 +277,10 @@ export class OAuthTokenExchangeService {
             if (!accounts.length) return false;
 
             const savedAccount = localStorage.getItem('active_loginid');
-            const active = accounts.find(account => account.account_id === savedAccount) || accounts[0];
+            const preferredMode = typeof window !== 'undefined' && localStorage.getItem('sharp_trading_mode') === 'real' ? 'real' : 'demo';
+            const active = accounts.find(account => account.account_id === savedAccount)
+                || accounts.find(account => account.account_type === preferredMode)
+                || accounts[0];
             localStorage.setItem('active_loginid', active.account_id);
             localStorage.setItem('account_type', active.account_type === 'demo' ? 'demo' : 'real');
 
