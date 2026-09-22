@@ -179,10 +179,26 @@ const DrawerFooter = ({ is_clear_stat_disabled, onClearStatClick }: TDrawerFoote
 );
 
 const MobileDrawerFooter = () => {
+    const { run_panel } = useStore();
+    const { setActiveTabIndex, toggleDrawer } = run_panel;
+
+    const openTransactions = () => {
+        setActiveTabIndex(1);
+        toggleDrawer(true);
+    };
+
     return (
         <div className='controls__section'>
             <div className='controls__buttons'>
                 <TradeAnimation className='controls__animation' should_show_overlay />
+                <Button
+                    id='db-run-panel__open-transactions'
+                    className='controls__transactions-button'
+                    secondary
+                    onClick={openTransactions}
+                >
+                    <Localize i18n_default_text='Open transaction' />
+                </Button>
             </div>
         </div>
     );
