@@ -39,8 +39,7 @@ import { ChartsPage } from './pages/LiveTradingPages';
 import PatCopyTradingPage from './pages/PatCopyTradingPage';
 import SpeedBotPage from './pages/SpeedBotPage';
 import { isCustomizableSection, useSiteCustomization } from './site-customization';
-import { getSharpTradingMode, getStoredDerivApiToken, setSharpTradingMode, SHARP_OFFLINE_MODE } from '@/config/runtime-mode';
-import SettingsPage from './pages/SettingsPage';
+import { getStoredDerivApiToken, SHARP_OFFLINE_MODE } from '@/config/runtime-mode';
 import { api_base } from '@/external/bot-skeleton/services/api/api-base';
 import { DerivWSAccountsService } from '@/services/derivws-accounts.service';
 import type { PremiumSection } from './types';
@@ -70,7 +69,7 @@ import './premium-site-theme.scss';
 const validSections: PremiumSection[] = [
     'dashboard', 'bot_ideas', 'quick_bot', 'bot_builder', 'free_bots', 'signal_ai', 'auto_trader',
     'manual_trading', 'bulk_trader', 'batch_trader', 'copy_trading', 'speedbot', 'calculator', 'pro_ai', 'analysis_tools',
-    'analysis_hub', 'charts', 'tradingview', 'dtrader', 'settings',
+    'analysis_hub', 'charts', 'tradingview', 'dtrader',
 ];
 
 const sectionFromHash = (hash: string): PremiumSection => {
@@ -92,7 +91,6 @@ const PremiumLayout = observer(() => {
     const [authError, setAuthError] = useState<string | null>(null);
     const [appAuthenticated, setAppAuthenticated] = useState(false);
     const [appAuthChecked, setAppAuthChecked] = useState(false);
-    const [tradingMode, setTradingMode] = useState(() => getSharpTradingMode());
     const hasBootstrappedSession = useRef(false);
 
     const params = new URLSearchParams(window.location.search);
@@ -133,27 +131,6 @@ const PremiumLayout = observer(() => {
 
         return () => { cancelled = true; };
     }, [hasStoredAuth, runtimeAuthenticated]);
-
-    const applyTradingMode = useCallback(async (mode: 'demo' | 'real') => {
-        setSharpTradingMode(mode);
-        setTradingMode(mode);
-
-        const accounts = DerivWSAccountsService.getStoredAccounts();
-        const wanted = mode === 'demo'
-            ? accounts.find(account => account.account_type === 'demo')
-            : accounts.find(account => account.account_type === 'real');
-
-        if (wanted?.account_id) {
-            localStorage.setItem('active_loginid', wanted.account_id);
-            localStorage.setItem('account_type', mode);
-            try {
-                await api_base.init(true);
-            } catch (error) {
-                console.warn('[SHARP] Account mode reconnect failed:', error);
-            }
-        }
-    }, []);
-
 
     useEffect(() => {
         setSection(sectionFromHash(location.hash));
@@ -321,7 +298,6 @@ const PremiumLayout = observer(() => {
             case 'charts': return <ChartsPage />;
             case 'tradingview': return <TradingViewPage />;
             case 'dtrader': return <DTraderPage />;
-            case 'settings': return <SettingsPage mode={tradingMode} onModeChange={applyTradingMode} />;
             default: return null;
         }
     };
