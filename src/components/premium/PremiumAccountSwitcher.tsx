@@ -283,26 +283,44 @@ const LivePremiumAccountSwitcher = observer(() => {
 });
 
 const OfflinePremiumAccountSwitcher = () => {
-    const [mode, setMode] = useState<'demo' | 'real'>(() => (localStorage.getItem('sharp_account_mode') as 'demo' | 'real') || 'demo');
+    const [mode, setMode] = useState<'demo' | 'real'>(() => (localStorage.getItem('sharp_account_mode') as 'demo' | 'real') || 'real');
+    const [cachedBalance, setCachedBalance] = useState(() => localStorage.getItem('sharp_last_real_balance') || '');
+    const [cachedCurrency, setCachedCurrency] = useState(() => localStorage.getItem('sharp_last_real_currency') || 'USD');
+
+    useEffect(() => {
+        const syncCachedBalance = () => {
+            setCachedBalance(localStorage.getItem('sharp_last_real_balance') || '');
+            setCachedCurrency(localStorage.getItem('sharp_last_real_currency') || 'USD');
+        };
+        window.addEventListener('sharp-real-balance-updated', syncCachedBalance);
+        window.addEventListener('storage', syncCachedBalance);
+        return () => {
+            window.removeEventListener('sharp-real-balance-updated', syncCachedBalance);
+            window.removeEventListener('storage', syncCachedBalance);
+        };
+    }, []);
+
     const selectMode = (next: 'demo' | 'real') => {
         setMode(next);
         localStorage.setItem('sharp_account_mode', next);
     };
+
+    const displayBalance = cachedBalance ? money(cachedBalance, cachedCurrency) : '— USD';
 
     return (
         <div className='prodb-api-account prodb-api-account--offline'>
             <button
                 type='button'
                 className='prodb-api-account__trigger'
-                aria-label={`Account mode: ${mode === 'demo' ? 'Demo' : 'Real'}`}
+                aria-label={`Offline account. Last known real balance: ${displayBalance}`}
                 onClick={() => selectMode(mode === 'demo' ? 'real' : 'demo')}
             >
                 <span className={`prodb-api-account-icon ${mode === 'demo' ? 'is-demo' : 'is-real'}`} aria-hidden='true'>
                     <CurrencyDemoIcon iconSize='sm' />
                 </span>
                 <span className='prodb-api-account__current'>
-                    <small>{mode === 'demo' ? 'Demo' : 'Real'}</small>
-                    <strong>— USD</strong>
+                    <small>OFFLINE · LAST KNOWN REAL</small>
+                    <strong>{displayBalance}</strong>
                 </span>
                 <span className='prodb-api-account__chevron'>⌄</span>
             </button>
