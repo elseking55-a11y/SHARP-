@@ -29,6 +29,7 @@ export const NAVIGATION_CATALOG: Array<{ id: PremiumSection; label: string; requ
     { id: 'copy_trading', label: 'Copy Trading' },
     { id: 'analysis_tools', label: 'Analysis Tool' },
     { id: 'calculator', label: 'Calculator' },
+    { id: 'settings', label: 'Settings' },
 ];
 
 export const DEFAULT_NAVIGATION = NAVIGATION_CATALOG.map(item => item.id);
