@@ -9,7 +9,6 @@ import { useOAuthCallback } from '@/hooks/useOAuthCallback';
 import { StoreProvider } from '@/hooks/useStore';
 import { OAuthTokenExchangeService } from '@/services/oauth-token-exchange.service';
 import { initializeI18n, TranslationProvider } from '@deriv-com/translations';
-import CoreStoreProvider from './CoreStoreProvider';
 import PremiumLayout from '../components/premium/PremiumLayout';
 import './app-root.scss';
 
@@ -27,9 +26,7 @@ const AppShell = () => (
             <StoreProvider>
                 <LocalStorageSyncWrapper>
                     <RoutePromptDialog />
-                    <CoreStoreProvider>
-                        <PremiumLayout />
-                    </CoreStoreProvider>
+                    <PremiumLayout />
                 </LocalStorageSyncWrapper>
             </StoreProvider>
         </LanguageHandler>
