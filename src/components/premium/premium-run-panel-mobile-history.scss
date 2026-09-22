@@ -145,3 +145,83 @@
         z-index: 191 !important;
     }
 }
+
+
+/* FINAL MOBILE TRANSACTION HISTORY OVERRIDE
+ * Transactions get the full open-panel height; statistics are hidden there.
+ * Keep the actual Deriv transaction data unchanged.
+ */
+@media (max-width: 768px) {
+    .prodb-premium-shell .prodb-bot-builder-host .dc-drawer.run-panel.dc-drawer--open {
+        top: 0 !important;
+        bottom: var(--prodb-mobile-trade-dock) !important;
+        height: auto !important;
+        max-height: none !important;
+    }
+
+    .prodb-premium-shell .prodb-bot-builder-host .dc-drawer.run-panel.dc-drawer--open .run-panel__content,
+    .prodb-premium-shell .prodb-bot-builder-host .dc-drawer.run-panel.dc-drawer--open .dc-drawer__content.run-panel__content {
+        height: 100% !important;
+        max-height: none !important;
+    }
+
+    .prodb-premium-shell .prodb-bot-builder-host .dc-drawer.run-panel.dc-drawer--open
+        .transactions.run-panel-tab__content--mobile {
+        height: 100% !important;
+        max-height: none !important;
+        min-height: 0 !important;
+    }
+
+    .prodb-premium-shell .prodb-bot-builder-host .dc-drawer.run-panel.dc-drawer--open
+        .transactions__content--mobile {
+        height: auto !important;
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+    }
+
+    .prodb-premium-shell .prodb-bot-builder-host .dc-drawer.run-panel.dc-drawer--open
+        .transactions__scrollbar {
+        height: 100% !important;
+        max-height: none !important;
+        overflow-y: auto !important;
+    }
+
+    .prodb-premium-shell .prodb-bot-builder-host .dc-drawer.run-panel.dc-drawer--open
+        .transactions__item-wrapper {
+        height: 5.6rem !important;
+        min-height: 5.6rem !important;
+        padding: 0 .9rem !important;
+    }
+
+    .prodb-premium-shell .prodb-bot-builder-host .dc-drawer.run-panel.dc-drawer--open
+        .transactions__item {
+        min-height: 5.6rem !important;
+        padding: .45rem 0 !important;
+        font-size: 1.2rem !important;
+        grid-row-gap: 1px !important;
+    }
+
+    .prodb-premium-shell .prodb-bot-builder-host .dc-drawer.run-panel.dc-drawer--open
+        .transactions__header {
+        height: 4.6rem !important;
+        min-height: 4.6rem !important;
+        padding: .35rem .9rem !important;
+    }
+
+    .prodb-premium-shell .prodb-bot-builder-host .dc-drawer.run-panel.dc-drawer--open
+        .transactions > .download__container {
+        min-height: 4.4rem !important;
+        padding: .35rem .9rem !important;
+    }
+
+    .prodb-premium-shell .prodb-bot-builder-host .dc-drawer.run-panel.dc-drawer--open
+        .transactions > .download__container .dc-btn {
+        min-height: 3.4rem !important;
+        height: 3.4rem !important;
+    }
+
+    .prodb-premium-shell .prodb-bot-builder-host .dc-drawer.run-panel.dc-drawer--open
+        .run-panel__stat--mobile {
+        display: none !important;
+    }
+}
