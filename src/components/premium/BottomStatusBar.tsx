@@ -29,7 +29,7 @@ const BottomStatusBar = ({ botBuilderActive = false }: { botBuilderActive?: bool
     }, []);
 
     const handleRunControl = async () => {
-        if (!botBuilderActive || !run_panel || busy) return;
+        if (!run_panel || busy) return;
         setBusy(true);
         try {
             if (canStop) run_panel.onStopButtonClick();
@@ -39,12 +39,12 @@ const BottomStatusBar = ({ botBuilderActive = false }: { botBuilderActive?: bool
         }
     };
 
-    const runLabel = busy ? 'Please wait' : canStop ? 'Stop' : botBuilderActive ? 'Run' : 'Ready';
+    const runLabel = busy ? 'Please wait' : canStop ? 'Stop' : 'Run';
 
     return <div className='prodb-bottom-bar'>
         <button className='prodb-risk' onClick={() => window.alert('Trading involves risk. Use demo trading to test strategies before risking real funds.')}>Risk Disclaimer</button>
         <div className='prodb-run-status'>
-            <button className={`prodb-run ${botBuilderActive ? 'is-enabled' : ''}`} onClick={handleRunControl} disabled={!botBuilderActive || busy} title={botBuilderActive ? 'Run or stop the current Bot Builder strategy' : 'Open Bot Builder to run a bot'}><PlayIcon /> {runLabel}</button>
+            <button className='prodb-run is-enabled' onClick={handleRunControl} disabled={busy} title='Run or stop the current configured Deriv strategy'><PlayIcon /> {runLabel}</button>
             <div className='prodb-execution'><small>DERIV BALANCE</small><strong>{connected ? `${liveBalance.toFixed(2)} ${balanceCurrency}` : hasRealBalance && isAuthorized ? `OFFLINE · ${liveBalance.toFixed(2)} ${balanceCurrency}` : 'OFFLINE · —'}</strong><span className='prodb-switch'><i /></span></div>
             <div className='prodb-bot-state'><strong>{isRunning ? 'Bot is running' : 'Bot is not running'}</strong><span /></div>
         </div>
