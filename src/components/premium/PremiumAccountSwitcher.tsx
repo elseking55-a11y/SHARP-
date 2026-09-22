@@ -58,7 +58,7 @@ const AccountIcon = ({ account }: { account?: DerivAccount }) => {
 
 const LivePremiumAccountSwitcher = observer(() => {
 
-    const { activeLoginid, accountList } = useApiBase();
+    const { activeLoginid, accountList, connectionStatus, isAuthorized } = useApiBase();
     const { client } = useStore() ?? {};
     const rootRef = useRef<HTMLDivElement>(null);
     const triggerRef = useRef<HTMLButtonElement>(null);
@@ -171,6 +171,10 @@ const LivePremiumAccountSwitcher = observer(() => {
 
     const activeBalance = client?.balance ?? active?.balance ?? 0;
     const activeCurrency = client?.currency || active?.currency || 'USD';
+    const connected = String(connectionStatus).toLowerCase().includes('open') || isAuthorized;
+    const lastKnownRealBalance = localStorage.getItem('sharp_last_real_balance') || '';
+    const lastKnownRealCurrency = localStorage.getItem('sharp_last_real_currency') || activeCurrency || 'USD';
+    const displayBalance = connected ? money(activeBalance, activeCurrency) : lastKnownRealBalance ? money(lastKnownRealBalance, lastKnownRealCurrency) : '— USD';
 
     // Keep only the last confirmed Deriv real balance locally so the header can
     // display a clearly labelled last-known value while the WebSocket is offline.
@@ -282,8 +286,8 @@ const LivePremiumAccountSwitcher = observer(() => {
             >
                 <AccountIcon account={active} />
                 <span className='prodb-api-account__current'>
-                    <small>{active?.account_type === 'demo' ? 'Demo' : 'Real'}</small>
-                    <strong>{money(activeBalance, activeCurrency)}</strong>
+                    <small>{connected ? (active?.account_type === 'demo' ? 'Demo' : 'Real') : 'OFFLINE · LAST KNOWN REAL'}</small>
+                    <strong>{displayBalance}</strong>
                 </span>
                 <span className={`prodb-api-account__chevron ${open ? 'is-open' : ''}`}>⌄</span>
             </button>
