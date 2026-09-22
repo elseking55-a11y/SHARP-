@@ -1932,3 +1932,63 @@
     .prodb-premium-shell .prodb-sequence{overflow-x:auto;justify-content:flex-start;padding-bottom:3px}
     .prodb-premium-shell .prodb-sequence span{flex:0 0 30px}
 }
+
+
+/* SHARP FREE BOTS — DARK COLOUR CARDS */
+.prodb-free-bots--app {
+    min-height: 100%;
+    padding: 22px 24px 80px;
+    background: radial-gradient(circle at 15% 0%, rgba(38, 105, 190, .22), transparent 34%),
+                radial-gradient(circle at 85% 0%, rgba(139, 62, 214, .18), transparent 32%),
+                #07111f !important;
+}
+.prodb-bot-grid--app {
+    gap: 18px;
+}
+.prodb-bot-card--app {
+    min-height: 210px;
+    padding: 16px;
+    border: 1px solid rgba(82, 151, 230, .45) !important;
+    border-top: 3px solid var(--bot-accent, #2388ff) !important;
+    border-radius: 14px;
+    background: linear-gradient(145deg, var(--bot-surface, #10233a), #091525) !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, .28);
+}
+.prodb-bot-card--app .prodb-bot-card__badge {
+    width: 82px;
+    height: 82px;
+    margin: 2px auto 14px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 16px;
+    background: rgba(255,255,255,.06);
+    color: #fff;
+    font-size: 38px;
+}
+.prodb-bot-card--app .prodb-bot-card__badge img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.prodb-bot-card--app h2 {
+    margin: 0 0 16px;
+    color: var(--bot-text, #fff) !important;
+    font-size: 16px;
+    line-height: 1.25;
+    font-weight: 900;
+    text-align: center;
+}
+.prodb-bot-card--app .prodb-load-bot {
+    height: 38px;
+    color: #fff !important;
+    background: linear-gradient(90deg, var(--bot-accent, #2388ff), #6b4df5) !important;
+    border: 0;
+    border-radius: 9px;
+    box-shadow: 0 7px 18px rgba(35, 136, 255, .22);
+}
+.prodb-bot-card--app .prodb-load-bot:disabled {
+    opacity: .65;
+}
