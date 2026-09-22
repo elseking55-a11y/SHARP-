@@ -490,3 +490,103 @@
         z-index: 191 !important;
     }
 }
+
+
+/* MOBILE PANEL NAV / COLLAPSE CONTROL
+ * The top chevron is the actual Drawer toggle. Keep it separate from Reset
+ * so tapping the chevron closes the Run Panel and returns to the builder.
+ */
+@media (max-width: 768px) {
+    .prodb-premium-shell .prodb-bot-builder-host .dc-drawer.run-panel.dc-drawer--open {
+        display: flex !important;
+        flex-direction: column !important;
+        top: 0 !important;
+        bottom: var(--prodb-mobile-trade-dock, 9.6rem) !important;
+    }
+
+    .prodb-premium-shell .prodb-bot-builder-host .dc-drawer.run-panel.dc-drawer--open > .dc-drawer__toggle {
+        order: 0 !important;
+        flex: 0 0 5.8rem !important;
+        height: 5.8rem !important;
+        min-height: 5.8rem !important;
+        position: relative !important;
+        z-index: 20 !important;
+        width: 100% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: var(--general-main-2) !important;
+        border: 0 !important;
+        border-bottom: 1px solid var(--general-section-1) !important;
+        cursor: pointer !important;
+    }
+
+    .prodb-premium-shell .prodb-bot-builder-host .dc-drawer.run-panel.dc-drawer--open > .dc-drawer__toggle::before {
+        content: '' !important;
+        position: absolute !important;
+        width: 4.8rem !important;
+        height: .35rem !important;
+        border-radius: 99px !important;
+        background: var(--text-general) !important;
+        opacity: .85 !important;
+        top: 1rem !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+    }
+
+    .prodb-premium-shell .prodb-bot-builder-host .dc-drawer.run-panel.dc-drawer--open > .dc-drawer__toggle .dc-drawer__toggle-icon {
+        width: 3.2rem !important;
+        height: 3.2rem !important;
+        min-width: 3.2rem !important;
+        min-height: 3.2rem !important;
+        fill: var(--text-general) !important;
+        transform: rotate(180deg) !important;
+    }
+
+    .prodb-premium-shell .prodb-bot-builder-host .dc-drawer.run-panel.dc-drawer--open > .dc-drawer__container {
+        order: 1 !important;
+        flex: 1 1 auto !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
+    }
+
+    .prodb-premium-shell .prodb-bot-builder-host .dc-drawer.run-panel.dc-drawer--open > .dc-drawer__container > .dc-drawer__header {
+        flex: 0 0 6.4rem !important;
+        height: 6.4rem !important;
+        min-height: 6.4rem !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+        padding: 0 1.6rem !important;
+        box-sizing: border-box !important;
+        position: relative !important;
+        z-index: 10 !important;
+        background: var(--general-main-2) !important;
+        border-bottom: 1px solid var(--general-section-1) !important;
+    }
+
+    .prodb-premium-shell .prodb-bot-builder-host .dc-drawer.run-panel.dc-drawer--open > .dc-drawer__container > .dc-drawer__header
+        .run-panel__clear-button {
+        position: static !important;
+        margin: 0 !important;
+        width: 11rem !important;
+        min-width: 11rem !important;
+        height: 4.4rem !important;
+        min-height: 4.4rem !important;
+        font-size: 1.5rem !important;
+        border-radius: .8rem !important;
+    }
+
+    /* Keep tabs below Reset instead of letting Reset cover them. */
+    .prodb-premium-shell .prodb-bot-builder-host .dc-drawer.run-panel.dc-drawer--open
+        .dc-drawer__content.run-panel__content {
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        height: auto !important;
+        overflow: hidden !important;
+    }
+}
