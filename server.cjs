@@ -339,6 +339,7 @@ const adminSaveBot = async (req, res) => {
         } else if (!old) {
             return send(res, 400, JSON.stringify({ error: 'xml_file_required' }));
         }
+        const id = requestedId || `bot-${Date.now()}`;
         const bot = {
             id,
             name,
