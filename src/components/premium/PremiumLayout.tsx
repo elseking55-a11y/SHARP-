@@ -16,6 +16,7 @@ import GlobalAIScannerV2 from './GlobalAIScannerV2';
 import GlobalContractBridge from './GlobalContractBridge';
 import GlobalQuickTrade from './GlobalQuickTrade';
 import LandingPage from './LandingPage';
+import CoreStoreProvider from '@/app/CoreStoreProvider';
 import PremiumHeader from './PremiumHeader';
 import PremiumLoader from './PremiumLoader';
 import AnalysisToolsPage from './pages/AnalysisToolsPage';
@@ -266,7 +267,8 @@ const PremiumLayout = observer(() => {
         '--sharp-icon-color': adminAppearance.icon || adminAppearance.accent || customization.colors.secondary,
     } as CSSProperties;
 
-    return <div
+    return <CoreStoreProvider>
+        <div
         className={`prodb-premium-shell ${isBotBuilder ? 'prodb-premium-shell--builder' : ''} ${isRunPanelOpen ? 'prodb-premium-shell--run-open' : ''} ${adminAppearance.theme === 'light' ? 'sharp-theme-light' : 'sharp-theme-dark'}`}
         style={themeStyle}
     >
@@ -283,7 +285,8 @@ const PremiumLayout = observer(() => {
         {!SHARP_OFFLINE_MODE && <GlobalAIScannerV2 openBotBuilder={openBotBuilder} />}
         {!SHARP_OFFLINE_MODE && <GlobalQuickTrade hidden={isBotBuilder} />}
         {!SHARP_OFFLINE_MODE && !isBotBuilder && <BottomStatusBar />}
-    </div>;
+        </div>
+    </CoreStoreProvider>;
 });
 
 export default PremiumLayout;
