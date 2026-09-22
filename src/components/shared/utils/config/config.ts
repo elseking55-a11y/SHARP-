@@ -234,7 +234,7 @@ export const generateOAuthURL = async (prompt?: string) => {
     try {
         // Prefer server-side Render configuration so login still works even when
         // VITE_* values were added after the last frontend build.
-        let runtimeClientId = (import.meta.env.VITE_DERIV_CLIENT_ID as string | undefined)?.trim();
+        let runtimeClientId = (typeof window !== 'undefined' ? localStorage.getItem('sharp_deriv_client_id') : '')?.trim() || (import.meta.env.VITE_DERIV_CLIENT_ID as string | undefined)?.trim();
         let runtimeRedirectUri =
             (import.meta.env.VITE_DERIV_REDIRECT_URI as string | undefined)?.trim()
             || 'https://sharp-mz3h.onrender.com/callback';
