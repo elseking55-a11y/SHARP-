@@ -10,6 +10,7 @@ import { StoreProvider } from '@/hooks/useStore';
 import { OAuthTokenExchangeService } from '@/services/oauth-token-exchange.service';
 import { initializeI18n, TranslationProvider } from '@deriv-com/translations';
 import PremiumLayout from '../components/premium/PremiumLayout';
+import AdminPage from '../components/admin/AdminPage';
 import './app-root.scss';
 
 const AppRoot = lazy(() => import('./app-root'));
@@ -36,6 +37,7 @@ const AppShell = () => (
 const router = createBrowserRouter(
     createRoutesFromElements(
         <>
+            <Route path='/admin' element={<AdminPage />} />
             <Route path='/' element={<AppShell />}>
                 <Route index element={
                     <Suspense fallback={null}>
