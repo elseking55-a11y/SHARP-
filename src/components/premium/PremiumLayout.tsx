@@ -19,7 +19,6 @@ import CoreStoreProvider from '@/app/CoreStoreProvider';
 import PremiumHeader from './PremiumHeader';
 import PremiumLoader from './PremiumLoader';
 import AnalysisToolsPage from './pages/AnalysisToolsPage';
-import BatchTraderPage from './pages/BatchTraderPage';
 import BulkTraderPage from './pages/BulkTraderPage';
 import CalculatorPage from './pages/CalculatorPage';
 import DashboardHome from './pages/DashboardHome';
@@ -36,7 +35,6 @@ import {
 } from './pages/ImportedFeaturePages';
 import { ChartsPage } from './pages/LiveTradingPages';
 import PatCopyTradingPage from './pages/PatCopyTradingPage';
-import SpeedBotPage from './pages/SpeedBotPage';
 import { isCustomizableSection, useSiteCustomization } from './site-customization';
 import { getStoredDerivApiToken, SHARP_OFFLINE_MODE } from '@/config/runtime-mode';
 import { writeManagedBots, type ManagedBot } from '@/utils/managed-bot-library';
@@ -68,7 +66,7 @@ import './premium-site-theme.scss';
 
 const validSections: PremiumSection[] = [
     'dashboard', 'bot_ideas', 'quick_bot', 'bot_builder', 'free_bots', 'signal_ai',
-    'manual_trading', 'bulk_trader', 'batch_trader', 'copy_trading', 'speedbot', 'calculator', 'pro_ai', 'analysis_tools',
+    'manual_trading', 'bulk_trader', 'copy_trading', 'calculator', 'pro_ai', 'analysis_tools',
     'analysis_hub', 'charts', 'tradingview', 'dtrader',
 ];
 
@@ -245,9 +243,7 @@ const PremiumLayout = observer(() => {
             case 'signal_ai': return <SignalAIPage />;
             case 'manual_trading': return <ManualTradingPage />;
             case 'bulk_trader': return <BulkTraderPage />;
-            case 'batch_trader': return <BatchTraderPage />;
             case 'copy_trading': return <PatCopyTradingPage />;
-            case 'speedbot': return <SpeedBotPage />;
             case 'calculator': return <CalculatorPage />;
             case 'pro_ai': return <ProAIPage />;
             case 'analysis_tools': return <AnalysisToolsPage />;
