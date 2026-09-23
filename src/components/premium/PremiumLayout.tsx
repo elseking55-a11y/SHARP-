@@ -7,6 +7,7 @@ import { DBOT_TABS } from '@/constants/bot-contents';
 import { useApiBase } from '@/hooks/useApiBase';
 import { useStore } from '@/hooks/useStore';
 import ManualTradingPage from '@/pages/manual-trading';
+import DcirclePage from './pages/DcirclePage';
 import TradingViewPage from '@/pages/tradingview';
 import { OAuthTokenExchangeService } from '@/services/oauth-token-exchange.service';
 import BottomStatusBar from './BottomStatusBar';
@@ -65,7 +66,7 @@ import './premium-site-theme.scss';
 
 const validSections: PremiumSection[] = [
     'dashboard', 'bot_ideas', 'quick_bot', 'bot_builder', 'free_bots', 'signal_ai',
-    'manual_trading', 'bulk_trader', 'copy_trading', 'calculator', 'pro_ai', 'analysis_tools',
+    'manual_trading', 'dcircle', 'bulk_trader', 'copy_trading', 'calculator', 'pro_ai', 'analysis_tools',
     'analysis_hub', 'charts', 'tradingview', 'dtrader',
 ];
 
@@ -236,6 +237,7 @@ const PremiumLayout = observer(() => {
             case 'free_bots': return <FreeBotsPage openBotBuilder={openBotBuilder} />;
             case 'signal_ai': return <SignalAIPage />;
             case 'manual_trading': return <ManualTradingPage />;
+            case 'dcircle': return <DcirclePage />;
             case 'bulk_trader': return <BulkTraderPage />;
             case 'copy_trading': return <PatCopyTradingPage />;
             case 'calculator': return <CalculatorPage />;
