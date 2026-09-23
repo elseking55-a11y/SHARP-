@@ -20,7 +20,7 @@ const AppRoot = lazy(() => import('./app-root'));
 // Load it only when the new SHARP shell actually opens Bot Builder.
 const BuilderRoute = () => {
     const location = useLocation();
-    const isBotBuilder = location.hash.replace(/^#\\/?/, '').split('?')[0] === 'bot_builder';
+    const isBotBuilder = location.hash.replace(/^#\/?/, '').split('?')[0] === 'bot_builder';
 
     if (!isBotBuilder) return null;
 
