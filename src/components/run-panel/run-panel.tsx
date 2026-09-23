@@ -638,6 +638,93 @@ const RunPanel = observer(() => {
                         box-shadow: none !important;
                     }
 
+                    /* FINAL MOBILE TRANSACTION CONTROLS: Back + Reset always visible. */
+                    .dc-drawer.run-panel .run-panel__mobile-header,
+                    .run-panel.dc-drawer .run-panel__mobile-header {
+                        display: flex !important;
+                        position: relative !important;
+                        z-index: 9999 !important;
+                        align-items: center !important;
+                        justify-content: center !important;
+                        width: 100% !important;
+                        height: 64px !important;
+                        min-height: 64px !important;
+                        max-height: 64px !important;
+                        padding: 0 !important;
+                        margin: 0 !important;
+                        background: #0b0b0b !important;
+                        visibility: visible !important;
+                        opacity: 1 !important;
+                        overflow: visible !important;
+                        box-sizing: border-box !important;
+                    }
+
+                    .dc-drawer.run-panel .run-panel__mobile-header-actions,
+                    .run-panel.dc-drawer .run-panel__mobile-header-actions {
+                        display: flex !important;
+                        position: relative !important;
+                        z-index: 10000 !important;
+                        align-items: center !important;
+                        justify-content: space-between !important;
+                        width: 100% !important;
+                        height: 64px !important;
+                        padding: 0 12px !important;
+                        margin: 0 !important;
+                        box-sizing: border-box !important;
+                        background: #0b0b0b !important;
+                    }
+
+                    .dc-drawer.run-panel .run-panel__mobile-header button,
+                    .run-panel.dc-drawer .run-panel__mobile-header button {
+                        display: flex !important;
+                        position: relative !important;
+                        z-index: 10001 !important;
+                        align-items: center !important;
+                        justify-content: center !important;
+                        visibility: visible !important;
+                        opacity: 1 !important;
+                        flex: 0 0 auto !important;
+                        height: 44px !important;
+                        min-height: 44px !important;
+                        width: 112px !important;
+                        min-width: 112px !important;
+                        margin: 0 !important;
+                        padding: 0 12px !important;
+                        border: 2px solid #64748b !important;
+                        border-radius: 12px !important;
+                        background: #111827 !important;
+                        color: #ffffff !important;
+                        font-size: 16px !important;
+                        font-weight: 900 !important;
+                        line-height: 1 !important;
+                        cursor: pointer !important;
+                        pointer-events: auto !important;
+                        box-sizing: border-box !important;
+                    }
+
+                    .dc-drawer.run-panel .run-panel__mobile-header button:first-child,
+                    .run-panel.dc-drawer .run-panel__mobile-header button:first-child {
+                        justify-content: flex-start !important;
+                    }
+
+                    .dc-drawer.run-panel .run-panel__mobile-header button:last-child,
+                    .run-panel.dc-drawer .run-panel__mobile-header button:last-child {
+                        justify-content: center !important;
+                    }
+
+                    .dc-drawer.run-panel .run-panel__mobile-header button span {
+                        display: inline-block !important;
+                        visibility: visible !important;
+                        opacity: 1 !important;
+                    }
+
+                    @media (max-width: 767px) {
+                        .dc-drawer.run-panel .run-panel__content,
+                        .run-panel.dc-drawer .run-panel__content {
+                            min-height: 0 !important;
+                        }
+                    }
+
                     .dc-drawer.run-panel .run-panel__mobile-header,
                     .run-panel.dc-drawer .run-panel__mobile-header {
                         display: block !important;
