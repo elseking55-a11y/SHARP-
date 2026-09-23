@@ -62,6 +62,7 @@ import './premium-execution-fixes.scss';
 import './premium-calculator.scss';
 import './premium-dcircle.scss';
 import './premium-wallet.scss';
+import RunPanel from '@/components/run-panel';
 import './premium-site-theme.scss';
 
 const validSections: PremiumSection[] = [
@@ -317,6 +318,10 @@ const PremiumLayout = observer(() => {
         </main>
         {!SHARP_OFFLINE_MODE && <GlobalAIScannerV2 openBotBuilder={openBotBuilder} />}
         {!SHARP_OFFLINE_MODE && <BottomStatusBar />}
+        {/* Keep one shared transaction drawer mounted on every premium section.
+            Bot Builder owns its native panel, so the global copy is only mounted
+            on Dashboard, Free Bots, Manual Trading, Dcircle, Charts, etc. */}
+        {!isBotBuilder && <RunPanel />}
         </div>
     </CoreStoreProvider>;
 });
