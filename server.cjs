@@ -231,6 +231,22 @@ const ADMIN_SESSION_SECRET = String(process.env.ADMIN_SESSION_SECRET || ADMIN_PA
 const ADMIN_COOKIE = 'sharp_admin_session';
 
 const ADMIN_CONFIG_PATH = process.env.SHARP_ADMIN_CONFIG_PATH || '/data/sharp-admin-config.json';
+const EPHEMERAL_ADMIN_CONFIG_PATH = path.join('/tmp', 'sharp-admin-config.json');
+
+const ensureConfigPath = () => {
+    const candidates = [ADMIN_CONFIG_PATH, EPHEMERAL_ADMIN_CONFIG_PATH];
+    for (const candidate of candidates) {
+        try {
+            fs.mkdirSync(path.dirname(candidate), { recursive: true });
+            fs.accessSync(path.dirname(candidate), fs.constants.W_OK);
+            return candidate;
+        } catch {}
+    }
+    return null;
+};
+
+const ACTIVE_ADMIN_CONFIG_PATH = ensureConfigPath() || ADMIN_CONFIG_PATH;
+const ADMIN_CONFIG_IS_PERSISTENT = ACTIVE_ADMIN_CONFIG_PATH === ADMIN_CONFIG_PATH;
 
 const defaultPublicConfig = {
     managedBots: [],
@@ -250,8 +266,8 @@ const defaultPublicConfig = {
 
 const loadPublicConfig = () => {
     try {
-        if (!fs.existsSync(ADMIN_CONFIG_PATH)) return structuredClone(defaultPublicConfig);
-        const saved = JSON.parse(fs.readFileSync(ADMIN_CONFIG_PATH, 'utf8'));
+        if (!fs.existsSync(ACTIVE_ADMIN_CONFIG_PATH)) return structuredClone(defaultPublicConfig);
+        const saved = JSON.parse(fs.readFileSync(ACTIVE_ADMIN_CONFIG_PATH, 'utf8'));
         return {
             ...defaultPublicConfig,
             ...saved,
@@ -270,10 +286,11 @@ const publicConfig = loadPublicConfig();
 
 const savePublicConfig = () => {
     try {
-        fs.mkdirSync(path.dirname(ADMIN_CONFIG_PATH), { recursive: true });
-        const tempPath = ADMIN_CONFIG_PATH + '.tmp';
+        const targetPath = ensureConfigPath();
+        if (!targetPath) throw new Error('No writable config path is available.');
+        const tempPath = targetPath + '.tmp';
         fs.writeFileSync(tempPath, JSON.stringify(publicConfig, null, 2), 'utf8');
-        fs.renameSync(tempPath, ADMIN_CONFIG_PATH);
+        fs.renameSync(tempPath, targetPath);
         return true;
     } catch (error) {
         console.error('[Admin config] Could not save persistent config:', error);
@@ -381,7 +398,7 @@ const saveAdminConfig = async (req, res) => {
         const persisted = savePublicConfig();
         return send(res, persisted ? 200 : 507, JSON.stringify({
             saved: persisted,
-            error_description: persisted ? undefined : 'Render persistent storage is not mounted. Add a persistent disk or set SHARP_ADMIN_CONFIG_PATH to a writable persistent path.',
+            error_description: persisted ? (ADMIN_CONFIG_IS_PERSISTENT ? undefined : 'Saved on the current Render instance. Mount a persistent disk at /data or set SHARP_ADMIN_CONFIG_PATH to a persistent writable path to keep this setting after redeploys.') : 'No writable config path is available on the Render service.',
             ...publicConfig,
         }));
     } catch (error) {
