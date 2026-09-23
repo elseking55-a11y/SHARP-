@@ -2019,3 +2019,91 @@
     display: none !important;
   }
 }
+
+
+/* =========================================================
+   SHARP GLOBAL BOT RESULT COLORS
+   Keep the exact win/loss result styling visible when the
+   shared Run Panel is opened from Dashboard, Free Bots,
+   Manual Trading, Charts, Analysis, etc. The native Bot
+   Builder already supplies these colours; these global rules
+   make the same result state independent of the current page.
+   ========================================================= */
+.prodb-premium-shell {
+  /* Stable fallbacks for pages that do not have the native
+     Deriv theme variables mounted at the same DOM depth. */
+  --sharp-profit-color: #22c55e;
+  --sharp-loss-color: #ef4444;
+  --sharp-result-win-bg: linear-gradient(135deg, rgba(34, 197, 94, .22), rgba(16, 185, 129, .08));
+  --sharp-result-loss-bg: linear-gradient(135deg, rgba(239, 68, 68, .22), rgba(220, 38, 38, .08));
+}
+
+/* Native contract result overlay */
+.prodb-premium-shell .dc-contract-card__result--won,
+.prodb-premium-shell .db-contract-card__result--won {
+  background-image: var(--sharp-result-win-bg) !important;
+  background-color: #071525 !important;
+  color: var(--sharp-profit-color) !important;
+}
+
+.prodb-premium-shell .dc-contract-card__result--lost,
+.prodb-premium-shell .db-contract-card__result--lost {
+  background-image: var(--sharp-result-loss-bg) !important;
+  background-color: #071525 !important;
+  color: var(--sharp-loss-color) !important;
+}
+
+.prodb-premium-shell .dc-contract-card__result--won .dc-result__caption,
+.prodb-premium-shell .dc-contract-card__result--won .dc-result__caption--won,
+.prodb-premium-shell .db-contract-card__result--won .db-contract-card__result-caption,
+.prodb-premium-shell .db-contract-card__result--won .dc-text {
+  color: var(--sharp-profit-color) !important;
+}
+
+.prodb-premium-shell .dc-contract-card__result--lost .dc-result__caption,
+.prodb-premium-shell .dc-contract-card__result--lost .dc-result__caption--lost,
+.prodb-premium-shell .db-contract-card__result--lost .db-contract-card__result-caption,
+.prodb-premium-shell .db-contract-card__result--lost .dc-text {
+  color: var(--sharp-loss-color) !important;
+}
+
+.prodb-premium-shell .dc-contract-card__result--won .dc-result__icon svg,
+.prodb-premium-shell .db-contract-card__result--won .db-contract-card__result-icon {
+  color: var(--sharp-profit-color) !important;
+  fill: var(--sharp-profit-color) !important;
+}
+
+.prodb-premium-shell .dc-contract-card__result--lost .dc-result__icon svg,
+.prodb-premium-shell .db-contract-card__result--lost .db-contract-card__result-icon {
+  color: var(--sharp-loss-color) !important;
+  fill: var(--sharp-loss-color) !important;
+}
+
+/* Shared transaction/run-panel P&L: never fall back to white. */
+.prodb-premium-shell .transactions__profit--win,
+.prodb-premium-shell .transactions__profit--win *,
+.prodb-premium-shell .run-panel__stat-amount--positive,
+.prodb-premium-shell .run-panel__stat-amount--positive * {
+  color: var(--sharp-profit-color) !important;
+  font-weight: 800 !important;
+}
+
+.prodb-premium-shell .transactions__profit--loss,
+.prodb-premium-shell .transactions__profit--loss *,
+.prodb-premium-shell .run-panel__stat-amount--negative,
+.prodb-premium-shell .run-panel__stat-amount--negative * {
+  color: var(--sharp-loss-color) !important;
+  font-weight: 800 !important;
+}
+
+.prodb-premium-shell .transactions__profit--win::before { color: var(--sharp-profit-color) !important; }
+.prodb-premium-shell .transactions__profit--loss::before { color: var(--sharp-loss-color) !important; }
+
+/* Also cover the result component when it is rendered outside the
+   contract-card wrapper but still inside the premium application. */
+.prodb-premium-shell .db-contract-card__result--won {
+  background-image: var(--sharp-result-win-bg) !important;
+}
+.prodb-premium-shell .db-contract-card__result--lost {
+  background-image: var(--sharp-result-loss-bg) !important;
+}
