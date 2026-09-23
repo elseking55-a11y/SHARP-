@@ -12,7 +12,8 @@ type Appearance = {
 };
 
 type EnvironmentMapping = { realLabel: 'REAL' | 'DEMO'; demoLabel: 'REAL' | 'DEMO' };
-type PublicConfig = { clientId: string; appearance: Appearance; environmentMapping: EnvironmentMapping };
+type ManagedBot = { id: string; name: string; description?: string; emoji?: string; file: string; accent?: string; surface?: string; text?: string; published?: boolean; comingSoon?: boolean; xmlBase64: string; updatedAt: number };
+type PublicConfig = { clientId: string; appearance: Appearance; environmentMapping: EnvironmentMapping; managedBots?: ManagedBot[] };
 
 const defaultAppearance: Appearance = {
     siteName: 'ELISY254',
@@ -32,6 +33,12 @@ const AdminPage = () => {
     const [clientId, setClientId] = useState('');
     const [appearance, setAppearance] = useState<Appearance>(defaultAppearance);
     const [environmentMapping, setEnvironmentMapping] = useState<EnvironmentMapping>({ realLabel: 'REAL', demoLabel: 'DEMO' });
+    const [managedBots, setManagedBots] = useState<ManagedBot[]>([]);
+    const [botName, setBotName] = useState('');
+    const [botDescription, setBotDescription] = useState('');
+    const [botEmoji, setBotEmoji] = useState('🤖');
+    const [botXmlBase64, setBotXmlBase64] = useState('');
+    const [botFile, setBotFile] = useState('');
     const [message, setMessage] = useState('');
     const [busy, setBusy] = useState(false);
 
@@ -42,6 +49,7 @@ const AdminPage = () => {
         setClientId(data.clientId || '');
         setAppearance({ ...defaultAppearance, ...(data.appearance || {}) });
         setEnvironmentMapping({ realLabel: 'REAL', demoLabel: 'DEMO', ...(data.environmentMapping || {}) });
+        setManagedBots(Array.isArray(data.managedBots) ? data.managedBots : []);
     };
 
     const loadSession = async () => {
@@ -86,7 +94,7 @@ const AdminPage = () => {
                 method: 'POST',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-                body: JSON.stringify({ clientId, appearance, environmentMapping }),
+                body: JSON.stringify({ clientId, appearance, environmentMapping, managedBots }),
             });
             const data = await response.json().catch(() => ({}));
             if (!response.ok) throw new Error(data.error_description || 'Could not save settings.');
@@ -126,6 +134,43 @@ const AdminPage = () => {
                     <button type='button' onClick={logout} style={secondaryButtonStyle}>LOG OUT</button>
                 </div>
                 <form onSubmit={save}>
+                    <section style={sectionStyle}>
+                        <h2 style={headingStyle}>Bot Management</h2>
+                        <p style={mutedStyle}>Upload a Blockly XML bot, give it a name, and publish it to the public Free Bots page.</p>
+                        <label style={labelStyle}>Bot XML file
+                            <input style={inputStyle} type='file' accept='.xml,text/xml,application/xml' onChange={e => {
+                                const file = e.target.files?.[0];
+                                if (!file) return;
+                                const reader = new FileReader();
+                                reader.onload = () => {
+                                    const xml = String(reader.result || '');
+                                    if (!/<xml[\s>]/i.test(xml) && !/<block[\s>]/i.test(xml)) { setMessage('Invalid Blockly XML file.'); return; }
+                                    const bytes = new TextEncoder().encode(xml);
+                                    let binary = '';
+                                    bytes.forEach(byte => { binary += String.fromCharCode(byte); });
+                                    setBotXmlBase64(btoa(binary));
+                                    setBotFile(file.name);
+                                    if (!botName) setBotName(file.name.replace(/\.xml$/i, ''));
+                                    setMessage('Bot XML loaded. Add it below, then save and publish.');
+                                };
+                                reader.readAsText(file);
+                            }} />
+                        </label>
+                        <label style={labelStyle}>Bot name<input style={inputStyle} value={botName} onChange={e => setBotName(e.target.value)} placeholder='Elisy234 Sharp' /></label>
+                        <label style={labelStyle}>Description<input style={inputStyle} value={botDescription} onChange={e => setBotDescription(e.target.value)} placeholder='Free bot ready for Bot Builder' /></label>
+                        <label style={labelStyle}>Emoji<input style={inputStyle} value={botEmoji} onChange={e => setBotEmoji(e.target.value)} /></label>
+                        <button type='button' style={secondaryButtonStyle} onClick={() => {
+                            if (!botXmlBase64 || !botName.trim()) { setMessage('Choose an XML bot and enter its name first.'); return; }
+                            const id = `bot-${Date.now()}`;
+                            setManagedBots(current => [...current, { id, name: botName.trim(), description: botDescription.trim(), emoji: botEmoji || '🤖', file: botFile || `${botName.trim()}.xml`, accent: '#00a884', surface: '#091a2b', text: '#ffffff', published: true, comingSoon: false, xmlBase64: botXmlBase64, updatedAt: Date.now() }]);
+                            setBotName(''); setBotDescription(''); setBotEmoji('🤖'); setBotXmlBase64(''); setBotFile('');
+                            setMessage('Bot added. Press SAVE & PUBLISH TO USERS.');
+                        }}>ADD BOT</button>
+                        {managedBots.map(bot => <div key={bot.id} style={{ marginTop: 8, padding: 10, borderRadius: 10, background: '#06111c', display: 'flex', gap: 10, alignItems: 'center' }}>
+                            <span>{bot.emoji || '🤖'}</span><strong style={{ flex: 1 }}>{bot.name}</strong><small>{bot.file}</small>
+                            <button type='button' style={dangerButtonStyle} onClick={() => setManagedBots(current => current.filter(item => item.id !== bot.id))}>DELETE</button>
+                        </div>)}
+                    </section>
                     <section style={sectionStyle}>
                         <h2 style={headingStyle}>Environment mapping — Admin only</h2>
                         <p style={mutedStyle}>This persistent setting is for Admin preview/label testing only. It does not change or disguise the user's actual Deriv account type.</p>
@@ -173,6 +218,7 @@ const mutedStyle: CSSProperties = { color: '#9fb0c0', fontSize: 13, lineHeight: 
 const labelStyle: CSSProperties = { display: 'flex', flexDirection: 'column', gap: 7, margin: '14px 0', fontSize: 13, color: '#dce7ef' };
 const inputStyle: CSSProperties = { width: '100%', boxSizing: 'border-box', padding: '12px 13px', borderRadius: 10, border: '1px solid rgba(255,255,255,.16)', background: '#06111c', color: '#fff', outline: 'none' };
 const buttonStyle: CSSProperties = { width: '100%', marginTop: 16, padding: '13px 16px', border: 0, borderRadius: 10, background: '#00a884', color: '#fff', fontWeight: 800, cursor: 'pointer' };
+const dangerButtonStyle: CSSProperties = { padding: '8px 10px', borderRadius: 8, border: 0, background: '#7b2832', color: '#fff', fontWeight: 700, cursor: 'pointer' };
 const secondaryButtonStyle: CSSProperties = { padding: '11px 14px', borderRadius: 10, border: '1px solid rgba(255,255,255,.16)', background: '#10283c', color: '#fff', fontWeight: 700, cursor: 'pointer' };
 const sectionStyle: CSSProperties = { marginTop: 24, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,.1)' };
 const messageStyle: CSSProperties = { marginTop: 14, color: '#8ff0cf' };
