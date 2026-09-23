@@ -115,30 +115,6 @@ export const StatisticsSummary = ({
     </div>
 );
 
-const DrawerHeader = ({ is_clear_stat_disabled, is_mobile, is_drawer_open, onClearStatClick, onClosePanel }: TDrawerHeader) =>
-    is_mobile &&
-    is_drawer_open && (
-        <div className='run-panel__mobile-header'>
-            <div className='run-panel__mobile-header-actions'>
-            <Button
-                id='db-run-panel__close-button'
-                className='run-panel__close-button'
-                text='⌄'
-                onClick={onClosePanel}
-                secondary
-            />
-            <Button
-            id='db-run-panel__clear-button'
-            className='run-panel__clear-button'
-            disabled={is_clear_stat_disabled}
-            text={localize('Reset')}
-            onClick={onClearStatClick}
-            secondary
-            />
-            </div>
-        </div>
-    );
-
 const DrawerContent = ({ active_index, is_drawer_open, active_tour, setActiveTabIndex, ...props }: TDrawerContent) => {
     const { isDesktop } = useDevice();
     // Use the useBlockScroll hook to prevent body scrolling when drawer is open on mobile
@@ -330,15 +306,8 @@ const RunPanel = observer(() => {
 
     const footer = <DrawerFooter is_clear_stat_disabled={is_clear_stat_disabled} onClearStatClick={onClearStatClick} />;
 
-    const header = (
-        <DrawerHeader
-            is_clear_stat_disabled={is_clear_stat_disabled}
-            is_mobile={!isDesktop}
-            is_drawer_open={is_drawer_open}
-            onClearStatClick={onClearStatClick}
-            onClosePanel={() => toggleDrawer(false)}
-        />
-    );
+    // DBot-style mobile transaction drawer: no separate top toolbar/header.
+    const header = null;
 
     // PROD B uses the native Deriv Run Panel as a global execution surface.
     // Keep it mounted on every authenticated premium section so the same
@@ -461,7 +430,7 @@ const RunPanel = observer(() => {
                         display: flex !important;
                         flex-direction: column !important;
                         width: 100% !important;
-                        height: calc(100dvh - 112px) !important;
+                        height: 100dvh !important;
                         min-height: 0 !important;
                         background: #071525 !important;
                     }
@@ -698,8 +667,8 @@ const RunPanel = observer(() => {
                     .dc-drawer.run-panel .run-panel__content,
                     .run-panel.dc-drawer .run-panel__content {
                         width: 100vw !important;
-                        height: calc(100dvh - 112px) !important;
-                        max-height: calc(100dvh - 112px) !important;
+                        height: 100dvh !important;
+                        max-height: 100dvh !important;
                         background: #071525 !important;
                     }
 
