@@ -6,14 +6,12 @@
     "manual_trading",
     "bot_builder",
     "free_bots",
-    "auto_trader",
+    "dcircle",
     "tradingview",
     "bulk_trader",
-    "speedbot",
     "copy_trading",
     "analysis_tools",
-    "calculator",
-    "batch_trader"
+    "calculator"
   ],
   "colors": {
     "primary": "#020093",
