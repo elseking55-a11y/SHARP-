@@ -24,6 +24,7 @@ import BatchTraderPage from './pages/BatchTraderPage';
 import BulkTraderPage from './pages/BulkTraderPage';
 import CalculatorPage from './pages/CalculatorPage';
 import DashboardHome from './pages/DashboardHome';
+import FreeBotsPage from './pages/FreeBotsPage';
 import {
     AdvancedManualTradingPage,
     AutoTraderPage,
@@ -67,7 +68,7 @@ import './premium-wallet.scss';
 import './premium-site-theme.scss';
 
 const validSections: PremiumSection[] = [
-    'dashboard', 'bot_ideas', 'quick_bot', 'bot_builder', 'signal_ai', 'auto_trader',
+    'dashboard', 'bot_ideas', 'quick_bot', 'bot_builder', 'free_bots', 'signal_ai', 'auto_trader',
     'manual_trading', 'bulk_trader', 'batch_trader', 'copy_trading', 'speedbot', 'calculator', 'pro_ai', 'analysis_tools',
     'analysis_hub', 'charts', 'tradingview', 'dtrader',
 ];
