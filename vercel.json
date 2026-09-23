@@ -1,0 +1,13 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "installCommand": "npm install --legacy-peer-deps",
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://sharp-mz3h.onrender.com/api/:path*" },
+    { "source": "/callback", "destination": "https://sharp-mz3h.onrender.com/callback" },
+    { "source": "/callback/:path*", "destination": "https://sharp-mz3h.onrender.com/callback/:path*" },
+    { "source": "/:path*", "destination": "/index.html" }
+  ]
+}
