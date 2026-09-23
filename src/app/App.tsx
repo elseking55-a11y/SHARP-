@@ -6,6 +6,7 @@ import RoutePromptDialog from '@/components/route-prompt-dialog';
 import { useAccountSwitching } from '@/hooks/useAccountSwitching';
 import { useLanguageFromURL } from '@/hooks/useLanguageFromURL';
 import { useOAuthCallback } from '@/hooks/useOAuthCallback';
+import { useLocation } from 'react-router-dom';
 import { StoreProvider } from '@/hooks/useStore';
 import { OAuthTokenExchangeService } from '@/services/oauth-token-exchange.service';
 import { initializeI18n, TranslationProvider } from '@deriv-com/translations';
@@ -14,6 +15,21 @@ import AdminPage from '../components/admin/AdminPage';
 import './app-root.scss';
 
 const AppRoot = lazy(() => import('./app-root'));
+
+// The old DBot application is heavy and must not mount on the landing page.
+// Load it only when the new SHARP shell actually opens Bot Builder.
+const BuilderRoute = () => {
+    const location = useLocation();
+    const isBotBuilder = location.hash.replace(/^#\\/?/, '').split('?')[0] === 'bot_builder';
+
+    if (!isBotBuilder) return null;
+
+    return (
+        <Suspense fallback={null}>
+            <AppRoot />
+        </Suspense>
+    );
+};
 const i18nInstance = initializeI18n({ cdnUrl: '' });
 
 const LanguageHandler = ({ children }: { children: React.ReactNode }) => {
@@ -39,18 +55,10 @@ const router = createBrowserRouter(
         <>
             <Route path='/admin' element={<AdminPage />} />
             <Route path='/' element={<AppShell />}>
-                <Route index element={
-                    <Suspense fallback={null}>
-                        <AppRoot />
-                    </Suspense>
-                } />
+                <Route index element={<BuilderRoute />} />
             </Route>
             <Route path='/callback' element={<AppShell />}>
-                <Route index element={
-                    <Suspense fallback={null}>
-                        <AppRoot />
-                    </Suspense>
-                } />
+                <Route index element={<BuilderRoute />} />
             </Route>
         </>
     )
