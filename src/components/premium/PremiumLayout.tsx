@@ -177,11 +177,6 @@ const PremiumLayout = observer(() => {
         };
     }, [activateNativeBotBuilder, isAuthenticated, section]);
 
-    useEffect(() => {
-        if (!isAuthenticated) return;
-        if (section === 'manual_trading') dashboard?.setActiveTab(DBOT_TABS.MANUAL_TRADING);
-    }, [dashboard, isAuthenticated, section]);
-
     const startOAuth = useCallback(async (prompt?: string) => {
         try {
             setAuthError(null);
