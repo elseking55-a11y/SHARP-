@@ -22,6 +22,7 @@ const NAV_ICONS: Partial<Record<PremiumSection, typeof HomeIcon>> = {
     copy_trading: CopyIcon,
     analysis_tools: SearchIcon,
     calculator: CalculatorIcon,
+    dcircle: GridIcon,
 };
 
 const NAV_LABELS = Object.fromEntries(NAVIGATION_CATALOG.map(item => [item.id, item.label])) as Partial<Record<PremiumSection, string>>;
@@ -111,7 +112,7 @@ const PremiumHeader = observer(
                     onPointerUp={endPointerDrag}
                     onPointerCancel={endPointerDrag}
                 >
-                    {navigation.map(id => {
+                    {navigation.filter(id => id !== 'analysis_tools').map(id => {
                         const Icon = NAV_ICONS[id];
                         const label = NAV_LABELS[id];
                         if (!Icon || !label) return null;
