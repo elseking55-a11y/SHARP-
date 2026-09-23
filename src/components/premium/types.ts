@@ -7,6 +7,7 @@ export type PremiumSection =
     | 'signal_ai'
     | 'auto_trader'
     | 'manual_trading'
+    | 'dcircle'
     | 'bulk_trader'
     | 'batch_trader'
     | 'copy_trading'
