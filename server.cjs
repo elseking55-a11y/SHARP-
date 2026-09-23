@@ -398,7 +398,8 @@ const saveAdminConfig = async (req, res) => {
         const persisted = savePublicConfig();
         return send(res, persisted ? 200 : 507, JSON.stringify({
             saved: persisted,
-            error_description: persisted ? (ADMIN_CONFIG_IS_PERSISTENT ? undefined : 'Saved on the current Render instance. Mount a persistent disk at /data or set SHARP_ADMIN_CONFIG_PATH to a persistent writable path to keep this setting after redeploys.') : 'No writable config path is available on the Render service.',
+            error_description: persisted ? undefined : 'No writable config path is available on the Render service.',
+            warning: persisted && !ADMIN_CONFIG_IS_PERSISTENT ? 'Saved on the current Render instance. Mount a persistent disk at /data or set SHARP_ADMIN_CONFIG_PATH to a persistent writable path to keep this setting after redeploys.' : undefined,
             ...publicConfig,
         }));
     } catch (error) {
