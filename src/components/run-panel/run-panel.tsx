@@ -616,14 +616,16 @@ const RunPanel = observer(() => {
                     .dc-drawer.run-panel,
                     .run-panel.dc-drawer {
                         position: fixed !important;
-                        top: 0 !important;
+                        /* Keep the premium site header + horizontal navigation visible.
+                           The transaction surface begins directly below them, matching DBot mobile. */
+                        top: 102px !important;
                         left: 0 !important;
                         right: 0 !important;
                         bottom: 0 !important;
                         width: 100vw !important;
                         max-width: 100vw !important;
-                        height: 100dvh !important;
-                        max-height: 100dvh !important;
+                        height: calc(100dvh - 102px) !important;
+                        max-height: calc(100dvh - 102px) !important;
                         background: #071525 !important;
                         z-index: 300 !important;
                         border: 0 !important;
