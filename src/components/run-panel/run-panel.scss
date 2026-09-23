@@ -488,8 +488,12 @@
         display: flex !important;
         align-items: center !important;
         justify-content: space-between !important;
-        background: var(--general-main-1) !important;
-        border-bottom: 1px solid var(--general-section-1) !important;
+        background: linear-gradient(135deg, #0b1d31 0%, #102b45 55%, #0b2238 100%) !important;
+        border: 1px solid rgba(82,224,176,.22) !important;
+        border-radius: 14px !important;
+        margin: 8px 9px !important;
+        width: calc(100% - 18px) !important;
+        box-shadow: 0 10px 26px rgba(0,0,0,.18) !important;
     }
 
     .prodb-premium-shell .prodb-bot-builder-host .run-panel__mobile-balance-account {
@@ -506,9 +510,10 @@
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        background: var(--general-section-1) !important;
-        color: var(--text-general) !important;
+        background: linear-gradient(135deg,#2563eb,#7c3aed) !important;
+        color: #fff !important;
         font-size: 2rem !important;
+        box-shadow: 0 6px 18px rgba(37,99,235,.28) !important;
         font-weight: 700 !important;
         flex: 0 0 4rem !important;
     }
@@ -517,7 +522,7 @@
         display: block !important;
         font-size: 1.15rem !important;
         line-height: 1.25 !important;
-        color: var(--text-less-prominent) !important;
+        color: #8fa8bd !important;
         white-space: nowrap !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
@@ -529,15 +534,15 @@
         margin-top: .15rem !important;
         font-size: 1.55rem !important;
         line-height: 1.2 !important;
-        color: var(--text-general) !important;
-        font-weight: 700 !important;
+        color: #f7fbff !important;
+        font-weight: 900 !important;
         white-space: nowrap !important;
     }
 
     .prodb-premium-shell .prodb-bot-builder-host .run-panel__mobile-balance-chevron {
         font-size: 2.6rem !important;
         line-height: 1 !important;
-        color: var(--text-general) !important;
+        color: #6ff0c2 !important;
         padding: 0 .7rem !important;
     }
 
