@@ -18,7 +18,6 @@ import LandingPage from './LandingPage';
 import CoreStoreProvider from '@/app/CoreStoreProvider';
 import PremiumHeader from './PremiumHeader';
 import PremiumLoader from './PremiumLoader';
-import AnalysisToolsPage from './pages/AnalysisToolsPage';
 import BulkTraderPage from './pages/BulkTraderPage';
 import CalculatorPage from './pages/CalculatorPage';
 import DashboardHome from './pages/DashboardHome';
@@ -62,13 +61,12 @@ import './premium-ai-scanner-v2.scss';
 import './premium-execution-fixes.scss';
 import './premium-calculator.scss';
 import './premium-dcircle.scss';
-import './premium-analysis-tools.scss';
 import './premium-wallet.scss';
 import './premium-site-theme.scss';
 
 const validSections: PremiumSection[] = [
     'dashboard', 'bot_ideas', 'quick_bot', 'bot_builder', 'free_bots', 'signal_ai',
-    'manual_trading', 'dcircle', 'bulk_trader', 'copy_trading', 'calculator', 'pro_ai', 'analysis_tools',
+    'manual_trading', 'dcircle', 'bulk_trader', 'copy_trading', 'calculator', 'pro_ai',
     'analysis_hub', 'charts', 'tradingview', 'dtrader',
 ];
 
@@ -244,7 +242,6 @@ const PremiumLayout = observer(() => {
             case 'copy_trading': return <PatCopyTradingPage />;
             case 'calculator': return <CalculatorPage />;
             case 'pro_ai': return <ProAIPage />;
-            case 'analysis_tools': return <AnalysisToolsPage />;
             case 'analysis_hub': return <SourceAnalysisToolsPage />;
             case 'charts': return <ChartsPage />;
             case 'tradingview': return <TradingViewPage />;
