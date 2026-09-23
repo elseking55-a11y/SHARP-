@@ -115,6 +115,28 @@ export const StatisticsSummary = ({
     </div>
 );
 
+const DrawerHeader = ({ is_clear_stat_disabled, onClearStatClick, onClosePanel }: TDrawerHeader) => (
+    <div className='run-panel__mobile-header'>
+        <div className='run-panel__mobile-header-actions'>
+            <Button
+                id='db-run-panel__close-button'
+                className='run-panel__close-button'
+                text='⌄'
+                onClick={onClosePanel}
+                secondary
+            />
+            <Button
+                id='db-run-panel__clear-button'
+                className='run-panel__clear-button'
+                disabled={is_clear_stat_disabled}
+                text={localize('Reset')}
+                onClick={onClearStatClick}
+                secondary
+            />
+        </div>
+    </div>
+);
+
 const DrawerContent = ({ active_index, is_drawer_open, active_tour, setActiveTabIndex, ...props }: TDrawerContent) => {
     const { isDesktop } = useDevice();
     // Use the useBlockScroll hook to prevent body scrolling when drawer is open on mobile
@@ -307,7 +329,13 @@ const RunPanel = observer(() => {
     const footer = <DrawerFooter is_clear_stat_disabled={is_clear_stat_disabled} onClearStatClick={onClearStatClick} />;
 
     // DBot-style mobile transaction drawer: no separate top toolbar/header.
-    const header = null;
+    const header = (
+        <DrawerHeader
+            is_clear_stat_disabled={is_clear_stat_disabled}
+            onClearStatClick={onClearStatClick}
+            onClosePanel={() => toggleDrawer(false)}
+        />
+    );
 
     // PROD B uses the native Deriv Run Panel as a global execution surface.
     // Keep it mounted on every authenticated premium section so the same
