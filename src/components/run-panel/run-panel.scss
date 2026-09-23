@@ -473,3 +473,113 @@
         }
     }
 }
+
+
+/* FINAL MOBILE BOT-BUILDER TRANSACTION SURFACE
+   Match the reference: no duplicate balance card, dark toolbar/tabs,
+   dark content and stats, and the bottom Run/Open transaction dock. */
+@media (max-width: 768px) {
+    body .run-panel__mobile-balance {
+        display: none !important;
+    }
+
+    body .run-panel__mobile-header {
+        width: 100vw !important;
+        height: 112px !important;
+        min-height: 112px !important;
+        padding: 0 !important;
+        background: #0b0b0b !important;
+        color: #f7f7f7 !important;
+    }
+
+    body .run-panel__mobile-header-actions {
+        width: 100% !important;
+        height: 112px !important;
+        min-height: 112px !important;
+        padding: 0 24px !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        background: #0b0b0b !important;
+    }
+
+    body .run-panel__mobile-header .run-panel__close-button,
+    body .run-panel__mobile-header .run-panel__clear-button {
+        background: #0b0b0b !important;
+        color: #f7f7f7 !important;
+        border: 1px solid #5a5a5a !important;
+        border-radius: 15px !important;
+        box-shadow: none !important;
+    }
+
+    body .run-panel__mobile-header .run-panel__close-button {
+        width: 108px !important;
+        min-width: 108px !important;
+        height: 86px !important;
+    }
+
+    body .run-panel__mobile-header .run-panel__clear-button {
+        width: 170px !important;
+        min-width: 170px !important;
+        height: 86px !important;
+    }
+
+    body .run-panel__container--mobile,
+    body .run-panel__container--mobile .run-panel,
+    body .run-panel__container--mobile .run-panel__content {
+        background: #071525 !important;
+        color: #f5f7fa !important;
+    }
+
+    body .run-panel__container--mobile .dc-tabs,
+    body .run-panel__container--mobile .tabs,
+    body .run-panel__container--mobile .dc-tabs__content,
+    body .run-panel__container--mobile .tabs__content {
+        background: #071525 !important;
+    }
+
+    body .run-panel__container--mobile .dc-tabs__list,
+    body .run-panel__container--mobile .tabs__list {
+        background: #151515 !important;
+        border-bottom: 1px solid #222 !important;
+    }
+
+    body .run-panel__container--mobile .dc-tabs__item,
+    body .run-panel__container--mobile .tabs__item {
+        color: #aebbd0 !important;
+    }
+
+    body .run-panel__container--mobile .dc-tabs__item--active,
+    body .run-panel__container--mobile .tabs__item--active {
+        color: #f1f5f9 !important;
+        border-bottom-color: #3b82f6 !important;
+    }
+
+    body .run-panel__container--mobile .transactions,
+    body .run-panel__container--mobile [class*="transactions"],
+    body .run-panel__container--mobile .run-panel__stat--mobile {
+        background: #071525 !important;
+        color: #f5f7fa !important;
+    }
+
+    body .run-panel__container--mobile .run-panel__stat--mobile {
+        background: #151515 !important;
+        border-top: 1px solid #273244 !important;
+    }
+
+    body .run-panel__container--mobile .run-panel__tile {
+        background: #0b0f14 !important;
+        border-color: #2c3a4d !important;
+        color: #f5f7fa !important;
+    }
+
+    body .controls__section {
+        background: #071525 !important;
+        border-top: 1px solid #273244 !important;
+    }
+
+    body .controls__buttons {
+        background: #071525 !important;
+    }
+}
