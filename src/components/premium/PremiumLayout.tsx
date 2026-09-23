@@ -40,6 +40,7 @@ import PatCopyTradingPage from './pages/PatCopyTradingPage';
 import SpeedBotPage from './pages/SpeedBotPage';
 import { isCustomizableSection, useSiteCustomization } from './site-customization';
 import { getStoredDerivApiToken, SHARP_OFFLINE_MODE } from '@/config/runtime-mode';
+import { writeManagedBots, type ManagedBot } from '@/utils/managed-bot-library';
 import { api_base } from '@/external/bot-skeleton/services/api/api-base';
 import { DerivWSAccountsService } from '@/services/derivws-accounts.service';
 import type { PremiumSection } from './types';
@@ -321,6 +322,7 @@ const PremiumLayout = observer(() => {
             .then(config => {
                 if (!alive || !config) return;
                 if (config.clientId) localStorage.setItem('sharp_deriv_client_id', String(config.clientId));
+                if (Array.isArray(config.managedBots)) writeManagedBots(config.managedBots as ManagedBot[]);
                 if (config.appearance) setPublicAppearance(config.appearance);
                 if (config.appearance?.siteName) document.title = String(config.appearance.siteName);
             })
