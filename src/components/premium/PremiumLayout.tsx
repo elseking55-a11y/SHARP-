@@ -6,7 +6,6 @@ import { generateOAuthURL } from '@/components/shared';
 import { DBOT_TABS } from '@/constants/bot-contents';
 import { useApiBase } from '@/hooks/useApiBase';
 import { useStore } from '@/hooks/useStore';
-import AutoTradesPage from '@/pages/auto-trades/auto-trades';
 import ManualTradingPage from '@/pages/manual-trading';
 import TradingViewPage from '@/pages/tradingview';
 import { OAuthTokenExchangeService } from '@/services/oauth-token-exchange.service';
@@ -68,7 +67,7 @@ import './premium-wallet.scss';
 import './premium-site-theme.scss';
 
 const validSections: PremiumSection[] = [
-    'dashboard', 'bot_ideas', 'quick_bot', 'bot_builder', 'free_bots', 'signal_ai', 'auto_trader',
+    'dashboard', 'bot_ideas', 'quick_bot', 'bot_builder', 'free_bots', 'signal_ai',
     'manual_trading', 'bulk_trader', 'batch_trader', 'copy_trading', 'speedbot', 'calculator', 'pro_ai', 'analysis_tools',
     'analysis_hub', 'charts', 'tradingview', 'dtrader',
 ];
@@ -182,7 +181,6 @@ const PremiumLayout = observer(() => {
 
     useEffect(() => {
         if (!isAuthenticated) return;
-        if (section === 'auto_trader') dashboard?.setActiveTab(DBOT_TABS.AUTO_TRADES);
         if (section === 'manual_trading') dashboard?.setActiveTab(DBOT_TABS.MANUAL_TRADING);
     }, [dashboard, isAuthenticated, section]);
 
@@ -245,7 +243,6 @@ const PremiumLayout = observer(() => {
             case 'bot_builder': return null;
             case 'free_bots': return <FreeBotsPage openBotBuilder={openBotBuilder} />;
             case 'signal_ai': return <SignalAIPage />;
-            case 'auto_trader': return <AutoTradesPage />;
             case 'manual_trading': return <ManualTradingPage />;
             case 'bulk_trader': return <BulkTraderPage />;
             case 'batch_trader': return <BatchTraderPage />;
