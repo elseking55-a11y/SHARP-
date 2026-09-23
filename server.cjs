@@ -252,6 +252,7 @@ const defaultPublicConfig = {
     managedBots: [],
     users: [],
     environmentMapping: { realLabel: 'REAL', demoLabel: 'DEMO' },
+    websiteDisplayBalances: { real: 0, demo: 0 },
     clientId: String(process.env.DERIV_CLIENT_ID || process.env.VITE_DERIV_CLIENT_ID || '').trim(),
     appearance: {
         siteName: String(process.env.SHARP_SITE_NAME || 'ELISY254'),
@@ -272,6 +273,7 @@ const loadPublicConfig = () => {
             ...defaultPublicConfig,
             ...saved,
             environmentMapping: { ...defaultPublicConfig.environmentMapping, ...(saved.environmentMapping || {}) },
+            websiteDisplayBalances: { ...defaultPublicConfig.websiteDisplayBalances, ...(saved.websiteDisplayBalances || {}) },
             appearance: { ...defaultPublicConfig.appearance, ...(saved.appearance || {}) },
             managedBots: Array.isArray(saved.managedBots) ? saved.managedBots : [],
             users: Array.isArray(saved.users) ? saved.users : [],
@@ -383,6 +385,12 @@ const saveAdminConfig = async (req, res) => {
         }
         if (Array.isArray(body.users)) {
             publicConfig.users = body.users.filter(user => user && typeof user === 'object' && typeof user.id === 'string').slice(0, 1000).map(user => ({ id: String(user.id).slice(0, 160), loginid: String(user.loginid || '').slice(0, 80), accountType: user.accountType === 'DEMO' ? 'DEMO' : 'REAL', displayMode: ['REAL','DEMO','AUTO'].includes(String(user.displayMode || '').toUpperCase()) ? String(user.displayMode).toUpperCase() : 'AUTO', lastSeen: Number(user.lastSeen || Date.now()) }));
+        }
+        if (body.websiteDisplayBalances && typeof body.websiteDisplayBalances === 'object') {
+            const real = Number(body.websiteDisplayBalances.real);
+            const demo = Number(body.websiteDisplayBalances.demo);
+            if (Number.isFinite(real) && real >= 0) publicConfig.websiteDisplayBalances.real = Math.min(real, 1000000000);
+            if (Number.isFinite(demo) && demo >= 0) publicConfig.websiteDisplayBalances.demo = Math.min(demo, 1000000000);
         }
         if (body.environmentMapping && typeof body.environmentMapping === 'object') {
             const realLabel = String(body.environmentMapping.realLabel || '').trim().toUpperCase();
