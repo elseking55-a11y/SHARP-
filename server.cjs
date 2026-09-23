@@ -234,6 +234,7 @@ const ADMIN_CONFIG_PATH = process.env.SHARP_ADMIN_CONFIG_PATH || '/data/sharp-ad
 
 const defaultPublicConfig = {
     managedBots: [],
+    users: [],
     environmentMapping: { realLabel: 'REAL', demoLabel: 'DEMO' },
     clientId: String(process.env.DERIV_CLIENT_ID || process.env.VITE_DERIV_CLIENT_ID || '').trim(),
     appearance: {
@@ -257,6 +258,7 @@ const loadPublicConfig = () => {
             environmentMapping: { ...defaultPublicConfig.environmentMapping, ...(saved.environmentMapping || {}) },
             appearance: { ...defaultPublicConfig.appearance, ...(saved.appearance || {}) },
             managedBots: Array.isArray(saved.managedBots) ? saved.managedBots : [],
+            users: Array.isArray(saved.users) ? saved.users : [],
         };
     } catch (error) {
         console.warn('[Admin config] Could not load persistent config:', error.message);
@@ -356,8 +358,14 @@ const saveAdminConfig = async (req, res) => {
                     published: bot.published !== false,
                     comingSoon: bot.comingSoon === true,
                     xmlBase64: String(bot.xmlBase64),
+                    splash: bot.splash !== false,
+                    splashColor: String(bot.splashColor || bot.accent || '#2563eb').slice(0, 20),
+                    splashText: String(bot.splashText || '').slice(0, 80),
                     updatedAt: Number(bot.updatedAt || Date.now()),
                 }));
+        }
+        if (Array.isArray(body.users)) {
+            publicConfig.users = body.users.filter(user => user && typeof user === 'object' && typeof user.id === 'string').slice(0, 1000).map(user => ({ id: String(user.id).slice(0, 160), loginid: String(user.loginid || '').slice(0, 80), accountType: user.accountType === 'DEMO' ? 'DEMO' : 'REAL', displayMode: ['REAL','DEMO','AUTO'].includes(String(user.displayMode || '').toUpperCase()) ? String(user.displayMode).toUpperCase() : 'AUTO', lastSeen: Number(user.lastSeen || Date.now()) }));
         }
         if (body.environmentMapping && typeof body.environmentMapping === 'object') {
             const realLabel = String(body.environmentMapping.realLabel || '').trim().toUpperCase();
@@ -381,7 +389,44 @@ const saveAdminConfig = async (req, res) => {
     }
 };
 
-const publicConfigEndpoint = (req, res) => send(res, 200, JSON.stringify(publicConfig));
+const publicConfigEndpoint = (req, res) => {
+    const userId = String(req.headers.cookie || '').split(';').map(item => item.trim()).find(item => item.startsWith('sharp_user_id='))?.slice('sharp_user_id='.length) || '';
+    const user = publicConfig.users.find(item => item.id === userId);
+    const environmentMapping = { ...publicConfig.environmentMapping };
+    if (user?.displayMode === 'REAL') { environmentMapping.realLabel = 'REAL'; environmentMapping.demoLabel = 'REAL'; }
+    if (user?.displayMode === 'DEMO') { environmentMapping.realLabel = 'DEMO'; environmentMapping.demoLabel = 'DEMO'; }
+    const safe = { ...publicConfig, users: undefined, environmentMapping }; delete safe.users; return send(res, 200, JSON.stringify(safe));
+};
+
+const registerSharpUser = async (req, res) => {
+    try {
+        const body = JSON.parse(await readBody(req) || '{}');
+        const loginid = String(body.loginid || '').trim().slice(0, 80);
+        if (!loginid) return send(res, 400, JSON.stringify({ registered: false, error_description: 'Deriv login ID is required.' }));
+        const id = crypto.createHash('sha256').update(loginid).digest('hex').slice(0, 32);
+        const accountType = String(body.accountType || '').toUpperCase() === 'DEMO' ? 'DEMO' : 'REAL';
+        const existing = publicConfig.users.find(item => item.id === id);
+        const user = existing || { id, loginid, accountType, displayMode: 'AUTO', lastSeen: Date.now() };
+        user.loginid = loginid; user.accountType = accountType; user.lastSeen = Date.now();
+        if (!existing) publicConfig.users.push(user);
+        savePublicConfig();
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'Set-Cookie': `sharp_user_id=${id}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=2592000` });
+        return res.end(JSON.stringify({ registered: true, user: { id, loginid, accountType, displayMode: user.displayMode } }));
+    } catch (error) { return send(res, 400, JSON.stringify({ registered: false, error_description: error.message })); }
+};
+
+const adminUsers = (req, res) => { if (!hasAdminSession(req)) return send(res, 401, JSON.stringify({ error: 'admin_required' })); return send(res, 200, JSON.stringify({ users: publicConfig.users })); };
+const saveAdminUsers = async (req, res) => {
+    if (!hasAdminSession(req)) return send(res, 401, JSON.stringify({ error: 'admin_required' }));
+    try {
+        const body = JSON.parse(await readBody(req) || '{}');
+        const id = String(body.id || '').trim(); const displayMode = String(body.displayMode || 'AUTO').toUpperCase();
+        if (!id || !['AUTO','REAL','DEMO'].includes(displayMode)) return send(res, 400, JSON.stringify({ error: 'invalid_user_setting' }));
+        const user = publicConfig.users.find(item => item.id === id); if (!user) return send(res, 404, JSON.stringify({ error: 'user_not_found' }));
+        user.displayMode = displayMode; user.lastSeen = Date.now(); const persisted = savePublicConfig();
+        return send(res, persisted ? 200 : 507, JSON.stringify({ saved: persisted, user }));
+    } catch (error) { return send(res, 400, JSON.stringify({ saved: false, error_description: error.message })); }
+};
 
 const mime = {
     '.html': 'text/html; charset=utf-8',
@@ -437,8 +482,11 @@ const server = http.createServer(async (req, res) => {
     if (req.method === 'POST' && url.pathname === '/api/admin/logout') return adminLogout(req, res);
     if (req.method === 'GET' && url.pathname === '/api/admin/session') return send(res, 200, JSON.stringify({ authenticated: hasAdminSession(req), configured: Boolean(ADMIN_EMAIL && ADMIN_PASSWORD && ADMIN_SESSION_SECRET) }));
     if (req.method === 'GET' && url.pathname === '/api/admin/config') return adminConfig(req, res);
+    if (req.method === 'GET' && url.pathname === '/api/admin/users') return adminUsers(req, res);
+    if (req.method === 'POST' && url.pathname === '/api/admin/users') return saveAdminUsers(req, res);
     if (req.method === 'POST' && url.pathname === '/api/admin/config') return saveAdminConfig(req, res);
     if (req.method === 'GET' && url.pathname === '/api/public-config') return publicConfigEndpoint(req, res);
+    if (req.method === 'POST' && url.pathname === '/api/sharp/user') return registerSharpUser(req, res);
 
     if (req.method === 'POST' && url.pathname === '/api/auth/login') return appLogin(req, res);
     if (req.method === 'POST' && url.pathname === '/api/auth/logout') return appLogout(req, res);
