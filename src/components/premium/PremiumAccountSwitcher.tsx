@@ -328,7 +328,7 @@ const LivePremiumAccountSwitcher = observer(() => {
                             <AccountIcon account={account} mapping={environmentMapping} />
                             <span className='prodb-api-account__choice-copy'>
                                 <strong>{getVisualAccountType(account, environmentMapping) === 'REAL' ? 'Real' : 'Demo'}</strong>
-                                <small>{account.account_id}</small>
+                                <small>{getVisualAccountType(account, environmentMapping) === 'REAL' ? websiteDisplayLoginIds.real : websiteDisplayLoginIds.demo}</small>
                             </span>
                             <b>{money(balanceFor(account), account.currency || 'USD')}</b>
                             {selected && <span className='prodb-api-account__selected-mark'>✓</span>}
