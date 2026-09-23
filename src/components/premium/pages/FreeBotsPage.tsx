@@ -73,14 +73,12 @@ const FreeBotsPage = ({ openBotBuilder }: { openBotBuilder?: () => void }) => {
                                     } as CSSProperties
                                 }
                             >
+                                {bot.splash !== false && <div style={{ minHeight: 76, borderRadius: 14, display: 'grid', placeItems: 'center', marginBottom: 10, background: `linear-gradient(135deg, ${bot.splashColor || bot.accent || '#2563eb'}, ${bot.surface || '#071521'})`, color: bot.text || '#fff', fontWeight: 900, letterSpacing: 1.2, boxShadow: `0 12px 28px ${bot.splashColor || bot.accent || '#2563eb'}55` }}>{bot.splashText || 'SHARP MIND'}</div>}
                                 <div className='prodb-bot-card__badge'>
-                                    {bot.imageBase64 || bot.imageUrl ? (
-                                        <img src={bot.imageBase64 || bot.imageUrl} alt='' />
-                                    ) : (
-                                        bot.emoji || '🤖'
-                                    )}
+                                    {bot.imageBase64 || bot.imageUrl ? <img src={bot.imageBase64 || bot.imageUrl} alt='' /> : (bot.emoji || '🤖')}
                                 </div>
                                 <h2>{name}</h2>
+                                {bot.description && <p style={{ color: bot.text || '#fff', opacity: .72, margin: '4px 0 10px' }}>{bot.description}</p>}
                                 <div className='prodb-bot-card__actions'>
                                     <button
                                         className='prodb-load-bot'
