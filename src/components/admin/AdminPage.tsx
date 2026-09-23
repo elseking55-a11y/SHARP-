@@ -28,6 +28,7 @@ const AdminPage = () => {
     const [managedBots, setManagedBots] = useState<ManagedBot[]>([]), [users, setUsers] = useState<SharpUser[]>([]);
     const [tab, setTab] = useState<'dashboard' | 'appearance' | 'bots' | 'settings' | 'sharp'>('dashboard');
     const [botName, setBotName] = useState(''), [botDescription, setBotDescription] = useState(''), [botEmoji, setBotEmoji] = useState('🤖');
+    const [editingBotId, setEditingBotId] = useState<string | null>(null);
     const [botXmlBase64, setBotXmlBase64] = useState(''), [botFile, setBotFile] = useState('');
     const [botColor, setBotColor] = useState('#2563eb'), [botSurface, setBotSurface] = useState('#071a2d'), [botText, setBotText] = useState('#ffffff');
     const [botSplash, setBotSplash] = useState(true), [botSplashText, setBotSplashText] = useState('SHARP MIND');
@@ -89,14 +90,25 @@ const AdminPage = () => {
 
     const addBot = () => {
         if (!botXmlBase64 || !botName.trim()) { setMessage('Choose an XML bot and enter its name first.'); return; }
-        const id = 'bot-' + Date.now();
-        setManagedBots(current => [...current, {
-            id, name: botName.trim(), description: botDescription.trim(), emoji: botEmoji || '🤖', file: botFile || botName.trim() + '.xml',
+        const nextBot = {
+            id: editingBotId || 'bot-' + Date.now(), name: botName.trim(), description: botDescription.trim(), emoji: botEmoji || '🤖', file: botFile || botName.trim() + '.xml',
             accent: botColor, surface: botSurface, text: botText, published: true, comingSoon: false, xmlBase64: botXmlBase64,
             splash: botSplash, splashColor: botColor, splashText: botSplashText.trim() || 'SHARP MIND', updatedAt: Date.now()
-        }]);
+        };
+        setManagedBots(current => editingBotId
+            ? current.map(bot => bot.id === editingBotId ? { ...bot, ...nextBot } : bot)
+            : [...current, nextBot]);
+        setEditingBotId(null);
         setBotName(''); setBotDescription(''); setBotEmoji('🤖'); setBotXmlBase64(''); setBotFile('');
-        setMessage('Bot added. Save & Publish to send it to Free Bot.');
+        setMessage(editingBotId ? 'Bot edited. Save & Publish to apply the changes.' : 'Bot added. Save & Publish to send it to Free Bot.');
+    };
+    const editBot = (bot: ManagedBot) => {
+        setEditingBotId(bot.id);
+        setBotName(bot.name); setBotDescription(bot.description || ''); setBotEmoji(bot.emoji || '🤖');
+        setBotXmlBase64(bot.xmlBase64); setBotFile(bot.file); setBotColor(bot.accent || '#2563eb');
+        setBotSurface(bot.surface || '#071a2d'); setBotText(bot.text || '#ffffff');
+        setBotSplash(bot.splash !== false); setBotSplashText(bot.splashText || 'SHARP MIND');
+        setMessage('Editing ' + bot.name + '. Update the fields, then press SAVE BOT CHANGES.');
     };
 
     const stats = useMemo(() => ({ users: users.length, bots: managedBots.length, published: managedBots.filter(b => b.published !== false).length }), [users, managedBots]);
@@ -139,8 +151,8 @@ const AdminPage = () => {
                 <div style={colorChoiceRow}>{colorChoices.map(([name,color])=><button type='button' key={name} title={name} onClick={()=>setBotColor(color)} style={{...colorChoice,background:color}}>{name}</button>)}</div>
                 <label style={checkRow}><input type='checkbox' checked={botSplash} onChange={e=>setBotSplash(e.target.checked)} /> SHOW SPLASH</label>
                 {botSplash && <label style={label}>Splash text<input style={input} value={botSplashText} onChange={e=>setBotSplashText(e.target.value)} placeholder='SHARP MIND' /></label>}
-                <button type='button' style={secondaryButton} onClick={addBot}>ADD BOT</button>
-                <div style={{ marginTop: 18 }}>{managedBots.map(bot => <div key={bot.id} style={{ ...botRow, borderColor: bot.accent || '#2563eb' }}><span style={{ fontSize: 24 }}>{bot.emoji || '🤖'}</span><div style={{ flex: 1 }}><b>{bot.name}</b><div style={muted}>{bot.splash === false ? 'No splash' : 'Splash enabled'} · {bot.file}</div></div><button type='button' style={danger} onClick={()=>setManagedBots(current=>current.filter(x=>x.id!==bot.id))}>DELETE</button></div>)}</div>
+                <button type='button' style={secondaryButton} onClick={addBot}>{editingBotId ? 'SAVE BOT CHANGES' : 'ADD BOT'}</button>
+                <div style={{ marginTop: 18 }}>{managedBots.map(bot => <div key={bot.id} style={{ ...botRow, borderColor: bot.accent || '#2563eb' }}><span style={{ fontSize: 24 }}>{bot.emoji || '🤖'}</span><div style={{ flex: 1 }}><b>{bot.name}</b><div style={muted}>{bot.splash === false ? 'No splash' : 'Splash enabled'} · {bot.file}</div></div><button type='button' style={ghostButton} onClick={()=>editBot(bot)}>EDIT</button><button type='button' style={danger} onClick={()=>setManagedBots(current=>current.filter(x=>x.id!==bot.id))}>DELETE</button></div>)}</div>
                 <button style={primaryButton} disabled={busy}>{busy ? 'SAVING…' : 'SAVE & PUBLISH BOTS'}</button>
             </form>}
 
