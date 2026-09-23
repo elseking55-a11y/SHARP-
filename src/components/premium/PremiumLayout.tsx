@@ -62,6 +62,7 @@ import './premium-ai-scanner-v2.scss';
 import './premium-execution-fixes.scss';
 import './premium-calculator.scss';
 import './premium-dcircle.scss';
+import './premium-analysis-tools.scss';
 import './premium-wallet.scss';
 import './premium-site-theme.scss';
 
