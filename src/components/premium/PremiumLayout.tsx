@@ -316,6 +316,17 @@ const PremiumLayout = observer(() => {
     } | null>(null);
 
     useEffect(() => {
+        if (!activeLoginid) return;
+        const accountType = /^VRTC/i.test(String(activeLoginid)) ? 'DEMO' : 'REAL';
+        void fetch('/api/sharp/user', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({ loginid: activeLoginid, accountType }),
+        }).catch(() => undefined);
+    }, [activeLoginid]);
+
+    useEffect(() => {
         let alive = true;
         fetch('/api/public-config', { cache: 'no-store' })
             .then(response => response.ok ? response.json() : null)
