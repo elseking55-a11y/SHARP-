@@ -614,6 +614,99 @@ const RunPanel = observer(() => {
                         color: #171717 !important;
                     }
                 }
+
+                    /* Drawer is rendered in a portal, so these selectors must be global. */
+                    .dc-drawer.run-panel,
+                    .run-panel.dc-drawer {
+                        position: fixed !important;
+                        top: 0 !important;
+                        left: 0 !important;
+                        right: 0 !important;
+                        bottom: 0 !important;
+                        width: 100vw !important;
+                        max-width: 100vw !important;
+                        height: 100dvh !important;
+                        max-height: 100dvh !important;
+                        background: #071525 !important;
+                        z-index: 300 !important;
+                        border: 0 !important;
+                        box-shadow: none !important;
+                    }
+
+                    .dc-drawer.run-panel .run-panel__mobile-header,
+                    .run-panel.dc-drawer .run-panel__mobile-header {
+                        display: block !important;
+                        position: relative !important;
+                        z-index: 20 !important;
+                        width: 100vw !important;
+                        height: 112px !important;
+                        min-height: 112px !important;
+                        background: #0b0b0b !important;
+                        visibility: visible !important;
+                        opacity: 1 !important;
+                    }
+
+                    .dc-drawer.run-panel .run-panel__mobile-header-actions,
+                    .run-panel.dc-drawer .run-panel__mobile-header-actions {
+                        display: flex !important;
+                        position: relative !important;
+                        z-index: 21 !important;
+                        align-items: center !important;
+                        justify-content: space-between !important;
+                        width: 100% !important;
+                        height: 112px !important;
+                        padding: 0 24px !important;
+                        box-sizing: border-box !important;
+                        background: #0b0b0b !important;
+                    }
+
+                    .dc-drawer.run-panel .run-panel__close-button,
+                    .dc-drawer.run-panel .run-panel__clear-button,
+                    .run-panel.dc-drawer .run-panel__close-button,
+                    .run-panel.dc-drawer .run-panel__clear-button {
+                        display: flex !important;
+                        visibility: visible !important;
+                        opacity: 1 !important;
+                        position: relative !important;
+                        z-index: 22 !important;
+                        align-items: center !important;
+                        justify-content: center !important;
+                        flex: 0 0 auto !important;
+                        background: #0b0b0b !important;
+                        color: #ffffff !important;
+                        border: 2px solid #777777 !important;
+                        border-radius: 15px !important;
+                        font-size: 22px !important;
+                        font-weight: 900 !important;
+                        box-shadow: none !important;
+                    }
+
+                    .dc-drawer.run-panel .run-panel__close-button,
+                    .run-panel.dc-drawer .run-panel__close-button {
+                        width: 108px !important;
+                        min-width: 108px !important;
+                        height: 86px !important;
+                    }
+
+                    .dc-drawer.run-panel .run-panel__clear-button,
+                    .run-panel.dc-drawer .run-panel__clear-button {
+                        width: 170px !important;
+                        min-width: 170px !important;
+                        height: 86px !important;
+                    }
+
+                    .dc-drawer.run-panel .run-panel__content,
+                    .run-panel.dc-drawer .run-panel__content {
+                        width: 100vw !important;
+                        height: calc(100dvh - 112px) !important;
+                        max-height: calc(100dvh - 112px) !important;
+                        background: #071525 !important;
+                    }
+
+                    .dc-drawer.run-panel .dc-tabs__list,
+                    .run-panel.dc-drawer .dc-tabs__list {
+                        background: #151515 !important;
+                    }
             `}</style>    `}</style>
 
             <StatisticsInfoModal
