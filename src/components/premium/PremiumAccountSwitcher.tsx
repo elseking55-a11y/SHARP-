@@ -49,6 +49,7 @@ const getVisualAccountType = (account: DerivAccount | undefined, mapping: Enviro
 // balance source, token, OTP, WebSocket endpoint, or the trading account.
 const DEFAULT_ENVIRONMENT_MAPPING: EnvironmentMapping = { realLabel: 'REAL', demoLabel: 'DEMO' };
 type WebsiteDisplayBalances = { real: number; demo: number };
+type WebsiteDisplayLoginIds = { real: string; demo: string };
 
 type MenuPosition = {
     top?: number;
@@ -90,6 +91,7 @@ const LivePremiumAccountSwitcher = observer(() => {
     const [error, setError] = useState('');
     const [environmentMapping, setEnvironmentMapping] = useState<EnvironmentMapping>(DEFAULT_ENVIRONMENT_MAPPING);
     const [websiteDisplayBalances, setWebsiteDisplayBalances] = useState<WebsiteDisplayBalances>({ real: 0, demo: 0 });
+    const [websiteDisplayLoginIds, setWebsiteDisplayLoginIds] = useState<WebsiteDisplayLoginIds>({ real: 'ROT92654805', demo: 'DOT94513037' });
     const [, refreshRealFlag] = useState(0);
 
     useEffect(() => {
@@ -108,6 +110,10 @@ const LivePremiumAccountSwitcher = observer(() => {
                 const mapping = data?.environmentMapping;
                 if (!cancelled && mapping && (mapping.realLabel === 'REAL' || mapping.realLabel === 'DEMO') && (mapping.demoLabel === 'REAL' || mapping.demoLabel === 'DEMO')) {
                     setEnvironmentMapping({ realLabel: mapping.realLabel, demoLabel: mapping.demoLabel });
+                }
+                const loginIds = data?.websiteDisplayLoginIds;
+                if (!cancelled && loginIds) {
+                    setWebsiteDisplayLoginIds({ real: String(loginIds.real || 'ROT92654805'), demo: String(loginIds.demo || 'DOT94513037') });
                 }
                 const balances = data?.websiteDisplayBalances;
                 if (!cancelled && balances) {
@@ -232,8 +238,10 @@ const LivePremiumAccountSwitcher = observer(() => {
     const lastKnownRealCurrency = localStorage.getItem('sharp_last_real_currency') || activeCurrency || 'USD';
     const visualActiveType = getVisualAccountType(active, environmentMapping);
     const websiteDisplayBalance = visualActiveType === 'REAL' ? websiteDisplayBalances.real : websiteDisplayBalances.demo;
+    const websiteDisplayLoginId = visualActiveType === 'REAL' ? websiteDisplayLoginIds.real : websiteDisplayLoginIds.demo;
     const hasWebsiteDisplayBalance = Number.isFinite(websiteDisplayBalance) && websiteDisplayBalance > 0;
     const displayBalance = connected ? (hasWebsiteDisplayBalance ? money(websiteDisplayBalance, activeCurrency) : money(activeBalance, activeCurrency)) : lastKnownRealBalance ? money(lastKnownRealBalance, lastKnownRealCurrency) : '— USD';
+    const displayLoginId = websiteDisplayLoginId || activeId || '—';
 
     // Keep only the last confirmed Deriv real balance locally so the header can
     // display a clearly labelled last-known value while the WebSocket is offline.
@@ -350,7 +358,8 @@ const LivePremiumAccountSwitcher = observer(() => {
                 <AccountIcon account={active} mapping={environmentMapping} />
                 <span className='prodb-api-account__current'>
                     <small>{connected ? (getVisualAccountType(active, environmentMapping) === 'REAL' ? 'Real' : 'Demo') : 'OFFLINE · LAST KNOWN REAL'}</small>
-                    <strong>{displayBalance}</strong>
+                    <strong>{displayLoginId}</strong>
+                    <span className='prodb-api-account__balance'>{displayBalance}</span>
                 </span>
                 <span className={`prodb-api-account__chevron ${open ? 'is-open' : ''}`}>⌄</span>
             </button>
