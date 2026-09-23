@@ -233,6 +233,7 @@ const ADMIN_COOKIE = 'sharp_admin_session';
 const ADMIN_CONFIG_PATH = process.env.SHARP_ADMIN_CONFIG_PATH || '/data/sharp-admin-config.json';
 
 const defaultPublicConfig = {
+    managedBots: [],
     environmentMapping: { realLabel: 'REAL', demoLabel: 'DEMO' },
     clientId: String(process.env.DERIV_CLIENT_ID || process.env.VITE_DERIV_CLIENT_ID || '').trim(),
     appearance: {
@@ -255,6 +256,7 @@ const loadPublicConfig = () => {
             ...saved,
             environmentMapping: { ...defaultPublicConfig.environmentMapping, ...(saved.environmentMapping || {}) },
             appearance: { ...defaultPublicConfig.appearance, ...(saved.appearance || {}) },
+            managedBots: Array.isArray(saved.managedBots) ? saved.managedBots : [],
         };
     } catch (error) {
         console.warn('[Admin config] Could not load persistent config:', error.message);
@@ -338,6 +340,25 @@ const saveAdminConfig = async (req, res) => {
         const body = JSON.parse(await readBody(req) || '{}');
         const appearance = body.appearance || {};
         publicConfig.clientId = String(body.clientId || '').trim();
+        if (Array.isArray(body.managedBots)) {
+            publicConfig.managedBots = body.managedBots
+                .filter(bot => bot && typeof bot === 'object' && typeof bot.id === 'string' && typeof bot.name === 'string' && typeof bot.file === 'string' && typeof bot.xmlBase64 === 'string')
+                .slice(0, 50)
+                .map(bot => ({
+                    id: String(bot.id).slice(0, 120),
+                    name: String(bot.name).slice(0, 120),
+                    description: String(bot.description || '').slice(0, 300),
+                    emoji: String(bot.emoji || '🤖').slice(0, 12),
+                    file: String(bot.file).slice(0, 180),
+                    accent: String(bot.accent || '').slice(0, 20),
+                    surface: String(bot.surface || '').slice(0, 20),
+                    text: String(bot.text || '').slice(0, 20),
+                    published: bot.published !== false,
+                    comingSoon: bot.comingSoon === true,
+                    xmlBase64: String(bot.xmlBase64),
+                    updatedAt: Number(bot.updatedAt || Date.now()),
+                }));
+        }
         if (body.environmentMapping && typeof body.environmentMapping === 'object') {
             const realLabel = String(body.environmentMapping.realLabel || '').trim().toUpperCase();
             const demoLabel = String(body.environmentMapping.demoLabel || '').trim().toUpperCase();
