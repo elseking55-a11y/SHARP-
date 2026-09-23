@@ -38,10 +38,6 @@
       "label": "Copy Trading"
     },
     {
-      "id": "analysis_tools",
-      "label": "Analysis Tool"
-    },
-    {
       "id": "calculator",
       "label": "Calculator"
     }
@@ -56,7 +52,6 @@
       "tradingview",
       "bulk_trader",
       "copy_trading",
-      "analysis_tools",
       "calculator"
     ],
     "colors": {
