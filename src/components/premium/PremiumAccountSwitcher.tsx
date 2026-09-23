@@ -237,10 +237,14 @@ const LivePremiumAccountSwitcher = observer(() => {
     const lastKnownRealBalance = localStorage.getItem('sharp_last_real_balance') || '';
     const lastKnownRealCurrency = localStorage.getItem('sharp_last_real_currency') || activeCurrency || 'USD';
     const visualActiveType = getVisualAccountType(active, environmentMapping);
-    const websiteDisplayBalance = visualActiveType === 'REAL' ? websiteDisplayBalances.real : websiteDisplayBalances.demo;
-    const websiteDisplayLoginId = visualActiveType === 'REAL' ? websiteDisplayLoginIds.real : websiteDisplayLoginIds.demo;
-    const hasWebsiteDisplayBalance = Number.isFinite(websiteDisplayBalance) && websiteDisplayBalance > 0;
-    const displayBalance = connected ? (hasWebsiteDisplayBalance ? money(websiteDisplayBalance, activeCurrency) : money(activeBalance, activeCurrency)) : lastKnownRealBalance ? money(lastKnownRealBalance, lastKnownRealCurrency) : '— USD';
+    // Balance source is ALWAYS the real underlying Deriv account type.
+    // Admin's Demo/Real appearance mapping changes labels/icons only.
+    const isUnderlyingReal = active?.account_type === 'real';
+    const fixedDemoBalance = Number(websiteDisplayBalances.demo) >= 0 ? websiteDisplayBalances.demo : 0;
+    const displayLoginId = websiteDisplayLoginIds[visualActiveType === 'REAL' ? 'real' : 'demo'] || activeId || '—';
+    const displayBalance = connected
+        ? (isUnderlyingReal ? money(activeBalance, activeCurrency) : money(fixedDemoBalance, activeCurrency))
+        : lastKnownRealBalance ? money(lastKnownRealBalance, lastKnownRealCurrency) : '— USD';
     const displayLoginId = websiteDisplayLoginId || activeId || '—';
 
     // Keep only the last confirmed Deriv real balance locally so the header can
@@ -291,8 +295,12 @@ const LivePremiumAccountSwitcher = observer(() => {
 
     const balanceFor = (account: DerivAccount) => {
         const visualType = getVisualAccountType(account, environmentMapping);
-        const configured = visualType === 'REAL' ? websiteDisplayBalances.real : websiteDisplayBalances.demo;
-        return Number.isFinite(configured) && configured > 0 ? configured : (account.account_id === activeId ? activeBalance : account.balance);
+        // Never use the visual label to choose the balance source.
+        // Real = live Deriv balance. Demo = fixed website display balance.
+        if (account.account_type === 'real') {
+            return account.account_id === activeId ? activeBalance : account.balance;
+        }
+        return Number(websiteDisplayBalances.demo) >= 0 ? websiteDisplayBalances.demo : 0;
     };
 
     const menu = open && menuPosition && typeof document !== 'undefined'
