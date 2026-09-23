@@ -20,7 +20,7 @@ export const NAVIGATION_CATALOG: Array<{ id: PremiumSection; label: string; requ
     { id: 'dashboard', label: 'Dashboard', required: true },
     { id: 'bot_builder', label: 'Bot Builder' },
     { id: 'free_bots', label: 'Free Bot' },
-    { id: 'manual_trading', label: 'Manual Trading' },
+    { id: 'manual_trading', label: 'Manual Trading', required: true },
     { id: 'tradingview', label: 'TradingView' },
     { id: 'bulk_trader', label: 'Bulk Trader' },
     { id: 'batch_trader', label: 'Batch Trader' },
@@ -54,9 +54,12 @@ const normalizeNavigation = (value: unknown): PremiumSection[] => {
         .map(item => String(item) as PremiumSection)
         .filter(item => CATALOG_IDS.has(item) && !seen.has(item) && Boolean(seen.add(item)));
 
-    // Dashboard is the safe landing destination and cannot be removed by a domain configuration.
-    if (!navigation.includes('dashboard')) navigation.unshift('dashboard');
-    return navigation.length ? navigation : ['dashboard'];
+    // Dashboard and Manual Trading are core user pages and cannot be removed by a domain configuration.
+    const requiredSections = NAVIGATION_CATALOG.filter(item => item.required).map(item => item.id);
+    requiredSections.forEach(required => {
+        if (!navigation.includes(required)) navigation.push(required);
+    });
+    return navigation.length ? navigation : [...DEFAULT_NAVIGATION];
 };
 
 const normalizeColors = (value: unknown): SiteThemeColors => {
