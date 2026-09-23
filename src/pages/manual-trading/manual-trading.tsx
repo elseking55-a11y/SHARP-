@@ -1147,6 +1147,11 @@ const ManualTrading = observer(() => {
             className={classNames('manual-trading-page', {
                 'manual-trading-page--dark': ui.is_dark_mode_on,
             })}
+            onKeyDownCapture={event => {
+                // Keep keyboard input inside Manual Trading. Do not let native
+                // Deriv dashboard keyboard shortcuts change the active page.
+                event.stopPropagation();
+            }}
         >
             <section className='manual-trading-toolbar'>
                 <label className='manual-trading-field manual-trading-field--market'>
