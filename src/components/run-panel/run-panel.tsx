@@ -116,23 +116,27 @@ export const StatisticsSummary = ({
 );
 
 const DrawerHeader = ({ is_clear_stat_disabled, onClearStatClick, onClosePanel }: TDrawerHeader) => (
-    <div className='run-panel__mobile-header'>
+    <div className='run-panel__mobile-header' role='toolbar' aria-label='Transaction controls'>
         <div className='run-panel__mobile-header-actions'>
-            <Button
+            <button
                 id='db-run-panel__close-button'
+                type='button'
                 className='run-panel__close-button'
-                text='⌄'
                 onClick={onClosePanel}
-                secondary
-            />
-            <Button
+                aria-label={localize('Back')}
+            >
+                <span aria-hidden='true'>⌄</span>
+                <span>Back</span>
+            </button>
+            <button
                 id='db-run-panel__clear-button'
+                type='button'
                 className='run-panel__clear-button'
                 disabled={is_clear_stat_disabled}
-                text={localize('Reset')}
                 onClick={onClearStatClick}
-                secondary
-            />
+            >
+                {localize('Reset')}
+            </button>
         </div>
     </div>
 );
@@ -661,6 +665,37 @@ const RunPanel = observer(() => {
                         background: #0b0b0b !important;
                     }
 
+                    .dc-drawer.run-panel .run-panel__mobile-header,
+                    .run-panel.dc-drawer .run-panel__mobile-header {
+                        display: flex !important;
+                        align-items: center !important;
+                        justify-content: center !important;
+                        width: 100% !important;
+                        height: 72px !important;
+                        min-height: 72px !important;
+                        max-height: 72px !important;
+                        padding: 0 !important;
+                        background: #0b0b0b !important;
+                        visibility: visible !important;
+                        opacity: 1 !important;
+                        overflow: visible !important;
+                        box-sizing: border-box !important;
+                    }
+
+                    .dc-drawer.run-panel .run-panel__mobile-header-actions,
+                    .run-panel.dc-drawer .run-panel__mobile-header-actions {
+                        display: flex !important;
+                        align-items: center !important;
+                        justify-content: space-between !important;
+                        width: 100% !important;
+                        height: 72px !important;
+                        min-height: 72px !important;
+                        padding: 0 14px !important;
+                        gap: 12px !important;
+                        background: #0b0b0b !important;
+                        box-sizing: border-box !important;
+                    }
+
                     .dc-drawer.run-panel .run-panel__close-button,
                     .dc-drawer.run-panel .run-panel__clear-button,
                     .run-panel.dc-drawer .run-panel__close-button,
@@ -684,16 +719,28 @@ const RunPanel = observer(() => {
 
                     .dc-drawer.run-panel .run-panel__close-button,
                     .run-panel.dc-drawer .run-panel__close-button {
-                        width: 108px !important;
-                        min-width: 108px !important;
-                        height: 86px !important;
+                        width: 112px !important;
+                        min-width: 112px !important;
+                        height: 48px !important;
+                        min-height: 48px !important;
+                        padding: 0 12px !important;
+                        gap: 7px !important;
+                        cursor: pointer !important;
+                    }
+
+                    .dc-drawer.run-panel .run-panel__close-button span:last-child,
+                    .run-panel.dc-drawer .run-panel__close-button span:last-child {
+                        font-size: 15px !important;
                     }
 
                     .dc-drawer.run-panel .run-panel__clear-button,
                     .run-panel.dc-drawer .run-panel__clear-button {
-                        width: 170px !important;
-                        min-width: 170px !important;
-                        height: 86px !important;
+                        width: 112px !important;
+                        min-width: 112px !important;
+                        height: 48px !important;
+                        min-height: 48px !important;
+                        padding: 0 12px !important;
+                        cursor: pointer !important;
                     }
 
                     .dc-drawer.run-panel .run-panel__content,
