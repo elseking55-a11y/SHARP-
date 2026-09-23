@@ -21,6 +21,11 @@
       "required": true
     },
     {
+      "id": "dcircle",
+      "label": "Dcircle",
+      "required": true
+    },
+    {
       "id": "tradingview",
       "label": "TradingView"
     },
@@ -47,6 +52,7 @@
       "bot_builder",
       "free_bots",
       "manual_trading",
+      "dcircle",
       "tradingview",
       "bulk_trader",
       "copy_trading",
