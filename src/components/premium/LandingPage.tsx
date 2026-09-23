@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { getCurrentSiteConfig } from '@/config/site-registry';
 import BrandMark from './BrandMark';
 import { BoltIcon, ChevronIcon, PulseIcon } from './icons';
@@ -22,7 +21,7 @@ const reviews = [
 ];
 
 interface Props {
-    onLogin: (email: string, password: string) => Promise<void>;
+    onDerivLogin: (prompt?: string) => Promise<void>;
     busy?: boolean;
     error?: string | null;
 }
@@ -41,16 +40,8 @@ const ReviewCard = ({ item }: { item: string[] }) => (
     </article>
 );
 
-const LandingPage = ({ onLogin, busy, error }: Props) => {
+const LandingPage = ({ onDerivLogin, busy, error }: Props) => {
     const site = getCurrentSiteConfig();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [showLogin, setShowLogin] = useState(false);
-
-    const submit = async (event: React.FormEvent) => {
-        event.preventDefault();
-        await onLogin(email, password);
-    };
 
     return (
         <div className='prodb-landing'>
@@ -58,7 +49,7 @@ const LandingPage = ({ onLogin, busy, error }: Props) => {
                 <BrandMark dark />
                 <span className='prodb-landing__domain'>{site.display_domain}</span>
                 <div className='prodb-landing__actions'>
-                    <button className='prodb-btn prodb-btn--outline-dark' onClick={() => setShowLogin(true)} disabled={busy}>Log in</button>
+                    <button className='prodb-btn prodb-btn--outline-dark' onClick={() => void onDerivLogin()} disabled={busy}>Log in</button>
                 </div>
             </header>
             <PremiumTicker />
@@ -74,10 +65,10 @@ const LandingPage = ({ onLogin, busy, error }: Props) => {
                         </div>
                     )}
                     <div className='prodb-hero__actions'>
-                        <button className='prodb-hero__primary' onClick={() => setShowLogin(true)} disabled={busy}>
+                        <button className='prodb-hero__primary' onClick={() => void onDerivLogin()} disabled={busy}>
                             <PulseIcon /><span>{busy ? 'Connecting...' : 'Log in and Trade'}</span><ChevronIcon />
                         </button>
-                        <button className='prodb-hero__secondary' onClick={() => setShowLogin(true)} disabled={busy}>
+                        <button className='prodb-hero__secondary' onClick={() => void onDerivLogin()} disabled={busy}>
                             <BoltIcon /><span>Create Free Account</span>
                         </button>
                     </div>
@@ -95,19 +86,9 @@ const LandingPage = ({ onLogin, busy, error }: Props) => {
                     </div>
                 </section>
                 <footer className='prodb-landing__footer'>© 2026 PROD B TRADER. All rights reserved.</footer>
-                {showLogin && (
-                    <div role='dialog' aria-modal='true' className='prodb-app-login-overlay'>
-                        <form className='prodb-app-login-card' onSubmit={submit}>
-                            <button type='button' className='prodb-app-login-close' onClick={() => setShowLogin(false)} aria-label='Close'>×</button>
-                            <BrandMark dark />
-                            <span className='prodb-app-login-kicker'>PRIVATE ACCESS</span>
-                            <h2>Sign in</h2>
-                            <p>Use the account credentials configured by the application owner.</p>
-                            {error && <div role='alert' className='prodb-app-login-error'>{error}</div>}
-                            <label>Email address<input type='email' autoComplete='username' value={email} onChange={e => setEmail(e.target.value)} required disabled={busy} /></label>
-                            <label>Password<input type='password' autoComplete='current-password' value={password} onChange={e => setPassword(e.target.value)} required disabled={busy} /></label>
-                            <button className='prodb-app-login-submit' type='submit' disabled={busy}>{busy ? 'SIGNING IN…' : 'SIGN IN'}</button>
-                        </form>
+                {error && (
+                    <div role='status' aria-live='polite' style={{ margin: '12px auto 0', maxWidth: 520, padding: '9px 12px', border: '1px solid #7f3434', borderRadius: 6, color: '#ffb4b4', background: 'rgba(80, 15, 15, .35)', fontSize: 9, lineHeight: 1.4 }}>
+                        {error}
                     </div>
                 )}
             </main>
