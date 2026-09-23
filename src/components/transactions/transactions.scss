@@ -488,3 +488,121 @@
         border-color: #16263a !important;
     }
 }
+
+
+/* SHARP mobile transaction rows — global because the Drawer is portalled to
+   document.body, so the transaction list is not always inside the premium
+   shell wrapper. This matches the dark Deriv-style transaction surface. */
+@media (max-width: 768px) {
+    body .transactions {
+        width: 100% !important;
+        background: #071525 !important;
+        color: #f1f5f9 !important;
+    }
+
+    body .transactions__header {
+        width: 100% !important;
+        height: 48px !important;
+        min-height: 48px !important;
+        padding: 0 12px !important;
+        box-sizing: border-box !important;
+        background: #071525 !important;
+        color: #94a3b8 !important;
+        border-bottom: 1px solid #1d2b3c !important;
+    }
+
+    body .transactions__content--mobile,
+    body .transactions__scrollbar,
+    body .transactions__mobile-list {
+        width: 100% !important;
+        background: #071525 !important;
+        color: #f1f5f9 !important;
+    }
+
+    body .transactions__item-wrapper {
+        width: 100% !important;
+        height: 76px !important;
+        min-height: 76px !important;
+        margin: 0 !important;
+        padding: 0 12px !important;
+        box-sizing: border-box !important;
+        background: #071525 !important;
+        border-top: 1px solid #142538 !important;
+        border-bottom: 0 !important;
+        border-radius: 0 !important;
+    }
+
+    body .transactions__item-wrapper:hover {
+        background: #0b1a2b !important;
+    }
+
+    body .transactions__item {
+        width: 100% !important;
+        height: 76px !important;
+        min-height: 76px !important;
+        padding: 8px 0 !important;
+        box-sizing: border-box !important;
+        background: #071525 !important;
+        color: #e5e7eb !important;
+    }
+
+    body .transactions__cell {
+        color: #e5e7eb !important;
+    }
+
+    body .transactions__cell .dc-text,
+    body .transactions__entry-spot,
+    body .transactions__exit-spot,
+    body .transactions__stake {
+        color: #e5e7eb !important;
+    }
+
+    /* Positive contract P/L: cyan/green like the reference. */
+    body .transactions__profit--win,
+    body .transactions__profit--win *,
+    body .transactions__profit--win .dc-text {
+        color: #00c7b7 !important;
+        font-weight: 800 !important;
+    }
+
+    /* Negative contract P/L: red like the reference. */
+    body .transactions__profit--loss,
+    body .transactions__profit--loss *,
+    body .transactions__profit--loss .dc-text {
+        color: #ec3157 !important;
+        font-weight: 800 !important;
+    }
+
+    body .transactions__profit--win::before {
+        color: #00c7b7 !important;
+    }
+
+    body .transactions__profit--loss::before {
+        color: #ec3157 !important;
+    }
+
+    body .transactions__icon svg,
+    body .transactions__trade-type svg {
+        color: #8ea0b7 !important;
+    }
+
+    body .transactions__divider {
+        background: #071525 !important;
+        border-color: #142538 !important;
+    }
+
+    body .transactions__divider-line {
+        background: #142538 !important;
+    }
+
+    /* Loading placeholders must also stay dark instead of becoming white. */
+    body .transactions__loader-text {
+        background: #142538 !important;
+    }
+
+    body .transactions-empty,
+    body .transactions-empty-box {
+        background: #071525 !important;
+        color: #94a3b8 !important;
+    }
+}
