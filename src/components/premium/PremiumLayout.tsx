@@ -196,7 +196,10 @@ const PremiumLayout = observer(() => {
     }, [setIsAuthorizing]);
 
     const changeSection = useCallback((requested: PremiumSection) => {
-        const next = isCustomizableSection(requested) && !customization.navigation.includes(requested)
+        const requiredNavigation: PremiumSection[] = ['dashboard', 'manual_trading', 'dcircle'];
+        const next = isCustomizableSection(requested) &&
+            !customization.navigation.includes(requested) &&
+            !requiredNavigation.includes(requested)
             ? 'dashboard'
             : requested;
 
