@@ -23,8 +23,6 @@ export const NAVIGATION_CATALOG: Array<{ id: PremiumSection; label: string; requ
     { id: 'manual_trading', label: 'Manual Trading', required: true },
     { id: 'tradingview', label: 'TradingView' },
     { id: 'bulk_trader', label: 'Bulk Trader' },
-    { id: 'batch_trader', label: 'Batch Trader' },
-    { id: 'speedbot', label: 'Speed Bot' },
     { id: 'copy_trading', label: 'Copy Trading' },
     { id: 'analysis_tools', label: 'Analysis Tool' },
     { id: 'calculator', label: 'Calculator' },
