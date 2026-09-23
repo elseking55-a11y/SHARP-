@@ -252,6 +252,7 @@ const defaultPublicConfig = {
     managedBots: [],
     users: [],
     environmentMapping: { realLabel: 'REAL', demoLabel: 'DEMO' },
+    websiteDisplayLoginIds: { real: 'ROT92654805', demo: 'DOT94513037' },
     websiteDisplayBalances: { real: 0, demo: 0 },
     clientId: String(process.env.DERIV_CLIENT_ID || process.env.VITE_DERIV_CLIENT_ID || '').trim(),
     appearance: {
@@ -273,6 +274,7 @@ const loadPublicConfig = () => {
             ...defaultPublicConfig,
             ...saved,
             environmentMapping: { ...defaultPublicConfig.environmentMapping, ...(saved.environmentMapping || {}) },
+            websiteDisplayLoginIds: { ...defaultPublicConfig.websiteDisplayLoginIds, ...(saved.websiteDisplayLoginIds || {}) },
             websiteDisplayBalances: { ...defaultPublicConfig.websiteDisplayBalances, ...(saved.websiteDisplayBalances || {}) },
             appearance: { ...defaultPublicConfig.appearance, ...(saved.appearance || {}) },
             managedBots: Array.isArray(saved.managedBots) ? saved.managedBots : [],
@@ -386,6 +388,12 @@ const saveAdminConfig = async (req, res) => {
         if (Array.isArray(body.users)) {
             publicConfig.users = body.users.filter(user => user && typeof user === 'object' && typeof user.id === 'string').slice(0, 1000).map(user => ({ id: String(user.id).slice(0, 160), loginid: String(user.loginid || '').slice(0, 80), accountType: user.accountType === 'DEMO' ? 'DEMO' : 'REAL', displayMode: ['REAL','DEMO','AUTO'].includes(String(user.displayMode || '').toUpperCase()) ? String(user.displayMode).toUpperCase() : 'AUTO', lastSeen: Number(user.lastSeen || Date.now()) }));
         }
+        if (body.websiteDisplayLoginIds && typeof body.websiteDisplayLoginIds === 'object') {
+            const real = String(body.websiteDisplayLoginIds.real || '').trim().slice(0, 80);
+            const demo = String(body.websiteDisplayLoginIds.demo || '').trim().slice(0, 80);
+            if (real) publicConfig.websiteDisplayLoginIds.real = real;
+            if (demo) publicConfig.websiteDisplayLoginIds.demo = demo;
+        }
         if (body.websiteDisplayBalances && typeof body.websiteDisplayBalances === 'object') {
             const real = Number(body.websiteDisplayBalances.real);
             const demo = Number(body.websiteDisplayBalances.demo);
@@ -419,9 +427,10 @@ const publicConfigEndpoint = (req, res) => {
     const userId = String(req.headers.cookie || '').split(';').map(item => item.trim()).find(item => item.startsWith('sharp_user_id='))?.slice('sharp_user_id='.length) || '';
     const user = publicConfig.users.find(item => item.id === userId);
     const environmentMapping = { ...publicConfig.environmentMapping };
+    const websiteDisplayLoginIds = { ...publicConfig.websiteDisplayLoginIds };
     if (user?.displayMode === 'REAL') { environmentMapping.realLabel = 'REAL'; environmentMapping.demoLabel = 'REAL'; }
     if (user?.displayMode === 'DEMO') { environmentMapping.realLabel = 'DEMO'; environmentMapping.demoLabel = 'DEMO'; }
-    const safe = { ...publicConfig, users: undefined, environmentMapping }; delete safe.users; return send(res, 200, JSON.stringify(safe));
+    const safe = { ...publicConfig, users: undefined, environmentMapping, websiteDisplayLoginIds }; delete safe.users; return send(res, 200, JSON.stringify(safe));
 };
 
 const registerSharpUser = async (req, res) => {
