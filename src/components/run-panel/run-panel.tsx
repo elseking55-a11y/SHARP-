@@ -842,6 +842,203 @@ const RunPanel = observer(() => {
                     .run-panel.dc-drawer .dc-tabs__list {
                         background: #151515 !important;
                     }
+
+                    /* FINAL DBOT-STYLE MOBILE TRANSACTION LAYOUT.
+                       Normal premium header contains the page/account balance.
+                       This drawer starts underneath it and contains only
+                       Back/Reset -> Summary/Transactions/Journal -> stats. */
+                    @media (max-width: 767px) {
+                        .dc-drawer.run-panel .run-panel__mobile-header,
+                        .run-panel.dc-drawer .run-panel__mobile-header {
+                            display: flex !important;
+                            align-items: center !important;
+                            justify-content: center !important;
+                            width: 100% !important;
+                            height: 56px !important;
+                            min-height: 56px !important;
+                            max-height: 56px !important;
+                            padding: 0 !important;
+                            margin: 0 !important;
+                            background: #0b0f14 !important;
+                            border-bottom: 1px solid #243244 !important;
+                        }
+
+                        .dc-drawer.run-panel .run-panel__mobile-header-actions,
+                        .run-panel.dc-drawer .run-panel__mobile-header-actions {
+                            display: flex !important;
+                            align-items: center !important;
+                            justify-content: space-between !important;
+                            width: 100% !important;
+                            height: 56px !important;
+                            padding: 0 10px !important;
+                            gap: 10px !important;
+                            background: transparent !important;
+                        }
+
+                        .dc-drawer.run-panel .run-panel__close-button,
+                        .dc-drawer.run-panel .run-panel__clear-button,
+                        .run-panel.dc-drawer .run-panel__close-button,
+                        .run-panel.dc-drawer .run-panel__clear-button {
+                            display: flex !important;
+                            align-items: center !important;
+                            justify-content: center !important;
+                            width: auto !important;
+                            min-width: 88px !important;
+                            height: 40px !important;
+                            min-height: 40px !important;
+                            padding: 0 12px !important;
+                            border: 1px solid #475569 !important;
+                            border-radius: 10px !important;
+                            background: #111827 !important;
+                            color: #ffffff !important;
+                            font-size: 14px !important;
+                            font-weight: 900 !important;
+                        }
+
+                        .dc-drawer.run-panel .run-panel__close-button {
+                            justify-content: flex-start !important;
+                            gap: 5px !important;
+                        }
+
+                        .dc-drawer.run-panel .run-panel__close-button span:first-child {
+                            font-size: 18px !important;
+                            line-height: 1 !important;
+                        }
+
+                        .dc-drawer.run-panel .run-panel__close-button span:last-child {
+                            font-size: 14px !important;
+                        }
+
+                        .dc-drawer.run-panel .run-panel__content,
+                        .run-panel.dc-drawer .run-panel__content {
+                            height: calc(100dvh - 56px) !important;
+                            max-height: calc(100dvh - 56px) !important;
+                            overflow: hidden !important;
+                            background: #071525 !important;
+                        }
+
+                        .dc-drawer.run-panel .dc-tabs,
+                        .run-panel.dc-drawer .dc-tabs,
+                        .dc-drawer.run-panel .tabs,
+                        .run-panel.dc-drawer .tabs {
+                            height: 100% !important;
+                            min-height: 0 !important;
+                            background: #071525 !important;
+                        }
+
+                        .dc-drawer.run-panel .dc-tabs__list,
+                        .run-panel.dc-drawer .dc-tabs__list,
+                        .dc-drawer.run-panel .tabs__list,
+                        .run-panel.dc-drawer .tabs__list {
+                            display: flex !important;
+                            flex: 0 0 48px !important;
+                            height: 48px !important;
+                            min-height: 48px !important;
+                            max-height: 48px !important;
+                            background: #0d1724 !important;
+                            border-bottom: 1px solid #27364a !important;
+                        }
+
+                        .dc-drawer.run-panel .dc-tabs__item,
+                        .run-panel.dc-drawer .dc-tabs__item,
+                        .dc-drawer.run-panel .tabs__item,
+                        .run-panel.dc-drawer .tabs__item {
+                            flex: 1 1 33.333% !important;
+                            height: 48px !important;
+                            min-height: 48px !important;
+                            padding: 0 4px !important;
+                            display: flex !important;
+                            align-items: center !important;
+                            justify-content: center !important;
+                            color: #94a3b8 !important;
+                            font-size: 13px !important;
+                            font-weight: 800 !important;
+                        }
+
+                        .dc-drawer.run-panel .dc-tabs__item--active,
+                        .run-panel.dc-drawer .dc-tabs__item--active,
+                        .dc-drawer.run-panel .tabs__item--active,
+                        .run-panel.dc-drawer .tabs__item--active {
+                            color: #ffffff !important;
+                            border-bottom: 3px solid #3b82f6 !important;
+                        }
+
+                        .dc-drawer.run-panel .dc-tabs__content,
+                        .run-panel.dc-drawer .dc-tabs__content,
+                        .dc-drawer.run-panel .tabs__content,
+                        .run-panel.dc-drawer .tabs__content {
+                            height: auto !important;
+                            min-height: 0 !important;
+                            flex: 1 1 auto !important;
+                            overflow: auto !important;
+                            background: #071525 !important;
+                        }
+
+                        /* Compact horizontally scrollable real statistics. */
+                        .dc-drawer.run-panel .run-panel__stat--mobile,
+                        .run-panel.dc-drawer .run-panel__stat--mobile {
+                            height: 104px !important;
+                            min-height: 104px !important;
+                            max-height: 104px !important;
+                            margin: 0 !important;
+                            padding: 0 !important;
+                            background: #0b1220 !important;
+                            border-top: 1px solid #27364a !important;
+                        }
+
+                        .dc-drawer.run-panel .run-panel__stat--info,
+                        .run-panel.dc-drawer .run-panel__stat--info {
+                            display: none !important;
+                        }
+
+                        .dc-drawer.run-panel .run-panel__stat--tiles,
+                        .run-panel.dc-drawer .run-panel__stat--tiles {
+                            display: flex !important;
+                            flex-wrap: nowrap !important;
+                            align-items: stretch !important;
+                            width: 100% !important;
+                            height: 104px !important;
+                            padding: 8px 10px !important;
+                            gap: 8px !important;
+                            overflow-x: auto !important;
+                            overflow-y: hidden !important;
+                            box-sizing: border-box !important;
+                        }
+
+                        .dc-drawer.run-panel .run-panel__tile,
+                        .run-panel.dc-drawer .run-panel__tile {
+                            flex: 0 0 108px !important;
+                            width: 108px !important;
+                            min-width: 108px !important;
+                            height: 88px !important;
+                            margin: 0 !important;
+                            padding: 10px 8px !important;
+                            border: 1px solid #26364a !important;
+                            border-radius: 10px !important;
+                            background: #101b2a !important;
+                            box-sizing: border-box !important;
+                        }
+
+                        .dc-drawer.run-panel .run-panel__tile-title,
+                        .run-panel.dc-drawer .run-panel__tile-title {
+                            margin: 0 !important;
+                            color: #8ea0b7 !important;
+                            font-size: 9px !important;
+                            line-height: 1.2 !important;
+                            font-weight: 800 !important;
+                            text-transform: uppercase !important;
+                        }
+
+                        .dc-drawer.run-panel .run-panel__tile-content,
+                        .run-panel.dc-drawer .run-panel__tile-content {
+                            margin-top: 8px !important;
+                            color: #ffffff !important;
+                            font-size: 15px !important;
+                            line-height: 1.1 !important;
+                            font-weight: 900 !important;
+                        }
+                    }
+
             `}</style>
 
             <StatisticsInfoModal
