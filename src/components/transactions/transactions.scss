@@ -330,3 +330,92 @@
         }
     }
 }
+
+
+/* =========================================================
+   SHARP MOBILE TRANSACTIONS — FULL MOBILE VISION
+   Match the Bot Builder transaction view to the mobile layout:
+   full-width panel, tabs at top, content in the middle,
+   horizontal statistics cards, bottom run dock.
+   ========================================================= */
+@media (max-width: 768px) {
+    .prodb-premium-shell .prodb-bot-builder-host .transactions {
+        width: 100% !important;
+        max-width: 100vw !important;
+        min-width: 0 !important;
+        height: 100% !important;
+        min-height: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
+        background: var(--sharp-surface, #071525) !important;
+    }
+
+    .prodb-premium-shell .prodb-bot-builder-host .transactions .transaction-details__button-container {
+        display: none !important;
+    }
+
+    .prodb-premium-shell .prodb-bot-builder-host .transactions__header {
+        flex: 0 0 48px !important;
+        min-height: 48px !important;
+        height: 48px !important;
+        box-sizing: border-box !important;
+        padding: 0 12px !important;
+        background: var(--sharp-surface-2, #111b28) !important;
+    }
+
+    .prodb-premium-shell .prodb-bot-builder-host .transactions__content--mobile {
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        height: auto !important;
+        width: 100% !important;
+        overflow: hidden !important;
+    }
+
+    .prodb-premium-shell .prodb-bot-builder-host .transactions__scrollbar {
+        width: 100% !important;
+        height: 100% !important;
+        min-height: 0 !important;
+        overflow: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .prodb-premium-shell .prodb-bot-builder-host .transactions__mobile-list {
+        width: 100% !important;
+        min-height: 100% !important;
+        box-sizing: border-box !important;
+        padding: 4px 0 12px !important;
+    }
+
+    .prodb-premium-shell .prodb-bot-builder-host .transactions__item-wrapper {
+        width: calc(100% - 16px) !important;
+        min-width: 0 !important;
+        min-height: 64px !important;
+        height: 64px !important;
+        margin: 6px 8px !important;
+        box-sizing: border-box !important;
+        border-radius: 12px !important;
+        background: var(--sharp-surface, #0b1727) !important;
+        border: 1px solid var(--sharp-border, #26334a) !important;
+    }
+
+    .prodb-premium-shell .prodb-bot-builder-host .transactions__item {
+        min-height: 62px !important;
+        padding: 7px 9px !important;
+        box-sizing: border-box !important;
+        font-size: 12px !important;
+    }
+
+    .prodb-premium-shell .prodb-bot-builder-host .transactions-empty-box {
+        width: 100% !important;
+        height: 100% !important;
+        min-height: 0 !important;
+    }
+
+    .prodb-premium-shell .prodb-bot-builder-host .transactions-empty {
+        min-height: 100% !important;
+        padding: 20px !important;
+        box-sizing: border-box !important;
+        justify-content: center !important;
+    }
+}
