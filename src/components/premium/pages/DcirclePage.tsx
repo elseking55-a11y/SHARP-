@@ -102,6 +102,22 @@ const DcirclePage = observer(() => {
     const total = digits.length;
     const getPercentage = (count: number) => (total ? (count / total) * 100 : 0);
 
+    // The ring colors are driven by the LIVE distribution, not fixed digits:
+    // highest occurrence = green, second highest = blue,
+    // lowest occurrence = red, second lowest = yellow.
+    const rankedDigits = useMemo(
+        () => [...counts].sort((a, b) => b.count - a.count || a.digit - b.digit),
+        [counts]
+    );
+    const liveColorByDigit = useMemo(() => {
+        const colors = new Map<number, string>();
+        if (rankedDigits.length >= 1) colors.set(rankedDigits[0].digit, 'dcircle-digit--green');
+        if (rankedDigits.length >= 2) colors.set(rankedDigits[1].digit, 'dcircle-digit--blue');
+        if (rankedDigits.length >= 2) colors.set(rankedDigits[rankedDigits.length - 2].digit, 'dcircle-digit--yellow');
+        if (rankedDigits.length >= 1) colors.set(rankedDigits[rankedDigits.length - 1].digit, 'dcircle-digit--red');
+        return colors;
+    }, [rankedDigits]);
+
     return (
         <main className='dcircle-page'>
             <header className='dcircle-header'>
@@ -155,16 +171,7 @@ const DcirclePage = observer(() => {
                 <div className='dcircle-grid'>
                     {counts.map(item => {
                         const percentage = getPercentage(item.count);
-                        const accentClass =
-                            item.digit === 2
-                                ? 'dcircle-digit--red'
-                                : item.digit === 3
-                                  ? 'dcircle-digit--yellow'
-                                  : item.digit === 4
-                                    ? 'dcircle-digit--green'
-                                    : item.digit === 8
-                                      ? 'dcircle-digit--blue'
-                                      : '';
+                        const accentClass = liveColorByDigit.get(item.digit) ?? '';
 
                         return (
                             <div
