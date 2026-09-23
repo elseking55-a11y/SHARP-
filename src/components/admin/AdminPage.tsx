@@ -143,11 +143,11 @@ const AdminPage = () => {
 
             {tab === 'settings' && <form onSubmit={save}>
                 <h2 style={heading}>SETTINGS</h2><p style={muted}>Server-side Deriv OAuth setting. Keep secrets out of the browser.</p>
-                <label style={label}>Deriv Client ID<input style={input} value={clientId} onChange={e=>setClientId(e.target.value)} placeholder='Your Deriv Client ID' /></label>
+                <label style={label}>Admin Deriv Client ID<input style={input} value={clientId} onChange={e=>setClientId(e.target.value)} placeholder='Your Deriv Client ID' /></label>
                 <div style={infoCard}><b>Account mapping defaults</b>
                     <div style={grid}><label style={label}>REAL account shows<select style={input} value={environmentMapping.realLabel} onChange={e=>setEnvironmentMapping({...environmentMapping,realLabel:e.target.value as any})}><option>REAL</option><option>DEMO</option></select></label>
                     <label style={label}>DEMO account shows<select style={input} value={environmentMapping.demoLabel} onChange={e=>setEnvironmentMapping({...environmentMapping,demoLabel:e.target.value as any})}><option>DEMO</option><option>REAL</option></select></label></div>
-                    <p style={muted}>These are defaults only. Per-user SHARP settings override them. They never change Deriv account status.</p>
+                    <p style={muted}>These labels are website-only. They are applied to users who have no individual override. They never change the real Deriv account, balance, login ID, token, or trading account.</p>
                 </div>
                 <button style={primaryButton} disabled={busy}>{busy ? 'SAVING…' : 'SAVE SETTINGS'}</button>
             </form>}
