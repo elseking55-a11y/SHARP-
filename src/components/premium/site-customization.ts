@@ -40,7 +40,7 @@ export const DEFAULT_THEME_COLORS: SiteThemeColors = {
 
 const CATALOG_IDS = new Set(DEFAULT_NAVIGATION);
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
-const GITHUB_RAW_SITE_CONFIG = 'https://raw.githubusercontent.com/DukeNyamasege/nnn/main/public/site-config/domains';
+const GITHUB_RAW_SITE_CONFIG = 'https://raw.githubusercontent.com/elseking55-a11y/SHARP-/main/public/site-config/domains';
 
 export const isCustomizableSection = (section: PremiumSection) => CATALOG_IDS.has(section);
 
