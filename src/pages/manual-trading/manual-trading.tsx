@@ -3,7 +3,6 @@ import type { CSSProperties } from 'react';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import Dialog from '@/components/shared_ui/dialog';
-import { DBOT_TABS } from '@/constants/bot-contents';
 import { api_base } from '@/external/bot-skeleton';
 import { useStore } from '@/hooks/useStore';
 import {
@@ -297,8 +296,7 @@ const getProposalPreview = (proposal: any, requestedStake: number, currency: str
 };
 
 const ManualTrading = observer(() => {
-    const { client, dashboard, run_panel, summary_card, transactions, ui } = useStore();
-    const { active_tab } = dashboard;
+    const { client, run_panel, summary_card, transactions, ui } = useStore();
     const [selectedSymbol, setSelectedSymbol] = useState(MANUAL_MARKETS[0].symbol);
     const [tickCountInput, setTickCountInput] = useState(String(DEFAULT_TICK_COUNT));
     const [activeTickCount, setActiveTickCount] = useState(DEFAULT_TICK_COUNT);
@@ -346,7 +344,9 @@ const ManualTrading = observer(() => {
     const lastTriggeredEntryKeyRef = useRef('');
     const previousQualifiedSignalKeyRef = useRef<string | null>(null);
 
-    const showManualTrading = active_tab === DBOT_TABS.MANUAL_TRADING;
+    // This component is mounted only for #manual_trading. Keep the route/page
+    // visible while Deriv market data is connecting; never fall back to Dashboard.
+    const showManualTrading = true;
     const selectedMarket = MANUAL_MARKETS.find(market => market.symbol === selectedSymbol) ?? MANUAL_MARKETS[0];
     const latestTick = ticks[ticks.length - 1] ?? null;
     const latestDigit = latestTick ? getLastDigitFromQuote(latestTick.quote, selectedSymbol) : null;
