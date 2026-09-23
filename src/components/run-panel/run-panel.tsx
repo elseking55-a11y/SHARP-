@@ -345,8 +345,6 @@ const RunPanel = observer(() => {
     // Keep it mounted on every authenticated premium section so the same
     // drawer state, summary, transactions, journal, and run controls persist
     // while the user moves between tools.
-    if (active_tour === 'bot_builder') return null;
-
     return (
         <>
             <div className={!isDesktop && is_drawer_open ? 'run-panel__container--mobile' : 'run-panel'}>
