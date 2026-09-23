@@ -37,31 +37,17 @@ const currencyIconMap = {
     demo: CurrencyDemoIcon,
 };
 
-const ADMIN_REAL_DISPLAY_CLIENT_ID = '019e9805-8d85-70f2-ba17-112d31bf66e3';
+type EnvironmentMapping = { realLabel: 'REAL' | 'DEMO'; demoLabel: 'REAL' | 'DEMO' };
 
-const getAdminDisplayMode = (): 'REAL' | 'DEMO' | 'ACTUAL' => {
-    if (typeof window === 'undefined') return 'ACTUAL';
-    const saved = localStorage.getItem('sharp_admin_account_badge_v1');
-    return saved === 'REAL' || saved === 'DEMO' || saved === 'ACTUAL' ? saved : 'ACTUAL';
-};
-
-// This is a presentation-only switch. It never changes account_type, loginid,
-// balance source, token, OTP, WebSocket endpoint, or the trading account.
-const isAdminVisualOverrideEnabled = () => {
-    if (typeof window === 'undefined') return false;
-    const envClientId = String(import.meta.env.VITE_DERIV_CLIENT_ID || '').trim();
-    const savedClientId = String(localStorage.getItem('sharp_admin_real_flag_client_id_v1') || '').trim();
-    const clientIdMatches = envClientId === ADMIN_REAL_DISPLAY_CLIENT_ID || savedClientId === ADMIN_REAL_DISPLAY_CLIENT_ID;
-    const mode = getAdminDisplayMode();
-    return clientIdMatches && (mode === 'REAL' || mode === 'DEMO');
-};
-
-const getVisualAccountType = (account?: DerivAccount): 'REAL' | 'DEMO' => {
+const getVisualAccountType = (account: DerivAccount | undefined, mapping: EnvironmentMapping): 'REAL' | 'DEMO' => {
     if (!account) return 'DEMO';
-    return isAdminVisualOverrideEnabled()
-        ? getAdminDisplayMode()
-        : (account.account_type === 'real' ? 'REAL' : 'DEMO');
+    if (account.account_type === 'real') return mapping.realLabel;
+    return mapping.demoLabel;
 };
+
+// Website-only presentation mapping. It never changes account_type, loginid,
+// balance source, token, OTP, WebSocket endpoint, or the trading account.
+const DEFAULT_ENVIRONMENT_MAPPING: EnvironmentMapping = { realLabel: 'REAL', demoLabel: 'DEMO' };
 
 type MenuPosition = {
     top?: number;
@@ -71,11 +57,11 @@ type MenuPosition = {
     maxHeight: number;
 };
 
-const AccountIcon = ({ account }: { account?: DerivAccount }) => {
+const AccountIcon = ({ account, mapping = DEFAULT_ENVIRONMENT_MAPPING }: { account?: DerivAccount; mapping?: EnvironmentMapping }) => {
     // Admin can swap ONLY the presentation: REAL <-> DEMO.
     // The underlying Deriv account object is never mutated.
-    const visualType = getVisualAccountType(account);
-    const adminOverride = isAdminVisualOverrideEnabled();
+    const visualType = getVisualAccountType(account, mapping);
+    const adminOverride = mapping.realLabel !== 'REAL' || mapping.demoLabel !== 'DEMO';
     const currencyKey = adminOverride
         ? (visualType === 'REAL' ? 'usd' : 'demo')
         : (account?.account_type === 'demo' ? 'demo' : (account?.currency || '').toLowerCase());
@@ -101,12 +87,37 @@ const LivePremiumAccountSwitcher = observer(() => {
     const [accounts, setAccounts] = useState<DerivAccount[]>(() => DerivWSAccountsService.getStoredAccounts() || []);
     const [busy, setBusy] = useState('');
     const [error, setError] = useState('');
+    const [environmentMapping, setEnvironmentMapping] = useState<EnvironmentMapping>(DEFAULT_ENVIRONMENT_MAPPING);
     const [, refreshRealFlag] = useState(0);
 
     useEffect(() => {
         const refresh = () => refreshRealFlag(value => value + 1);
         window.addEventListener('sharp-admin-real-flag-updated', refresh);
         return () => window.removeEventListener('sharp-admin-real-flag-updated', refresh);
+    }, []);
+
+    useEffect(() => {
+        let cancelled = false;
+        const loadWebsiteMapping = async () => {
+            try {
+                const response = await fetch('/api/public-config', { credentials: 'include', cache: 'no-store' });
+                if (!response.ok) return;
+                const data = await response.json();
+                const mapping = data?.environmentMapping;
+                if (!cancelled && mapping && (mapping.realLabel === 'REAL' || mapping.realLabel === 'DEMO') && (mapping.demoLabel === 'REAL' || mapping.demoLabel === 'DEMO')) {
+                    setEnvironmentMapping({ realLabel: mapping.realLabel, demoLabel: mapping.demoLabel });
+                }
+            } catch {
+                // Keep the real Deriv labels if the website config endpoint is unavailable.
+            }
+        };
+        void loadWebsiteMapping();
+        const refresh = () => void loadWebsiteMapping();
+        window.addEventListener('sharp-admin-real-flag-updated', refresh);
+        return () => {
+            cancelled = true;
+            window.removeEventListener('sharp-admin-real-flag-updated', refresh);
+        };
     }, []);
 
     const activeId = activeLoginid || client?.loginid || localStorage.getItem('active_loginid') || '';
@@ -293,9 +304,9 @@ const LivePremiumAccountSwitcher = observer(() => {
                             disabled={Boolean(busy)}
                             onClick={() => selectAccount(account)}
                         >
-                            <AccountIcon account={account} />
+                            <AccountIcon account={account} mapping={environmentMapping} />
                             <span className='prodb-api-account__choice-copy'>
-                                <strong>{getVisualAccountType(account) === 'REAL' ? 'Real' : 'Demo'}</strong>
+                                <strong>{getVisualAccountType(account, environmentMapping) === 'REAL' ? 'Real' : 'Demo'}</strong>
                                 <small>{account.account_id}</small>
                             </span>
                             <b>{money(balanceFor(account), account.currency || 'USD')}</b>
@@ -323,9 +334,9 @@ const LivePremiumAccountSwitcher = observer(() => {
                 aria-haspopup='listbox'
                 aria-controls={open ? menuId : undefined}
             >
-                <AccountIcon account={active} />
+                <AccountIcon account={active} mapping={environmentMapping} />
                 <span className='prodb-api-account__current'>
-                    <small>{connected ? (getVisualAccountType(active) === 'REAL' ? 'Real' : 'Demo') : 'OFFLINE · LAST KNOWN REAL'}</small>
+                    <small>{connected ? (getVisualAccountType(active, environmentMapping) === 'REAL' ? 'Real' : 'Demo') : 'OFFLINE · LAST KNOWN REAL'}</small>
                     <strong>{displayBalance}</strong>
                 </span>
                 <span className={`prodb-api-account__chevron ${open ? 'is-open' : ''}`}>⌄</span>
