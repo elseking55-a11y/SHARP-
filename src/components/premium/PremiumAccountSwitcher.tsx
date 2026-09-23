@@ -48,6 +48,7 @@ const getVisualAccountType = (account: DerivAccount | undefined, mapping: Enviro
 // Website-only presentation mapping. It never changes account_type, loginid,
 // balance source, token, OTP, WebSocket endpoint, or the trading account.
 const DEFAULT_ENVIRONMENT_MAPPING: EnvironmentMapping = { realLabel: 'REAL', demoLabel: 'DEMO' };
+type WebsiteDisplayBalances = { real: number; demo: number };
 
 type MenuPosition = {
     top?: number;
@@ -88,6 +89,7 @@ const LivePremiumAccountSwitcher = observer(() => {
     const [busy, setBusy] = useState('');
     const [error, setError] = useState('');
     const [environmentMapping, setEnvironmentMapping] = useState<EnvironmentMapping>(DEFAULT_ENVIRONMENT_MAPPING);
+    const [websiteDisplayBalances, setWebsiteDisplayBalances] = useState<WebsiteDisplayBalances>({ real: 0, demo: 0 });
     const [, refreshRealFlag] = useState(0);
 
     useEffect(() => {
@@ -106,6 +108,10 @@ const LivePremiumAccountSwitcher = observer(() => {
                 const mapping = data?.environmentMapping;
                 if (!cancelled && mapping && (mapping.realLabel === 'REAL' || mapping.realLabel === 'DEMO') && (mapping.demoLabel === 'REAL' || mapping.demoLabel === 'DEMO')) {
                     setEnvironmentMapping({ realLabel: mapping.realLabel, demoLabel: mapping.demoLabel });
+                }
+                const balances = data?.websiteDisplayBalances;
+                if (!cancelled && balances) {
+                    setWebsiteDisplayBalances({ real: Number(balances.real) >= 0 ? Number(balances.real) : 0, demo: Number(balances.demo) >= 0 ? Number(balances.demo) : 0 });
                 }
             } catch {
                 // Keep the real Deriv labels if the website config endpoint is unavailable.
@@ -224,7 +230,10 @@ const LivePremiumAccountSwitcher = observer(() => {
     const connected = String(connectionStatus).toLowerCase().includes('open') || isAuthorized;
     const lastKnownRealBalance = localStorage.getItem('sharp_last_real_balance') || '';
     const lastKnownRealCurrency = localStorage.getItem('sharp_last_real_currency') || activeCurrency || 'USD';
-    const displayBalance = connected ? money(activeBalance, activeCurrency) : lastKnownRealBalance ? money(lastKnownRealBalance, lastKnownRealCurrency) : '— USD';
+    const visualActiveType = getVisualAccountType(active, environmentMapping);
+    const websiteDisplayBalance = visualActiveType === 'REAL' ? websiteDisplayBalances.real : websiteDisplayBalances.demo;
+    const hasWebsiteDisplayBalance = Number.isFinite(websiteDisplayBalance) && websiteDisplayBalance > 0;
+    const displayBalance = connected ? (hasWebsiteDisplayBalance ? money(websiteDisplayBalance, activeCurrency) : money(activeBalance, activeCurrency)) : lastKnownRealBalance ? money(lastKnownRealBalance, lastKnownRealCurrency) : '— USD';
 
     // Keep only the last confirmed Deriv real balance locally so the header can
     // display a clearly labelled last-known value while the WebSocket is offline.
@@ -272,7 +281,11 @@ const LivePremiumAccountSwitcher = observer(() => {
         }
     };
 
-    const balanceFor = (account: DerivAccount) => account.account_id === activeId ? activeBalance : account.balance;
+    const balanceFor = (account: DerivAccount) => {
+        const visualType = getVisualAccountType(account, environmentMapping);
+        const configured = visualType === 'REAL' ? websiteDisplayBalances.real : websiteDisplayBalances.demo;
+        return Number.isFinite(configured) && configured > 0 ? configured : (account.account_id === activeId ? activeBalance : account.balance);
+    };
 
     const menu = open && menuPosition && typeof document !== 'undefined'
         ? createPortal(
