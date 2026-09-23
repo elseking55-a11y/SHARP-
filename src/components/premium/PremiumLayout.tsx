@@ -13,7 +13,6 @@ import BottomStatusBar from './BottomStatusBar';
 import { getTemplateDomain } from './domain-brand';
 import GlobalAIScannerV2 from './GlobalAIScannerV2';
 import GlobalContractBridge from './GlobalContractBridge';
-import GlobalQuickTrade from './GlobalQuickTrade';
 import LandingPage from './LandingPage';
 import CoreStoreProvider from '@/app/CoreStoreProvider';
 import PremiumHeader from './PremiumHeader';
@@ -313,7 +312,6 @@ const PremiumLayout = observer(() => {
             </div>
         </main>
         {!SHARP_OFFLINE_MODE && <GlobalAIScannerV2 openBotBuilder={openBotBuilder} />}
-        {!SHARP_OFFLINE_MODE && <GlobalQuickTrade hidden={isBotBuilder} />}
         {!SHARP_OFFLINE_MODE && <BottomStatusBar />}
         </div>
     </CoreStoreProvider>;
