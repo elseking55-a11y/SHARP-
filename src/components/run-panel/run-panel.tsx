@@ -1037,6 +1037,22 @@ const RunPanel = observer(() => {
                             line-height: 1.1 !important;
                             font-weight: 900 !important;
                         }
+
+                        /* Deriv-style transaction result colours:
+                           positive profit = green, negative loss = red. */
+                        .dc-drawer.run-panel .run-panel__stat-amount--positive,
+                        .run-panel.dc-drawer .run-panel__stat-amount--positive,
+                        .dc-drawer.run-panel .run-panel__stat-amount--positive *,
+                        .run-panel.dc-drawer .run-panel__stat-amount--positive * {
+                            color: #22c55e !important;
+                        }
+
+                        .dc-drawer.run-panel .run-panel__stat-amount--negative,
+                        .run-panel.dc-drawer .run-panel__stat-amount--negative,
+                        .dc-drawer.run-panel .run-panel__stat-amount--negative *,
+                        .run-panel.dc-drawer .run-panel__stat-amount--negative * {
+                            color: #ef4444 !important;
+                        }
                     }
 
             `}</style>
