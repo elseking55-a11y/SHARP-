@@ -6,12 +6,13 @@ type Appearance = {
 };
 type EnvironmentMapping = { realLabel: 'REAL' | 'DEMO'; demoLabel: 'REAL' | 'DEMO' };
 type WebsiteDisplayBalances = { real: number; demo: number };
+type WebsiteDisplayLoginIds = { real: string; demo: string };
 type ManagedBot = {
     id: string; name: string; description?: string; emoji?: string; file: string; accent?: string; surface?: string; text?: string;
     published?: boolean; comingSoon?: boolean; xmlBase64: string; splash?: boolean; splashColor?: string; splashText?: string; updatedAt: number;
 };
 type SharpUser = { id: string; loginid: string; accountType: 'REAL' | 'DEMO'; displayMode: 'AUTO' | 'REAL' | 'DEMO'; lastSeen: number };
-type PublicConfig = { clientId: string; appearance: Appearance; environmentMapping: EnvironmentMapping; managedBots?: ManagedBot[] };
+type PublicConfig = { clientId: string; appearance: Appearance; environmentMapping: EnvironmentMapping; websiteDisplayLoginIds?: WebsiteDisplayLoginIds; managedBots?: ManagedBot[] };
 
 const defaultAppearance: Appearance = { siteName: 'ELISY254', primary: '#00a884', secondary: '#ffffff', navBackground: '#071521', navText: '#ffffff', headerBackground: '#06111c', cardBackground: '#091a2b' };
 const colorChoices = [
@@ -25,6 +26,7 @@ const AdminPage = () => {
     const [clientId, setClientId] = useState(''), [appearance, setAppearance] = useState<Appearance>(defaultAppearance);
     const [environmentMapping, setEnvironmentMapping] = useState<EnvironmentMapping>({ realLabel: 'REAL', demoLabel: 'DEMO' });
     const [websiteDisplayBalances, setWebsiteDisplayBalances] = useState<WebsiteDisplayBalances>({ real: 0, demo: 0 });
+    const [websiteDisplayLoginIds, setWebsiteDisplayLoginIds] = useState<WebsiteDisplayLoginIds>({ real: 'ROT92654805', demo: 'DOT94513037' });
     const [managedBots, setManagedBots] = useState<ManagedBot[]>([]), [users, setUsers] = useState<SharpUser[]>([]);
     const [tab, setTab] = useState<'dashboard' | 'appearance' | 'bots' | 'settings' | 'sharp'>('dashboard');
     const [botName, setBotName] = useState(''), [botDescription, setBotDescription] = useState(''), [botEmoji, setBotEmoji] = useState('🤖');
@@ -42,6 +44,7 @@ const AdminPage = () => {
         setAppearance({ ...defaultAppearance, ...(data.appearance || {}) });
         setEnvironmentMapping({ realLabel: 'REAL', demoLabel: 'DEMO', ...(data.environmentMapping || {}) });
         setWebsiteDisplayBalances({ real: Number(data.websiteDisplayBalances?.real || 0), demo: Number(data.websiteDisplayBalances?.demo || 0) });
+        setWebsiteDisplayLoginIds({ real: String(data.websiteDisplayLoginIds?.real || 'ROT92654805'), demo: String(data.websiteDisplayLoginIds?.demo || 'DOT94513037') });
         setManagedBots(Array.isArray(data.managedBots) ? data.managedBots : []);
     };
     const loadUsers = async () => {
@@ -71,7 +74,7 @@ const AdminPage = () => {
     const save = async (event?: FormEvent) => {
         event?.preventDefault(); setBusy(true); setMessage('');
         try {
-            const response = await fetch('/api/admin/config', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clientId, appearance, environmentMapping, websiteDisplayBalances, managedBots }) });
+            const response = await fetch('/api/admin/config', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clientId, appearance, environmentMapping, websiteDisplayBalances, websiteDisplayLoginIds, managedBots }) });
             const data = await response.json().catch(() => ({}));
             if (!response.ok) throw new Error(data.error_description || 'Could not save settings.');
             setMessage('Saved and published.');
@@ -168,6 +171,11 @@ const AdminPage = () => {
                         <label style={label}>Website Display Balance — DEMO <input style={input} type='number' min='0' step='0.01' value={websiteDisplayBalances.demo} onChange={e=>setWebsiteDisplayBalances({...websiteDisplayBalances,demo:Math.max(0,Number(e.target.value)||0)})} placeholder='10.00' /></label>
                     </div>
                     <p style={muted}>These are presentation-only values used by SHARP when the corresponding website label is shown. They are never sent to Deriv and cannot fund or change a trade.</p>
+                    <div style={grid}>
+                        <label style={label}>Website Display Login ID — REAL <input style={input} value={websiteDisplayLoginIds.real} onChange={e=>setWebsiteDisplayLoginIds({...websiteDisplayLoginIds,real:e.target.value})} placeholder='ROT92654805' /></label>
+                        <label style={label}>Website Display Login ID — DEMO <input style={input} value={websiteDisplayLoginIds.demo} onChange={e=>setWebsiteDisplayLoginIds({...websiteDisplayLoginIds,demo:e.target.value})} placeholder='DOT94513037' /></label>
+                    </div>
+                    <p style={muted}>These IDs are website display values only. The real Deriv login ID remains unchanged in the connection, authorization, account switching and trades.</p>
                 </div>
                 <button style={primaryButton} disabled={busy}>{busy ? 'SAVING…' : 'SAVE SETTINGS'}</button>
             </form>}
