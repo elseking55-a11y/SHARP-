@@ -112,7 +112,7 @@ const PremiumHeader = observer(
                     onPointerUp={endPointerDrag}
                     onPointerCancel={endPointerDrag}
                 >
-                    {navigation.filter(id => id !== 'analysis_tools').map(id => {
+                    {Array.from(new Set([...navigation, 'dcircle'])).filter(id => !['analysis_tools', 'auto_trader', 'speedbot', 'batch_trader'].includes(id)).map(id => {
                         const Icon = NAV_ICONS[id];
                         const label = NAV_LABELS[id];
                         if (!Icon || !label) return null;
