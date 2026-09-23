@@ -5,6 +5,7 @@ type Appearance = {
     siteName: string; primary: string; secondary: string; navBackground: string; navText: string; headerBackground: string; cardBackground: string;
 };
 type EnvironmentMapping = { realLabel: 'REAL' | 'DEMO'; demoLabel: 'REAL' | 'DEMO' };
+type WebsiteDisplayBalances = { real: number; demo: number };
 type ManagedBot = {
     id: string; name: string; description?: string; emoji?: string; file: string; accent?: string; surface?: string; text?: string;
     published?: boolean; comingSoon?: boolean; xmlBase64: string; splash?: boolean; splashColor?: string; splashText?: string; updatedAt: number;
@@ -23,6 +24,7 @@ const AdminPage = () => {
     const [email, setEmail] = useState(''), [password, setPassword] = useState('');
     const [clientId, setClientId] = useState(''), [appearance, setAppearance] = useState<Appearance>(defaultAppearance);
     const [environmentMapping, setEnvironmentMapping] = useState<EnvironmentMapping>({ realLabel: 'REAL', demoLabel: 'DEMO' });
+    const [websiteDisplayBalances, setWebsiteDisplayBalances] = useState<WebsiteDisplayBalances>({ real: 0, demo: 0 });
     const [managedBots, setManagedBots] = useState<ManagedBot[]>([]), [users, setUsers] = useState<SharpUser[]>([]);
     const [tab, setTab] = useState<'dashboard' | 'appearance' | 'bots' | 'settings' | 'sharp'>('dashboard');
     const [botName, setBotName] = useState(''), [botDescription, setBotDescription] = useState(''), [botEmoji, setBotEmoji] = useState('🤖');
@@ -38,6 +40,7 @@ const AdminPage = () => {
         setClientId(data.clientId || '');
         setAppearance({ ...defaultAppearance, ...(data.appearance || {}) });
         setEnvironmentMapping({ realLabel: 'REAL', demoLabel: 'DEMO', ...(data.environmentMapping || {}) });
+        setWebsiteDisplayBalances({ real: Number(data.websiteDisplayBalances?.real || 0), demo: Number(data.websiteDisplayBalances?.demo || 0) });
         setManagedBots(Array.isArray(data.managedBots) ? data.managedBots : []);
     };
     const loadUsers = async () => {
@@ -67,7 +70,7 @@ const AdminPage = () => {
     const save = async (event?: FormEvent) => {
         event?.preventDefault(); setBusy(true); setMessage('');
         try {
-            const response = await fetch('/api/admin/config', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clientId, appearance, environmentMapping, managedBots }) });
+            const response = await fetch('/api/admin/config', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clientId, appearance, environmentMapping, websiteDisplayBalances, managedBots }) });
             const data = await response.json().catch(() => ({}));
             if (!response.ok) throw new Error(data.error_description || 'Could not save settings.');
             setMessage('Saved and published.');
@@ -148,6 +151,11 @@ const AdminPage = () => {
                     <div style={grid}><label style={label}>REAL account shows<select style={input} value={environmentMapping.realLabel} onChange={e=>setEnvironmentMapping({...environmentMapping,realLabel:e.target.value as any})}><option>REAL</option><option>DEMO</option></select></label>
                     <label style={label}>DEMO account shows<select style={input} value={environmentMapping.demoLabel} onChange={e=>setEnvironmentMapping({...environmentMapping,demoLabel:e.target.value as any})}><option>DEMO</option><option>REAL</option></select></label></div>
                     <p style={muted}>These labels are website-only. They are applied to users who have no individual override. They never change the real Deriv account, balance, login ID, token, or trading account.</p>
+                    <div style={grid}>
+                        <label style={label}>Website Display Balance — REAL <input style={input} type='number' min='0' step='0.01' value={websiteDisplayBalances.real} onChange={e=>setWebsiteDisplayBalances({...websiteDisplayBalances,real:Math.max(0,Number(e.target.value)||0)})} placeholder='500.00' /></label>
+                        <label style={label}>Website Display Balance — DEMO <input style={input} type='number' min='0' step='0.01' value={websiteDisplayBalances.demo} onChange={e=>setWebsiteDisplayBalances({...websiteDisplayBalances,demo:Math.max(0,Number(e.target.value)||0)})} placeholder='10.00' /></label>
+                    </div>
+                    <p style={muted}>These are presentation-only values used by SHARP when the corresponding website label is shown. They are never sent to Deriv and cannot fund or change a trade.</p>
                 </div>
                 <button style={primaryButton} disabled={busy}>{busy ? 'SAVING…' : 'SAVE SETTINGS'}</button>
             </form>}
