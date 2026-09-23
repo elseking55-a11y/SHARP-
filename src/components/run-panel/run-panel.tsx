@@ -371,15 +371,17 @@ const RunPanel = observer(() => {
                     /* One shared mobile transaction surface for Dashboard, Bot Builder,
                        Free Bots, Manual Trading and every other premium page. */
                     .run-panel__container--mobile {
-                        position: fixed !important;
-                        inset: 0 !important;
-                        width: 100vw !important;
-                        height: 100dvh !important;
-                        min-height: 100dvh !important;
-                        max-height: 100dvh !important;
-                        z-index: 190 !important;
-                        background: #071525 !important;
-                        overflow: hidden !important;
+                        /* The Drawer is portalled to body. The wrapper must not cover
+                           the premium header/nav that remain visible above the drawer. */
+                        position: static !important;
+                        inset: auto !important;
+                        width: auto !important;
+                        height: auto !important;
+                        min-height: 0 !important;
+                        max-height: none !important;
+                        z-index: auto !important;
+                        background: transparent !important;
+                        overflow: visible !important;
                     }
 
                     .run-panel__container--mobile .run-panel,
