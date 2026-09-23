@@ -620,16 +620,16 @@ const RunPanel = observer(() => {
                         position: fixed !important;
                         /* Keep the premium site header + horizontal navigation visible.
                            The transaction surface begins directly below them, matching DBot mobile. */
-                        top: 102px !important;
+                        top: 123px !important;
                         left: 0 !important;
                         right: 0 !important;
                         bottom: 0 !important;
                         width: 100vw !important;
                         max-width: 100vw !important;
-                        height: calc(100dvh - 102px) !important;
-                        max-height: calc(100dvh - 102px) !important;
+                        height: calc(100dvh - 123px) !important;
+                        max-height: calc(100dvh - 123px) !important;
                         background: #071525 !important;
-                        z-index: 300 !important;
+                        z-index: 30 !important;
                         border: 0 !important;
                         box-shadow: none !important;
                     }
