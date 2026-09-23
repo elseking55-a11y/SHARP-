@@ -14,6 +14,7 @@ const DcirclePage = observer(() => {
     const [ticksInput, setTicksInput] = useState(String(DEFAULT_TICKS));
     const [digits, setDigits] = useState<number[]>([]);
     const [liveDigit, setLiveDigit] = useState<number | null>(null);
+    const [lastTickTime, setLastTickTime] = useState<number | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const requestRef = useRef(0);
@@ -33,6 +34,7 @@ const DcirclePage = observer(() => {
             setError('');
             setDigits([]);
             setLiveDigit(null);
+            setLastTickTime(null);
 
             try {
                 await api_base.init(true);
@@ -69,6 +71,7 @@ const DcirclePage = observer(() => {
                     if (!Number.isInteger(digit)) return;
 
                     setLiveDigit(digit);
+                    setLastTickTime(Date.now());
                     setDigits(previous => [...previous, digit].slice(-tickCount));
                 });
             } catch (err) {
@@ -100,7 +103,10 @@ const DcirclePage = observer(() => {
     );
 
     const total = digits.length;
+    // Every percentage is calculated from the actual Deriv ticks currently
+    // held in the rolling window. No simulated/fixed percentages are used.
     const getPercentage = (count: number) => (total ? (count / total) * 100 : 0);
+    const movementAge = lastTickTime == null ? null : Math.max(0, Date.now() - lastTickTime);
 
     // The ring colors are driven by the LIVE distribution, not fixed digits:
     // highest occurrence = green, second highest = blue,
@@ -157,6 +163,7 @@ const DcirclePage = observer(() => {
                 <div className='dcircle-current'>
                     <span>Current digit</span>
                     <strong>{liveDigit ?? digits[digits.length - 1] ?? '—'}</strong>
+                    <small>{movementAge == null ? 'Waiting for tick…' : movementAge < 1000 ? 'Moving now' : `${Math.floor(movementAge / 1000)}s ago`}</small>
                 </div>
             </section>
 
@@ -164,8 +171,8 @@ const DcirclePage = observer(() => {
 
             <section className='dcircle-board'>
                 <div className='dcircle-board__title'>
-                    <span>Digit distribution</span>
-                    <small>{digits.length} / {tickCount} ticks</small>
+                    <span>Live digit occurrence</span>
+                    <small>{digits.length} / {tickCount} real ticks</small>
                 </div>
 
                 <div className='dcircle-grid'>
@@ -181,8 +188,9 @@ const DcirclePage = observer(() => {
                                 <div className='dcircle-ring'>
                                     <div className='dcircle-dot'>{item.digit}</div>
                                     <strong>{percentage.toFixed(2)}%</strong>
+                                    <small>{item.count} tick{item.count === 1 ? '' : 's'}</small>
                                 </div>
-                                {liveDigit === item.digit && <span className='dcircle-cursor' aria-label='Current digit' />}
+                                {liveDigit === item.digit && <span className='dcircle-cursor' aria-label={`Live cursor on digit ${item.digit}`} />}
                             </div>
                         );
                     })}
