@@ -6,8 +6,8 @@ import { getLastDigitFromQuote } from '@/utils/market-data';
 import { safeSubscribe } from '@/utils/websocket-handler';
 
 const MIN_TICKS = 10;
-const MAX_TICKS = 100;
-const DEFAULT_TICKS = 50;
+const MAX_TICKS = 1000;
+const DEFAULT_TICKS = 1000;
 
 const DcirclePage = observer(() => {
     const [symbol, setSymbol] = useState(SUPPORTED_VOLATILITY_MARKETS[0]?.symbol ?? '1HZ100V');
@@ -106,6 +106,9 @@ const DcirclePage = observer(() => {
     // Every percentage is calculated from the actual Deriv ticks currently
     // held in the rolling window. No simulated/fixed percentages are used.
     const getPercentage = (count: number) => (total ? (count / total) * 100 : 0);
+    // With the default 1,000-tick window, each percentage is simply the
+    // observed occurrence count divided by the number of real ticks loaded.
+    // Example: 120 occurrences in 1,000 real ticks = 12.00%.
     const movementAge = lastTickTime == null ? null : Math.max(0, Date.now() - lastTickTime);
 
     // The ring colors are driven by the LIVE distribution, not fixed digits:
@@ -156,7 +159,7 @@ const DcirclePage = observer(() => {
                         min={MIN_TICKS}
                         max={MAX_TICKS}
                         value={ticksInput}
-                        onChange={event => setTicksInput(event.target.value.replace(/\D/g, '').slice(0, 3))}
+                        onChange={event => setTicksInput(event.target.value.replace(/\D/g, '').slice(0, 4))}
                         onBlur={() => setTicksInput(String(tickCount))}
                     />
                 </label>
@@ -172,7 +175,7 @@ const DcirclePage = observer(() => {
             <section className='dcircle-board'>
                 <div className='dcircle-board__title'>
                     <span>Live digit occurrence</span>
-                    <small>{digits.length} / {tickCount} real ticks</small>
+                    <small>{digits.length} / {tickCount} real ticks • live occurrence %</small>
                 </div>
 
                 <div className='dcircle-grid'>
