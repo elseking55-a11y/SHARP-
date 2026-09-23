@@ -115,32 +115,10 @@ export const StatisticsSummary = ({
     </div>
 );
 
-const MobileBalanceBar = observer(() => {
-    const { client } = useStore();
-    const balance = Number(client?.balance ?? 0);
-    const currency = client?.currency || 'USD';
-    const loginid = client?.loginid || localStorage.getItem('active_loginid') || '';
-
-    return (
-        <div className='run-panel__mobile-balance' aria-label='Account balance'>
-            <div className='run-panel__mobile-balance-account'>
-                <span className='run-panel__mobile-balance-icon'>$
-                </span>
-                <span>
-                    <small>{loginid || 'Deriv account'}</small>
-                    <strong>{Number.isFinite(balance) ? balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'} {currency}</strong>
-                </span>
-            </div>
-            <span className='run-panel__mobile-balance-chevron'>⌄</span>
-        </div>
-    );
-});
-
 const DrawerHeader = ({ is_clear_stat_disabled, is_mobile, is_drawer_open, onClearStatClick, onClosePanel }: TDrawerHeader) =>
     is_mobile &&
     is_drawer_open && (
         <div className='run-panel__mobile-header'>
-            <MobileBalanceBar />
             <div className='run-panel__mobile-header-actions'>
             <Button
                 id='db-run-panel__close-button'
@@ -219,7 +197,8 @@ const MobileDrawerFooter = () => {
     const { setActiveTabIndex, toggleDrawer } = run_panel;
 
     const openTransactions = () => {
-        setActiveTabIndex(1);
+        // Open the full transaction/run surface and preserve the Summary tab,
+        // matching the mobile Bot Builder layout.
         toggleDrawer(true);
     };
 
