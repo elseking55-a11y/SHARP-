@@ -90,15 +90,13 @@ const PremiumLayout = observer(() => {
     const [section, setSection] = useState<PremiumSection>(() => sectionFromHash(location.hash));
     const [, setAuthProbe] = useState(0);
     const [authError, setAuthError] = useState<string | null>(null);
-    const [appAuthenticated, setAppAuthenticated] = useState(false);
-    const [appAuthChecked, setAppAuthChecked] = useState(false);
     const hasBootstrappedSession = useRef(false);
 
     const params = new URLSearchParams(window.location.search);
     const isOAuthCallback = Boolean(params.get('code') && params.get('state'));
     const hasStoredAuth = OAuthTokenExchangeService.isAuthenticated();
     const runtimeAuthenticated = Boolean(activeLoginid || client?.is_logged_in);
-    const isAuthenticated = Boolean(SHARP_OFFLINE_MODE || appAuthenticated || runtimeAuthenticated || hasStoredAuth || isLocalDevelopmentHost() || Boolean(getStoredDerivApiToken()));
+    const isAuthenticated = Boolean(SHARP_OFFLINE_MODE || runtimeAuthenticated || hasStoredAuth || isLocalDevelopmentHost() || Boolean(getStoredDerivApiToken()));
 
     useEffect(() => { document.title = getTemplateDomain(); }, []);
 
@@ -136,44 +134,6 @@ const PremiumLayout = observer(() => {
     useEffect(() => {
         setSection(sectionFromHash(location.hash));
     }, [location.hash]);
-    useEffect(() => {
-        let alive = true;
-        fetch('/api/auth/session', { credentials: 'include', cache: 'no-store' })
-            .then(response => response.ok ? response.json() : null)
-            .then(data => {
-                if (!alive) return;
-                setAppAuthenticated(Boolean(data?.authenticated));
-                setAppAuthChecked(true);
-            })
-            .catch(() => {
-                if (!alive) return;
-                setAppAuthenticated(false);
-                setAppAuthChecked(true);
-            });
-        return () => { alive = false; };
-    }, []);
-
-    const appLogin = useCallback(async (email: string, password: string) => {
-        setAuthError(null);
-        setIsAuthorizing(true);
-        try {
-            const response = await fetch('/api/auth/login', {
-                method: 'POST',
-                credentials: 'include',
-                headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-                body: JSON.stringify({ email, password }),
-            });
-            const data = await response.json().catch(() => ({}));
-            if (!response.ok || !data.authenticated) throw new Error(data.error_description || 'Unable to sign in.');
-            setAppAuthenticated(true);
-        } catch (error) {
-            setAuthError(error instanceof Error ? error.message : 'Unable to sign in.');
-        } finally {
-            setIsAuthorizing(false);
-        }
-    }, [setIsAuthorizing]);
-
-
     useEffect(() => {
         if (SHARP_OFFLINE_MODE) return;
         if (hasBootstrappedSession.current || isOAuthCallback || !hasStoredAuth || runtimeAuthenticated) return;
@@ -274,8 +234,7 @@ const PremiumLayout = observer(() => {
     // back to the landing page (or keep them on a loader) during that handoff.
     // The restoreSession effect below completes the live Deriv connection.
     if (!SHARP_OFFLINE_MODE && !runtimeAuthenticated && isOAuthCallback && !hasStoredAuth) return <PremiumLoader />;
-    if (!appAuthChecked && !runtimeAuthenticated && !hasStoredAuth && !SHARP_OFFLINE_MODE && !isOAuthCallback) return <PremiumLoader />;
-    if (!isAuthenticated) return <LandingPage onLogin={appLogin} busy={isAuthorizing} error={authError} />;
+    if (!isAuthenticated) return <LandingPage onDerivLogin={startOAuth} busy={isAuthorizing} error={authError} />;
 
     const openBotBuilder = () => changeSection('bot_builder');
     const renderSection = () => {
@@ -317,7 +276,7 @@ const PremiumLayout = observer(() => {
 
     useEffect(() => {
         if (!activeLoginid) return;
-        const accountType = /^VRTC/i.test(String(activeLoginid)) ? 'DEMO' : 'REAL';
+        const accountType = String(localStorage.getItem('account_type') || '').toLowerCase() === 'demo' ? 'DEMO' : 'REAL';
         void fetch('/api/sharp/user', {
             method: 'POST',
             credentials: 'include',
