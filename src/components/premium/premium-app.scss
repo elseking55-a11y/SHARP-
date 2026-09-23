@@ -2004,3 +2004,18 @@
 .prodb-app-login-submit{width:100%;margin-top:20px;padding:13px 16px;border:0;border-radius:10px;background:linear-gradient(90deg,#1685ff,#6b4df5);color:#fff;font-weight:900}
 .prodb-app-login-close{position:absolute;top:14px;right:14px;width:36px;height:36px;border:0;border-radius:10px;background:rgba(255,255,255,.08);color:#fff;font-size:22px}
 .prodb-app-login-error{padding:10px 12px;border:1px solid #7f3434;border-radius:9px;background:rgba(80,15,15,.35);color:#ffb4b4;font-size:12px}
+
+
+/* Mobile DBot-style transaction workspace: keep the site's header/navigation visible above the drawer. */
+@media (max-width: 767px) {
+  .prodb-premium-shell--run-open .prodb-app-header,
+  .prodb-premium-shell--run-open .prodb-nav,
+  .prodb-premium-shell--run-open .prodb-ticker {
+    position: relative !important;
+    z-index: 60 !important;
+  }
+
+  .prodb-premium-shell--run-open .prodb-bottom-bar {
+    display: none !important;
+  }
+}
