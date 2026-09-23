@@ -583,3 +583,15 @@
         background: #071525 !important;
     }
 }
+
+
+/* Transaction P/L colours — match Deriv result semantics. */
+.run-panel__stat-amount--positive,
+.run-panel__stat-amount--positive * {
+    color: #22c55e !important;
+}
+
+.run-panel__stat-amount--negative,
+.run-panel__stat-amount--negative * {
+    color: #ef4444 !important;
+}
