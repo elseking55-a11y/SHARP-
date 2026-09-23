@@ -5,13 +5,11 @@
     "dashboard",
     "bot_builder",
     "free_bots",
-    "auto_trader",
     "manual_trading",
+    "dcircle",
     "tradingview",
     "bulk_trader",
-    "speedbot",
-    "batch_trader",
-    "analysis_tools",
+    "copy_trading",
     "calculator"
   ],
   "colors": {
