@@ -419,3 +419,72 @@
         justify-content: center !important;
     }
 }
+
+
+/* SHARP transaction rows — dark Deriv-style execution history.
+   Keep real contract values from the transaction store; styling only. */
+@media (max-width: 768px) {
+    body .run-panel__container--mobile .transactions,
+    body .run-panel__container--mobile .transactions__content--mobile,
+    body .run-panel__container--mobile .transactions__scrollbar,
+    body .run-panel__container--mobile .transactions__mobile-list {
+        background: #071525 !important;
+        color: #f1f5f9 !important;
+    }
+
+    body .run-panel__container--mobile .transactions__header {
+        background: #071525 !important;
+        color: #94a3b8 !important;
+        border-bottom: 1px solid #1e2d40 !important;
+    }
+
+    body .run-panel__container--mobile .transactions__item-wrapper {
+        background: #071525 !important;
+        border-top: 1px solid #16263a !important;
+        border-bottom: 1px solid #16263a !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+    }
+
+    body .run-panel__container--mobile .transactions__item {
+        background: #071525 !important;
+        color: #f1f5f9 !important;
+    }
+
+    body .run-panel__container--mobile .transactions__cell,
+    body .run-panel__container--mobile .transactions__cell .dc-text,
+    body .run-panel__container--mobile .transactions__stake,
+    body .run-panel__container--mobile .transactions__entry-spot,
+    body .run-panel__container--mobile .transactions__exit-spot {
+        color: #e5e7eb !important;
+    }
+
+    body .run-panel__container--mobile .transactions__profit--win,
+    body .run-panel__container--mobile .transactions__profit--win *,
+    body .run-panel__container--mobile .transactions__profit--win .dc-text {
+        color: #00c7b7 !important;
+        font-weight: 800 !important;
+    }
+
+    body .run-panel__container--mobile .transactions__profit--loss,
+    body .run-panel__container--mobile .transactions__profit--loss *,
+    body .run-panel__container--mobile .transactions__profit--loss .dc-text {
+        color: #ec3157 !important;
+        font-weight: 800 !important;
+    }
+
+    body .run-panel__container--mobile .transactions__profit--win::before {
+        color: #00c7b7 !important;
+    }
+
+    body .run-panel__container--mobile .transactions__profit--loss::before {
+        color: #ec3157 !important;
+    }
+
+    body .run-panel__container--mobile .transactions__divider,
+    body .run-panel__container--mobile .transactions__divider-line {
+        background: #071525 !important;
+        border-color: #16263a !important;
+    }
+}
