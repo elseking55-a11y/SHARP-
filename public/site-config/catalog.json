@@ -13,15 +13,12 @@
     },
     {
       "id": "free_bots",
-      "label": "Free Bots"
-    },
-    {
-      "id": "auto_trader",
-      "label": "Auto Trades"
+      "label": "Free Bot"
     },
     {
       "id": "manual_trading",
-      "label": "Manual Trading"
+      "label": "Manual Trading",
+      "required": true
     },
     {
       "id": "tradingview",
@@ -57,7 +54,6 @@
       "dashboard",
       "bot_builder",
       "free_bots",
-      "auto_trader",
       "manual_trading",
       "tradingview",
       "bulk_trader",
