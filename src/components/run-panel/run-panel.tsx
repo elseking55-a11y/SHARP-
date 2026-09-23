@@ -707,7 +707,7 @@ const RunPanel = observer(() => {
                     .run-panel.dc-drawer .dc-tabs__list {
                         background: #151515 !important;
                     }
-            `}</style>    `}</style>
+            `}</style>
 
             <StatisticsInfoModal
                 is_mobile={!isDesktop}
