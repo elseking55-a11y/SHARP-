@@ -25,7 +25,6 @@ export const NAVIGATION_CATALOG: Array<{ id: PremiumSection; label: string; requ
     { id: 'tradingview', label: 'TradingView' },
     { id: 'bulk_trader', label: 'Bulk Trader' },
     { id: 'copy_trading', label: 'Copy Trading' },
-    { id: 'analysis_tools', label: 'Analysis Tool' },
     { id: 'calculator', label: 'Calculator' },
 ];
 
