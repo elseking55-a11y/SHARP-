@@ -371,100 +371,250 @@ const RunPanel = observer(() => {
 
             <style>{`
                 @media (max-width: 767px) {
-                    .run-panel__container--mobile,
+                    /* One shared mobile transaction surface for Dashboard, Bot Builder,
+                       Free Bots, Manual Trading and every other premium page. */
+                    .run-panel__container--mobile {
+                        position: fixed !important;
+                        inset: 0 !important;
+                        width: 100vw !important;
+                        height: 100dvh !important;
+                        min-height: 100dvh !important;
+                        max-height: 100dvh !important;
+                        z-index: 190 !important;
+                        background: #071525 !important;
+                        overflow: hidden !important;
+                    }
+
                     .run-panel__container--mobile .run-panel,
                     .run-panel__container--mobile .run-panel__content {
+                        width: 100vw !important;
                         height: 100dvh !important;
                         min-height: 0 !important;
                         max-height: 100dvh !important;
+                        background: #071525 !important;
+                        color: #f5f7fa !important;
+                        overflow: hidden !important;
                     }
 
-                    .run-panel__mobile-header {
-                        flex: 0 0 auto !important;
-                        height: auto !important;
-                        min-height: 0 !important;
-                        padding: 0 !important;
-                        background: var(--general-main-1, #1f2330) !important;
-                        position: relative !important;
-                        z-index: 5 !important;
-                    }
-
+                    /* The website's normal header already contains the live balance.
+                       Do not create a second balance card inside Transactions. */
+                    .run-panel__container--mobile .run-panel__mobile-balance,
                     .run-panel__mobile-balance {
-                        width: 100% !important;
-                        min-height: 72px !important;
-                        box-sizing: border-box !important;
-                        display: flex !important;
-                        align-items: center !important;
-                        justify-content: space-between !important;
-                        padding: 12px 16px !important;
-                        background: var(--general-main-2, var(--general-main-1, #1f2330)) !important;
-                        border-bottom: 1px solid rgba(255,255,255,.10) !important;
-                    }
-
-                    .run-panel__mobile-balance-account {
-                        display: flex !important;
-                        align-items: center !important;
-                        min-width: 0 !important;
-                    }
-
-                    .run-panel__mobile-balance-account small,
-                    .run-panel__mobile-balance-account strong {
-                        display: block !important;
-                    }
-
-                    .run-panel__mobile-balance-account strong {
-                        margin-top: 3px !important;
-                    }
-
-                    .run-panel__mobile-balance-chevron {
                         display: none !important;
                     }
 
-                    .run-panel__mobile-header-actions {
+                    /* Black toolbar: collapse + Reset. */
+                    .run-panel__container--mobile .run-panel__mobile-header {
+                        display: block !important;
+                        width: 100% !important;
+                        height: 112px !important;
+                        min-height: 112px !important;
+                        max-height: 112px !important;
+                        padding: 0 !important;
+                        background: #0b0b0b !important;
+                        color: #f7f7f7 !important;
+                        box-sizing: border-box !important;
+                    }
+
+                    .run-panel__container--mobile .run-panel__mobile-header-actions {
                         display: flex !important;
                         align-items: center !important;
                         justify-content: space-between !important;
+                        gap: 18px !important;
                         width: 100% !important;
+                        height: 112px !important;
+                        min-height: 112px !important;
+                        padding: 0 24px !important;
+                        background: #0b0b0b !important;
                         box-sizing: border-box !important;
-                        min-height: 52px !important;
-                        padding: 6px 12px !important;
-                        background: var(--general-main-1, #1f2330) !important;
                     }
 
-                    .run-panel__mobile-header + * {
-                        min-height: 0 !important;
+                    .run-panel__container--mobile .run-panel__close-button,
+                    .run-panel__container--mobile .run-panel__clear-button {
+                        position: static !important;
+                        background: #0b0b0b !important;
+                        color: #f7f7f7 !important;
+                        border: 1px solid #5a5a5a !important;
+                        border-radius: 15px !important;
+                        box-shadow: none !important;
+                        font-weight: 900 !important;
+                        flex: 0 0 auto !important;
                     }
 
+                    .run-panel__container--mobile .run-panel__close-button {
+                        width: 108px !important;
+                        min-width: 108px !important;
+                        height: 86px !important;
+                        min-height: 86px !important;
+                    }
+
+                    .run-panel__container--mobile .run-panel__clear-button {
+                        width: 170px !important;
+                        min-width: 170px !important;
+                        height: 86px !important;
+                        min-height: 86px !important;
+                    }
+
+                    /* Tabs directly below toolbar. */
                     .run-panel__container--mobile .dc-tabs,
                     .run-panel__container--mobile .tabs {
                         display: flex !important;
                         flex-direction: column !important;
-                        flex: 1 1 auto !important;
+                        width: 100% !important;
+                        height: calc(100dvh - 112px) !important;
                         min-height: 0 !important;
-                        height: auto !important;
-                        background: var(--general-main-1, #1f2330) !important;
+                        background: #071525 !important;
+                    }
+
+                    .run-panel__container--mobile .dc-tabs__list,
+                    .run-panel__container--mobile .tabs__list {
+                        display: flex !important;
+                        flex: 0 0 110px !important;
+                        width: 100% !important;
+                        height: 110px !important;
+                        min-height: 110px !important;
+                        background: #151515 !important;
+                        border-bottom: 1px solid #222 !important;
+                    }
+
+                    .run-panel__container--mobile .dc-tabs__item,
+                    .run-panel__container--mobile .tabs__item {
+                        flex: 1 1 33.333% !important;
+                        min-width: 0 !important;
+                        height: 110px !important;
+                        display: flex !important;
+                        align-items: center !important;
+                        justify-content: center !important;
+                        padding: 0 8px !important;
+                        color: #aebbd0 !important;
+                        font-size: 20px !important;
+                        font-weight: 850 !important;
+                        white-space: nowrap !important;
+                        overflow: hidden !important;
+                        text-overflow: ellipsis !important;
+                        box-sizing: border-box !important;
+                    }
+
+                    .run-panel__container--mobile .dc-tabs__item--active,
+                    .run-panel__container--mobile .tabs__item--active {
+                        color: #f1f5f9 !important;
+                        border-bottom: 4px solid #3b82f6 !important;
                     }
 
                     .run-panel__container--mobile .dc-tabs__content,
                     .run-panel__container--mobile .tabs__content {
                         flex: 1 1 auto !important;
+                        width: 100% !important;
                         min-height: 0 !important;
                         height: auto !important;
                         overflow: hidden !important;
-                        background: var(--general-main-1, #1f2330) !important;
+                        background: #071525 !important;
                     }
 
                     .run-panel__container--mobile .transactions,
-                    .run-panel__container--mobile [class*="transactions"] {
-                        background: var(--general-main-1, #1f2330) !important;
+                    .run-panel__container--mobile [class*="transactions"],
+                    .run-panel__container--mobile .run-panel__content {
+                        background: #071525 !important;
+                        color: #f5f7fa !important;
                     }
 
-                    .run-panel__container--mobile .run-panel__content {
-                        background: var(--general-main-1, #1f2330) !important;
+                    /* Statistics strip. */
+                    .run-panel__container--mobile .run-panel__stat--mobile {
+                        width: 100% !important;
+                        height: 170px !important;
+                        min-height: 170px !important;
+                        max-height: 170px !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        background: #151515 !important;
+                        border-top: 1px solid #273244 !important;
                         overflow: hidden !important;
+                        box-sizing: border-box !important;
+                    }
+
+                    .run-panel__container--mobile .run-panel__stat--info {
+                        height: 38px !important;
+                        min-height: 38px !important;
+                        padding: 12px 24px 0 !important;
+                        color: #7e8a9c !important;
+                        background: #151515 !important;
+                        box-sizing: border-box !important;
+                    }
+
+                    .run-panel__container--mobile .run-panel__stat--tiles {
+                        display: flex !important;
+                        flex-wrap: nowrap !important;
+                        width: 100% !important;
+                        height: 132px !important;
+                        min-height: 132px !important;
+                        padding: 6px 20px 12px !important;
+                        gap: 12px !important;
+                        overflow-x: auto !important;
+                        overflow-y: hidden !important;
+                        background: #151515 !important;
+                        box-sizing: border-box !important;
+                    }
+
+                    .run-panel__container--mobile .run-panel__tile {
+                        flex: 0 0 118px !important;
+                        width: 118px !important;
+                        min-width: 118px !important;
+                        height: 112px !important;
+                        margin: 0 !important;
+                        border: 1px solid #2c3a4d !important;
+                        border-radius: 13px !important;
+                        background: #0b0f14 !important;
+                        color: #f5f7fa !important;
+                        box-sizing: border-box !important;
+                    }
+
+                    .run-panel__container--mobile .run-panel__tile-title {
+                        margin-top: 20px !important;
+                        color: #7e8a9c !important;
+                        font-size: 9px !important;
+                        font-weight: 800 !important;
+                        text-transform: uppercase !important;
+                    }
+
+                    .run-panel__container--mobile .run-panel__tile-content {
+                        margin-top: 9px !important;
+                        color: #f5f7fa !important;
+                        font-size: 16px !important;
+                        font-weight: 900 !important;
+                    }
+
+                    /* Bottom Run / status / Open transaction bar. */
+                    .controls__section {
+                        position: fixed !important;
+                        left: 0 !important;
+                        right: 0 !important;
+                        bottom: 0 !important;
+                        width: 100vw !important;
+                        height: 72px !important;
+                        min-height: 72px !important;
+                        z-index: 250 !important;
+                        background: #071525 !important;
+                        border-top: 1px solid #273244 !important;
+                        box-sizing: border-box !important;
+                    }
+
+                    .controls__buttons {
+                        display: flex !important;
+                        width: 100% !important;
+                        height: 72px !important;
+                        min-height: 72px !important;
+                        padding: 8px 22px !important;
+                        gap: 0 !important;
+                        background: #071525 !important;
+                        box-sizing: border-box !important;
+                    }
+
+                    .controls__transactions-button {
+                        background: #f7f7f7 !important;
+                        color: #171717 !important;
                     }
                 }
-            `}</style>
+            `}</style>    `}</style>
 
             <StatisticsInfoModal
                 is_mobile={!isDesktop}
