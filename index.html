@@ -51,26 +51,19 @@
 
         <div id="modal_root" class="modal-root"></div>
         <div id="popup_root" class="popup-root"></div>
-        <div id="root" style="min-height:100vh;background:#07131d;color:#ffffff;display:grid;place-items:center;font-family:Inter,system-ui,sans-serif;font-weight:800;">
-            <div id="sharp-boot-status" style="padding:24px;text-align:center;">
-                <div style="font-size:24px;margin-bottom:8px;">ELISY254 SHARP</div>
-                <div>Starting website…</div>
+        <div id="root" style="min-height:100vh;background:#07131d;color:#fff;font-family:Inter,system-ui,sans-serif;">
+            <div id="sharp-instant-landing" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;">
+                <section style="width:min(760px,100%);text-align:center;">
+                    <div style="font-size:12px;letter-spacing:.22em;color:#19cba3;font-weight:900;margin-bottom:18px;">ELISY254 SHARP</div>
+                    <h1 style="margin:0 0 14px;font-size:clamp(38px,10vw,76px);line-height:.95;font-weight:950;letter-spacing:-.04em;">WELCOME TO ELISY254</h1>
+                    <p style="margin:0 auto 28px;max-width:560px;color:#a9bac7;font-size:15px;line-height:1.6;">Deriv bots, automation, analysis and trading tools in one workspace.</p>
+                    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+                        <button type="button" id="sharp-instant-login" style="min-width:150px;min-height:50px;border:0;border-radius:12px;background:#19cba3;color:#06130f;font-weight:900;font-size:15px;cursor:pointer;">SIGN IN</button>
+                        <button type="button" id="sharp-instant-signup" style="min-width:150px;min-height:50px;border:1px solid #365264;border-radius:12px;background:#0b1d2b;color:#fff;font-weight:900;font-size:15px;cursor:pointer;">SIGN UP</button>
+                    </div>
+                </section>
             </div>
         </div>
-        <script>
-            // Do not replace the boot screen with a false failure message while
-            // Render is starting or a slow mobile connection is downloading the bundle.
-            setTimeout(function () {
-                var root = document.getElementById('root');
-                var status = document.getElementById('sharp-boot-status');
-                if (root && status && status.isConnected) {
-                    status.innerHTML =
-                        '<div style="font-size:24px;margin-bottom:10px;">ELISY254 SHARP</div>' +
-                        '<div style="color:#b8c7d3;margin-bottom:8px;">Loading ELISY254 SHARP…</div>' +
-                        '<div style="font-size:13px;color:#8296a5;font-weight:500;">Please wait while the application starts.</div>';
-                }
-            }, 30000);
-        </script>
         <!-- LiveChat script -->
         <script type="text/javascript" defer>
             window.__lc = window.__lc || {};
