@@ -18,4 +18,5 @@ export type PremiumSection =
     | 'analysis_hub'
     | 'charts'
     | 'tradingview'
-    | 'dtrader'\n    | 'settings';
+    | 'dtrader'
+    | 'settings';
