@@ -229,33 +229,6 @@ const PremiumLayout = observer(() => {
     // back to the landing page (or keep them on a loader) during that handoff.
     // The restoreSession effect below completes the live Deriv connection.
     if (!SHARP_OFFLINE_MODE && !runtimeAuthenticated && isOAuthCallback && !hasStoredAuth) return <PremiumLoader />;
-    if (!isAuthenticated) return <LandingPage onDerivLogin={startOAuth} busy={isAuthorizing} error={authError} />;
-
-    const openBotBuilder = () => changeSection('bot_builder');
-    const renderSection = () => {
-        switch (section) {
-            case 'dashboard': return <DashboardHome openBotBuilder={openBotBuilder} openSection={changeSection} />;
-            case 'bot_ideas': return <BotIdeasPage openBotBuilder={openBotBuilder} />;
-            case 'quick_bot': return <QuickBotPage openBotBuilder={openBotBuilder} openSection={changeSection} />;
-            case 'bot_builder': return null;
-            case 'free_bots': return <FreeBotsPage openBotBuilder={openBotBuilder} />;
-            case 'signal_ai': return <SignalAIPage />;
-            case 'manual_trading': return <ManualTradingPage />;
-            case 'dcircle': return <DcirclePage />;
-            case 'bulk_trader': return <BulkTraderPage />;
-            case 'copy_trading': return <PatCopyTradingPage />;
-            case 'calculator': return <CalculatorPage />;
-            case 'pro_ai': return <ProAIPage />;
-            case 'analysis_hub': return <SourceAnalysisToolsPage />;
-            case 'charts': return <ChartsPage />;
-            case 'tradingview': return <TradingViewPage />;
-            case 'dtrader': return <DTraderPage />;
-            default: return null;
-        }
-    };
-
-    const isBotBuilder = section === 'bot_builder';
-    const isRunPanelOpen = Boolean(run_panel?.is_drawer_open);
     const [publicAppearance, setPublicAppearance] = useState<{
         siteName?: string;
         primary?: string;
@@ -292,6 +265,33 @@ const PremiumLayout = observer(() => {
         return () => { alive = false; };
     }, []);
 
+    if (!isAuthenticated) return <LandingPage onDerivLogin={startOAuth} busy={isAuthorizing} error={authError} />;
+
+    const openBotBuilder = () => changeSection('bot_builder');
+    const renderSection = () => {
+        switch (section) {
+            case 'dashboard': return <DashboardHome openBotBuilder={openBotBuilder} openSection={changeSection} />;
+            case 'bot_ideas': return <BotIdeasPage openBotBuilder={openBotBuilder} />;
+            case 'quick_bot': return <QuickBotPage openBotBuilder={openBotBuilder} openSection={changeSection} />;
+            case 'bot_builder': return null;
+            case 'free_bots': return <FreeBotsPage openBotBuilder={openBotBuilder} />;
+            case 'signal_ai': return <SignalAIPage />;
+            case 'manual_trading': return <ManualTradingPage />;
+            case 'dcircle': return <DcirclePage />;
+            case 'bulk_trader': return <BulkTraderPage />;
+            case 'copy_trading': return <PatCopyTradingPage />;
+            case 'calculator': return <CalculatorPage />;
+            case 'pro_ai': return <ProAIPage />;
+            case 'analysis_hub': return <SourceAnalysisToolsPage />;
+            case 'charts': return <ChartsPage />;
+            case 'tradingview': return <TradingViewPage />;
+            case 'dtrader': return <DTraderPage />;
+            default: return null;
+        }
+    };
+
+    const isBotBuilder = section === 'bot_builder';
+    const isRunPanelOpen = Boolean(run_panel?.is_drawer_open);
     const themeStyle = {
         '--site-primary': publicAppearance?.primary || customization.colors.primary,
         '--site-secondary': publicAppearance?.secondary || customization.colors.secondary,
