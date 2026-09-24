@@ -132,6 +132,43 @@ const PremiumLayout = observer(() => {
     useEffect(() => {
         setSection(sectionFromHash(location.hash));
     }, [location.hash]);
+    const [publicAppearance, setPublicAppearance] = useState<{
+        siteName?: string;
+        primary?: string;
+        secondary?: string;
+        navBackground?: string;
+        navText?: string;
+        headerBackground?: string;
+        cardBackground?: string;
+    } | null>(null);
+
+    useEffect(() => {
+        if (!activeLoginid) return;
+        const accountType = String(localStorage.getItem('account_type') || '').toLowerCase() === 'demo' ? 'DEMO' : 'REAL';
+        void fetch('/api/sharp/user', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({ loginid: activeLoginid, accountType }),
+        }).catch(() => undefined);
+    }, [activeLoginid]);
+
+    useEffect(() => {
+        let alive = true;
+        fetch('/api/public-config', { cache: 'no-store' })
+            .then(response => response.ok ? response.json() : null)
+            .then(config => {
+                if (!alive || !config) return;
+                if (config.clientId) localStorage.setItem('sharp_deriv_client_id', String(config.clientId));
+                if (Array.isArray(config.managedBots)) writeManagedBots(config.managedBots as ManagedBot[]);
+                if (config.appearance) setPublicAppearance(config.appearance);
+                if (config.appearance?.siteName) document.title = String(config.appearance.siteName);
+            })
+            .catch(() => undefined);
+        return () => { alive = false; };
+    }, []);
+
+
     useEffect(() => {
         if (SHARP_OFFLINE_MODE) return;
         if (hasBootstrappedSession.current || isOAuthCallback || !hasStoredAuth || runtimeAuthenticated) return;
@@ -229,42 +266,6 @@ const PremiumLayout = observer(() => {
     // back to the landing page (or keep them on a loader) during that handoff.
     // The restoreSession effect below completes the live Deriv connection.
     if (!SHARP_OFFLINE_MODE && !runtimeAuthenticated && isOAuthCallback && !hasStoredAuth) return <PremiumLoader />;
-    const [publicAppearance, setPublicAppearance] = useState<{
-        siteName?: string;
-        primary?: string;
-        secondary?: string;
-        navBackground?: string;
-        navText?: string;
-        headerBackground?: string;
-        cardBackground?: string;
-    } | null>(null);
-
-    useEffect(() => {
-        if (!activeLoginid) return;
-        const accountType = String(localStorage.getItem('account_type') || '').toLowerCase() === 'demo' ? 'DEMO' : 'REAL';
-        void fetch('/api/sharp/user', {
-            method: 'POST',
-            credentials: 'include',
-            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-            body: JSON.stringify({ loginid: activeLoginid, accountType }),
-        }).catch(() => undefined);
-    }, [activeLoginid]);
-
-    useEffect(() => {
-        let alive = true;
-        fetch('/api/public-config', { cache: 'no-store' })
-            .then(response => response.ok ? response.json() : null)
-            .then(config => {
-                if (!alive || !config) return;
-                if (config.clientId) localStorage.setItem('sharp_deriv_client_id', String(config.clientId));
-                if (Array.isArray(config.managedBots)) writeManagedBots(config.managedBots as ManagedBot[]);
-                if (config.appearance) setPublicAppearance(config.appearance);
-                if (config.appearance?.siteName) document.title = String(config.appearance.siteName);
-            })
-            .catch(() => undefined);
-        return () => { alive = false; };
-    }, []);
-
     if (!isAuthenticated) return <LandingPage onDerivLogin={startOAuth} busy={isAuthorizing} error={authError} />;
 
     const openBotBuilder = () => changeSection('bot_builder');
