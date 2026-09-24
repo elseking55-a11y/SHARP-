@@ -22,6 +22,8 @@ export const NAVIGATION_CATALOG: Array<{ id: PremiumSection; label: string; requ
     { id: 'free_bots', label: 'Free Bot' },
     { id: 'manual_trading', label: 'Manual Trading', required: true },
     { id: 'dcircle', label: 'Dcircle', required: true },
+    { id: 'charts', label: 'Charts' },
+    { id: 'analysis_hub', label: 'Analysis' },
     { id: 'tradingview', label: 'TradingView' },
     { id: 'bulk_trader', label: 'Bulk Trader' },
     { id: 'copy_trading', label: 'Copy Trading' },
