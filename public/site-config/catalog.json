@@ -26,6 +26,14 @@
       "required": true
     },
     {
+      "id": "charts",
+      "label": "Charts"
+    },
+    {
+      "id": "analysis_hub",
+      "label": "Analysis"
+    },
+    {
       "id": "tradingview",
       "label": "TradingView"
     },
@@ -49,6 +57,8 @@
       "free_bots",
       "manual_trading",
       "dcircle",
+      "charts",
+      "analysis_hub",
       "tradingview",
       "bulk_trader",
       "copy_trading",
