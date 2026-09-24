@@ -15,6 +15,8 @@ const NAV_ICONS: Partial<Record<PremiumSection, typeof HomeIcon>> = {
     free_bots: RobotIcon,
     auto_trader: RobotIcon,
     manual_trading: BoltIcon,
+    charts: SearchIcon,
+    analysis_hub: SearchIcon,
     tradingview: SearchIcon,
     bulk_trader: GridIcon,
     batch_trader: GridIcon,
