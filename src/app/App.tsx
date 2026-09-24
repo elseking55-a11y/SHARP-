@@ -1,4 +1,5 @@
 import React from 'react';
+import AppRoot from './app-root';
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
 import LocalStorageSyncWrapper from '@/components/localStorage-sync-wrapper';
 import RoutePromptDialog from '@/components/route-prompt-dialog';
@@ -13,7 +14,6 @@ import PremiumLayout from '../components/premium/PremiumLayout';
 import AdminPage from '../components/admin/AdminPage';
 import './app-root.scss';
 
-const AppRoot = require('./app-root').default;
 
 // The old DBot application is heavy and must not mount on the landing page.
 // Load it only when the new SHARP shell actually opens Bot Builder.
