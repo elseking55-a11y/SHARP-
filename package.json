@@ -7,7 +7,7 @@
     },
     "scripts": {
         "start": "node server.cjs",
-        "build": "rsbuild build",
+        "build": "rm -rf dist && rsbuild build",
         "watch": "rsbuild build --watch",
         "serve": "http-server dist -p 8443 -a localhost -o",
         "start:webpack": "webpack serve --open --config webpack.config.js",
