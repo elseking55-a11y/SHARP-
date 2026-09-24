@@ -95,15 +95,15 @@ const PremiumLayout = observer(() => {
     const hasStoredAuth = OAuthTokenExchangeService.isAuthenticated();
     const runtimeAuthenticated = Boolean(activeLoginid || client?.is_logged_in);
     const authHandoffComplete = sessionStorage.getItem('sharp_auth_handoff') === 'complete';
-    // Always start a normal browser visit on the landing page. After the user
-    // chooses Deriv login, the OAuth callback marks the handoff complete and
-    // the live Deriv session moves the user into the application.
+
+    // Production always starts at the public landing page. A stored Deriv
+    // token/session must never skip the landing page on a fresh browser
+    // session. The only normal way into the app is the explicit Sign In /
+    // Sign Up OAuth handoff, which sets sharp_auth_handoff=complete.
     const isAuthenticated = Boolean(
         SHARP_OFFLINE_MODE ||
-        runtimeAuthenticated ||
         authHandoffComplete ||
-        isLocalDevelopmentHost() ||
-        Boolean(getStoredDerivApiToken())
+        isLocalDevelopmentHost()
     );
 
     useEffect(() => { document.title = getTemplateDomain(); }, []);
