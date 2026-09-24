@@ -76,6 +76,11 @@ export default defineConfig({
     dev: {
         hmr: true,
     },
+    optimization: {
+        // Keep the production shell in one browser bundle. This prevents users from
+        // receiving an old async chunk after a deployment and getting stuck on boot.
+        splitChunks: false,
+    },
     performance: {
         // Configure Rsbuild's native bundle analyzer
         bundleAnalyze:
