@@ -500,6 +500,13 @@ const serveFile = (res, pathname) => {
             return res.end(data);
         }
 
+        // Never return index.html for missing JS/CSS/image/font assets.
+        // Returning HTML with HTTP 200 makes the browser fail to start the bundle.
+        const ext = path.extname(String(pathname).split('?')[0]).toLowerCase();
+        if (ext && ext !== '.html') {
+            return send(res, 404, JSON.stringify({ error: 'asset_not_found', path: pathname }));
+        }
+
         // React Router callback/deep links must return the SPA entry point.
         fs.readFile(path.join(ROOT, 'index.html'), (indexError, indexData) => {
             if (indexError) return send(res, 404, JSON.stringify({ error: 'not_found' }));
@@ -507,6 +514,9 @@ const serveFile = (res, pathname) => {
                 'Content-Type': 'text/html; charset=utf-8',
                 'Cache-Control': 'no-cache',
             });
+            res.end(indexData);
+        });
+    });
             res.end(indexData);
         });
     });
