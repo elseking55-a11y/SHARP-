@@ -43,11 +43,7 @@ const exchangeToken = async (req, res) => {
             process.env.VITE_DERIV_CLIENT_ID ||
             ''
         ).trim();
-        const runtimeRedirectUri = String(
-            process.env.DERIV_REDIRECT_URI ||
-            process.env.VITE_DERIV_REDIRECT_URI ||
-            'https://sharp-mz3h.onrender.com/callback'
-        ).trim();
+        const runtimeRedirectUri = getRuntimeRedirectUri(req);
 
         const site = sites.find(entry => entry.id === params.site_id) || (
             params.site_id === 'sharp-render' && runtimeClientId
@@ -112,13 +108,19 @@ const exchangeToken = async (req, res) => {
 };
 
 
-const getOAuthConfig = (req, res) => {
-    const clientId = String(process.env.DERIV_CLIENT_ID || process.env.VITE_DERIV_CLIENT_ID || '').trim();
-    const redirectUri = String(
+const getRuntimeRedirectUri = req => {
+    const host = String(req.headers['x-forwarded-host'] || req.headers.host || '').split(',')[0].trim().toLowerCase().replace(/^www\./, '');
+    if (host === 'elisy.site') return 'https://elisy.site/callback';
+    return String(
         process.env.DERIV_REDIRECT_URI ||
         process.env.VITE_DERIV_REDIRECT_URI ||
         'https://sharp-mz3h.onrender.com/callback'
     ).trim();
+};
+
+const getOAuthConfig = (req, res) => {
+    const clientId = String(process.env.DERIV_CLIENT_ID || process.env.VITE_DERIV_CLIENT_ID || '').trim();
+    const redirectUri = getRuntimeRedirectUri(req);
 
     if (!clientId) {
         return send(res, 503, JSON.stringify({
