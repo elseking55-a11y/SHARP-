@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "site_id": "sharp-render",
+  "navigation": [
+    "dashboard",
+    "bot_builder",
+    "free_bots",
+    "manual_trading",
+    "dcircle",
+    "charts",
+    "analysis_hub",
+    "tradingview",
+    "bulk_trader",
+    "copy_trading",
+    "calculator"
+  ],
+  "colors": {
+    "primary": "#059669",
+    "secondary": "#19cba3",
+    "nav_background": "#151d26",
+    "nav_text": "#f3f6f8",
+    "header_background": "#ffffff"
+  }
+}
