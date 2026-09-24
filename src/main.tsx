@@ -4,7 +4,49 @@ import { configure } from 'mobx';
 import { performVersionCheck } from './utils/version-check';
 import './styles/index.scss';
 
+
 configure({ isolateGlobalState: true });
+
+const isChunkLoadError = (value: unknown) => {
+    const message = value instanceof Error ? value.message : String(value ?? '');
+    return /Loading chunk/i.test(message) || /ChunkLoadError/i.test(message) || /missing:\s*https?:/i.test(message);
+};
+
+const recoverFromStaleChunk = (value: unknown) => {
+    if (!isChunkLoadError(value)) return false;
+
+    try {
+        const reloadKey = 'sharp_chunk_reload';
+        if (sessionStorage.getItem(reloadKey)) {
+            sessionStorage.removeItem(reloadKey);
+            return false;
+        }
+
+        sessionStorage.setItem(reloadKey, '1');
+        const url = new URL(window.location.href);
+        url.searchParams.set('_sharp_reload', String(Date.now()));
+        window.location.replace(url.toString());
+        return true;
+    } catch (error) {
+        console.error('[SHARP] Chunk recovery failed:', error);
+        return false;
+    }
+};
+
+// Catch chunk failures from every lazy boundary, including nested routes/components.
+window.addEventListener('error', event => {
+    const target = event.target as HTMLScriptElement | HTMLLinkElement | null;
+    const resourceUrl = target?.src || target?.href || '';
+    if (isChunkLoadError(event.error) || /\/static\/js\/async\//i.test(resourceUrl)) {
+        recoverFromStaleChunk(event.error || new Error(`Missing frontend resource: ${resourceUrl}`));
+    }
+}, true);
+
+window.addEventListener('unhandledrejection', event => {
+    if (isChunkLoadError(event.reason)) {
+        recoverFromStaleChunk(event.reason);
+    }
+});
 
 type BootState = { error: Error | null };
 
@@ -74,36 +116,7 @@ class BootErrorBoundary extends Component<React.PropsWithChildren, BootState> {
     }
 }
 
-const App = lazy(async () => {
-    try {
-        return await import('./app/App');
-    } catch (error) {
-        console.error('[SHARP] Failed to load application bundle:', error);
-
-        // Rsbuild emits hashed async chunks. If the browser has an old
-        // entry/chunk cached after a deployment, force one clean HTML reload
-        // so the browser receives the new chunk manifest.
-        const message = error instanceof Error ? error.message : String(error);
-        const isChunkError =
-            /Loading chunk/i.test(message) ||
-            /ChunkLoadError/i.test(message) ||
-            /missing:/i.test(message);
-
-        if (isChunkError) {
-            const reloadKey = 'sharp_chunk_reload';
-            if (!sessionStorage.getItem(reloadKey)) {
-                sessionStorage.setItem(reloadKey, '1');
-                const url = new URL(window.location.href);
-                url.searchParams.set('_sharp_reload', String(Date.now()));
-                window.location.replace(url.toString());
-                return new Promise<never>(() => {});
-            }
-            sessionStorage.removeItem(reloadKey);
-        }
-
-        throw error;
-    }
-});
+const App = lazy(() => import('./app/App'));
 
 let versionCheckError: Error | null = null;
 try {
