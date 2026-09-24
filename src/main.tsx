@@ -1,4 +1,4 @@
-import React, { Component, lazy, Suspense } from 'react';
+import React, { Component } from 'react';
 import { createRoot } from 'react-dom/client';
 import { configure } from 'mobx';
 import { performVersionCheck } from './utils/version-check';
@@ -116,7 +116,7 @@ class BootErrorBoundary extends Component<React.PropsWithChildren, BootState> {
     }
 }
 
-const App = lazy(() => import('./app/App'));
+import App from './app/App';
 
 let versionCheckError: Error | null = null;
 try {
@@ -131,25 +131,7 @@ const Boot = () => {
         throw versionCheckError;
     }
 
-    return (
-        <Suspense
-            fallback={
-                <div style={{
-                    minHeight: '100vh',
-                    display: 'grid',
-                    placeItems: 'center',
-                    background: '#07131d',
-                    color: '#fff',
-                    fontFamily: 'Inter, system-ui, sans-serif',
-                    fontWeight: 800,
-                }}>
-                    Loading ELISY254 SHARP…
-                </div>
-            }
-        >
-            <App />
-        </Suspense>
-    );
+    return <App />;
 };
 
 const rootElement = document.getElementById('root');
