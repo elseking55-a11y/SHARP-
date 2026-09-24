@@ -94,7 +94,17 @@ const PremiumLayout = observer(() => {
     const isOAuthCallback = Boolean(params.get('code') && params.get('state'));
     const hasStoredAuth = OAuthTokenExchangeService.isAuthenticated();
     const runtimeAuthenticated = Boolean(activeLoginid || client?.is_logged_in);
-    const isAuthenticated = Boolean(SHARP_OFFLINE_MODE || runtimeAuthenticated || hasStoredAuth || isLocalDevelopmentHost() || Boolean(getStoredDerivApiToken()));
+    const authHandoffComplete = sessionStorage.getItem('sharp_auth_handoff') === 'complete';
+    // Always start a normal browser visit on the landing page. After the user
+    // chooses Deriv login, the OAuth callback marks the handoff complete and
+    // the live Deriv session moves the user into the application.
+    const isAuthenticated = Boolean(
+        SHARP_OFFLINE_MODE ||
+        runtimeAuthenticated ||
+        authHandoffComplete ||
+        isLocalDevelopmentHost() ||
+        Boolean(getStoredDerivApiToken())
+    );
 
     useEffect(() => { document.title = getTemplateDomain(); }, []);
 
