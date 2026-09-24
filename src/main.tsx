@@ -79,6 +79,28 @@ const App = lazy(async () => {
         return await import('./app/App');
     } catch (error) {
         console.error('[SHARP] Failed to load application bundle:', error);
+
+        // Rsbuild emits hashed async chunks. If the browser has an old
+        // entry/chunk cached after a deployment, force one clean HTML reload
+        // so the browser receives the new chunk manifest.
+        const message = error instanceof Error ? error.message : String(error);
+        const isChunkError =
+            /Loading chunk/i.test(message) ||
+            /ChunkLoadError/i.test(message) ||
+            /missing:/i.test(message);
+
+        if (isChunkError) {
+            const reloadKey = 'sharp_chunk_reload';
+            if (!sessionStorage.getItem(reloadKey)) {
+                sessionStorage.setItem(reloadKey, '1');
+                const url = new URL(window.location.href);
+                url.searchParams.set('_sharp_reload', String(Date.now()));
+                window.location.replace(url.toString());
+                return new Promise<never>(() => {});
+            }
+            sessionStorage.removeItem(reloadKey);
+        }
+
         throw error;
     }
 });
