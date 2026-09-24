@@ -31,19 +31,22 @@ const multiSite = brandConfig.sites as MultiSiteConfig;
 const normalizeHost = (host: string) => host.trim().toLowerCase().replace(/^www\\./, '');
 
 const getRenderSiteConfig = (hostname: string): SiteOAuthConfig | undefined => {
-    if (normalizeHost(hostname) !== 'sharp-mz3h.onrender.com') return undefined;
+    const host = normalizeHost(hostname);
+    if (!['sharp-mz3h.onrender.com', 'elisy.site'].includes(host)) return undefined;
 
     const clientId = (import.meta.env.VITE_DERIV_CLIENT_ID as string | undefined)?.trim();
-    const redirectUri = (import.meta.env.VITE_DERIV_REDIRECT_URI as string | undefined)?.trim()
-        || 'https://sharp-mz3h.onrender.com/callback';
+    const configuredRedirectUri = (import.meta.env.VITE_DERIV_REDIRECT_URI as string | undefined)?.trim();
+    const redirectUri = host === 'elisy.site'
+        ? (configuredRedirectUri || 'https://elisy.site/callback')
+        : (configuredRedirectUri || 'https://sharp-mz3h.onrender.com/callback');
 
     if (!clientId) return undefined;
 
     return {
         id: 'sharp-render',
-        hosts: ['sharp-mz3h.onrender.com'],
-        display_domain: 'sharp-mz3h.onrender.com',
-        website_url: 'https://sharp-mz3h.onrender.com',
+        hosts: host === 'elisy.site' ? ['elisy.site', 'www.elisy.site'] : ['sharp-mz3h.onrender.com'],
+        display_domain: host === 'elisy.site' ? 'elisy.site' : 'sharp-mz3h.onrender.com',
+        website_url: host === 'elisy.site' ? 'https://elisy.site' : 'https://sharp-mz3h.onrender.com',
         redirect_uri: redirectUri,
         client_id: clientId,
         scopes: ['trade', 'application_read'],
