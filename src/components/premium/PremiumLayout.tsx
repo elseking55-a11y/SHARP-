@@ -243,6 +243,15 @@ const PremiumLayout = observer(() => {
         }
     }, [setIsAuthorizing]);
 
+    useEffect(() => {
+        const action = new URLSearchParams(window.location.search).get('sharp_auth');
+        if (!action || isOAuthCallback || SHARP_OFFLINE_MODE) return;
+        const key = 'sharp_instant_auth_started';
+        if (sessionStorage.getItem(key) === '1') return;
+        sessionStorage.setItem(key, '1');
+        void startOAuth(action === 'signup' ? 'signup' : 'login');
+    }, [isOAuthCallback, startOAuth]);
+
     const changeSection = useCallback((requested: PremiumSection) => {
         const requiredNavigation: PremiumSection[] = ['dashboard', 'manual_trading', 'dcircle'];
         const next = isCustomizableSection(requested) &&
