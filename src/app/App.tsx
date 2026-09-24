@@ -1,4 +1,3 @@
-import { lazy, Suspense } from 'react';
 import React from 'react';
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
 import LocalStorageSyncWrapper from '@/components/localStorage-sync-wrapper';
@@ -14,7 +13,7 @@ import PremiumLayout from '../components/premium/PremiumLayout';
 import AdminPage from '../components/admin/AdminPage';
 import './app-root.scss';
 
-const AppRoot = lazy(() => import('./app-root'));
+const AppRoot = require('./app-root').default;
 
 // The old DBot application is heavy and must not mount on the landing page.
 // Load it only when the new SHARP shell actually opens Bot Builder.
@@ -24,11 +23,7 @@ const BuilderRoute = () => {
 
     if (!isBotBuilder) return null;
 
-    return (
-        <Suspense fallback={null}>
-            <AppRoot />
-        </Suspense>
-    );
+    return <AppRoot />;
 };
 const i18nInstance = initializeI18n({ cdnUrl: '' });
 
