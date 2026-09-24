@@ -51,7 +51,24 @@
 
         <div id="modal_root" class="modal-root"></div>
         <div id="popup_root" class="popup-root"></div>
-        <div id="root"></div>
+        <div id="root" style="min-height:100vh;background:#07131d;color:#ffffff;display:grid;place-items:center;font-family:Inter,system-ui,sans-serif;font-weight:800;">
+            <div id="sharp-boot-status" style="padding:24px;text-align:center;">
+                <div style="font-size:24px;margin-bottom:8px;">ELISY254 SHARP</div>
+                <div>Starting website…</div>
+            </div>
+        </div>
+        <script>
+            setTimeout(function () {
+                var root = document.getElementById('root');
+                var status = document.getElementById('sharp-boot-status');
+                if (root && status && status.isConnected) {
+                    status.innerHTML =
+                        '<div style="font-size:24px;margin-bottom:10px;">ELISY254 SHARP</div>' +
+                        '<div style="color:#ff6b6b;margin-bottom:8px;">The application JavaScript did not start.</div>' +
+                        '<div style="font-size:13px;color:#b8c7d3;font-weight:500;">The Render server can be healthy while the browser bundle fails to load. Please refresh this page after deployment.</div>';
+                }
+            }, 8000);
+        </script>
         <!-- LiveChat script -->
         <script type="text/javascript" defer>
             window.__lc = window.__lc || {};
