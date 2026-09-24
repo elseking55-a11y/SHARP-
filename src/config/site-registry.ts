@@ -28,7 +28,7 @@ interface MultiSiteConfig {
 
 const multiSite = brandConfig.sites as MultiSiteConfig;
 
-const normalizeHost = (host: string) => host.trim().toLowerCase().replace(/^www\\./, '');
+const normalizeHost = (host: string) => host.trim().toLowerCase().replace(/^www\./, '');
 
 const getRenderSiteConfig = (hostname: string): SiteOAuthConfig | undefined => {
     const host = normalizeHost(hostname);
