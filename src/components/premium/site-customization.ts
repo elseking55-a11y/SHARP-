@@ -17,17 +17,14 @@ export type SiteCustomization = {
 };
 
 export const NAVIGATION_CATALOG: Array<{ id: PremiumSection; label: string; required?: boolean }> = [
-    { id: 'dashboard', label: 'Dashboard', required: true },
     { id: 'bot_builder', label: 'Bot Builder' },
-    { id: 'free_bots', label: 'Free Bot' },
-    { id: 'manual_trading', label: 'Manual Trading', required: true },
-    { id: 'dcircle', label: 'Dcircle', required: true },
+    { id: 'free_bots', label: 'Free Bots' },
+    { id: 'manual_trading', label: 'Manual Trading' },
+    { id: 'speedbot', label: 'Speed Bot' },
+    { id: 'analysis_tools', label: 'Analysis Tools' },
     { id: 'charts', label: 'Charts' },
-    { id: 'analysis_hub', label: 'Analysis' },
-    { id: 'tradingview', label: 'TradingView' },
-    { id: 'bulk_trader', label: 'Bulk Trader' },
-    { id: 'copy_trading', label: 'Copy Trading' },
-    { id: 'calculator', label: 'Calculator' },
+    { id: 'dtrader', label: 'DTrader' },
+    { id: 'bulk_trader', label: 'Bulk Trading' },
 ];
 
 export const DEFAULT_NAVIGATION = NAVIGATION_CATALOG.map(item => item.id);
@@ -54,11 +51,6 @@ const normalizeNavigation = (value: unknown): PremiumSection[] => {
         .map(item => String(item) as PremiumSection)
         .filter(item => CATALOG_IDS.has(item) && !seen.has(item) && Boolean(seen.add(item)));
 
-    // Dashboard and Manual Trading are core user pages and cannot be removed by a domain configuration.
-    const requiredSections = NAVIGATION_CATALOG.filter(item => item.required).map(item => item.id);
-    requiredSections.forEach(required => {
-        if (!navigation.includes(required)) navigation.push(required);
-    });
     return navigation.length ? navigation : [...DEFAULT_NAVIGATION];
 };
 
