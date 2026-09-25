@@ -788,3 +788,76 @@
         gap: 0 !important;
     }
 }
+
+
+/* =========================================================
+   SHARP FIX — GLOBAL RUN PANEL MUST NOT COVER PREMIUM PAGES
+   PremiumLayout mounts the shared RunPanel outside
+   .prodb-bot-builder-host. The earlier desktop rules only
+   targeted the builder host, which allowed Summary /
+   Transactions / Journal to render across the homepage.
+   Keep the drawer available, but collapsed until opened.
+   ========================================================= */
+
+@media (min-width: 769px) {
+    .prodb-premium-shell .dc-drawer.run-panel {
+        position: fixed !important;
+        top: 126px !important;
+        right: 0 !important;
+        bottom: 39px !important;
+        left: auto !important;
+        width: 366px !important;
+        max-width: 366px !important;
+        height: auto !important;
+        max-height: calc(100vh - 165px) !important;
+        margin: 0 !important;
+        overflow: hidden !important;
+        transform: translateX(calc(100% - 16px)) !important;
+        transition: transform .24s ease !important;
+        z-index: 180 !important;
+        pointer-events: auto !important;
+        will-change: transform;
+    }
+
+    .prodb-premium-shell .dc-drawer.run-panel.dc-drawer--open {
+        transform: translateX(0) !important;
+        box-shadow: -14px 0 34px rgba(17, 31, 43, .16);
+    }
+
+    .prodb-premium-shell .dc-drawer.run-panel:not(.dc-drawer--open) {
+        box-shadow: none !important;
+    }
+
+    .prodb-premium-shell .dc-drawer.run-panel .dc-drawer__toggle {
+        position: absolute !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: auto !important;
+        width: 16px !important;
+        height: 100% !important;
+        min-width: 16px !important;
+        z-index: 5 !important;
+    }
+
+    .prodb-premium-shell .dc-drawer.run-panel .dc-drawer__container {
+        width: 100% !important;
+        max-width: 366px !important;
+        height: 100% !important;
+        min-height: 0 !important;
+        padding-inline-start: 16px !important;
+        padding-inline-end: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    .prodb-premium-shell .dc-drawer.run-panel .dc-drawer__content {
+        min-width: 0 !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+    }
+}
+
+/* Never let the shared panel reserve document space on premium pages. */
+.prodb-premium-shell .dc-drawer.run-panel {
+    margin: 0 !important;
+}
