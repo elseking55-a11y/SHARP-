@@ -2107,3 +2107,81 @@
 .prodb-premium-shell .db-contract-card__result--lost {
   background-image: var(--sharp-result-loss-bg) !important;
 }
+
+/* =========================================================
+   SHARP NAV + BOT TOOL BOX SIZING
+   All top navigation buttons use the same dimensions.
+   ========================================================= */
+.prodb-nav{
+    display:flex!important;
+    align-items:stretch!important;
+    gap:6px!important;
+    overflow-x:auto!important;
+}
+.prodb-nav__item{
+    flex:0 0 128px!important;
+    width:128px!important;
+    min-width:128px!important;
+    height:48px!important;
+    min-height:48px!important;
+    box-sizing:border-box!important;
+    justify-content:center!important;
+    white-space:nowrap!important;
+    border-radius:10px!important;
+}
+.prodb-nav__item--copy_trading{border-bottom-color:#a855f7!important}
+.prodb-nav__item--apex_bot{border-bottom-color:#f59e0b!important}
+.prodb-nav__item--market_hacker{border-bottom-color:#06b6d4!important}
+
+.prodb-bot-tool-page{
+    width:100%!important;
+    max-width:1100px!important;
+    margin:0 auto!important;
+    padding:18px 18px 90px!important;
+    box-sizing:border-box!important;
+}
+.prodb-bot-tool-card{
+    width:100%!important;
+    box-sizing:border-box!important;
+}
+.prodb-bot-signal{
+    display:grid!important;
+    grid-template-columns:1fr auto!important;
+    gap:4px 12px!important;
+    margin:14px 0!important;
+    padding:14px!important;
+    border:1px solid rgba(255,255,255,.12)!important;
+    border-radius:14px!important;
+    background:rgba(255,255,255,.045)!important;
+}
+.prodb-bot-signal span{font-size:10px!important;font-weight:900!important;color:#8ea4ba!important}
+.prodb-bot-signal strong{font-size:17px!important;color:#fff!important}
+.prodb-bot-signal small{grid-column:1/-1;color:#9fb2c4!important}
+.prodb-analysis-digits{
+    display:grid!important;
+    grid-template-columns:repeat(10,minmax(0,1fr))!important;
+    gap:7px!important;
+}
+.prodb-analysis-digits>div{
+    min-width:0!important;
+    padding:10px 5px!important;
+    border-radius:11px!important;
+    background:rgba(255,255,255,.045)!important;
+    border:1px solid rgba(255,255,255,.09)!important;
+    text-align:center!important;
+}
+.prodb-analysis-digits>div span{display:grid!important;place-items:center!important;width:32px!important;height:32px!important;margin:0 auto 5px!important;border-radius:50%!important;background:#1d3550!important;color:#fff!important;font-weight:950!important}
+.prodb-analysis-digits>div span.is-high{background:#b45309!important;color:#fff!important}
+.prodb-analysis-digits>div b,.prodb-analysis-digits>div small{display:block!important;color:#c8d6e5!important;font-size:10px!important}
+@media(max-width:700px){
+    .prodb-nav__item{
+        flex-basis:116px!important;
+        width:116px!important;
+        min-width:116px!important;
+        height:44px!important;
+        min-height:44px!important;
+        font-size:11px!important;
+    }
+    .prodb-bot-tool-page{padding:10px 9px 86px!important}
+    .prodb-analysis-digits{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+}
