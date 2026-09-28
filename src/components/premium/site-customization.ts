@@ -54,7 +54,9 @@ const normalizeNavigation = (value: unknown): PremiumSection[] => {
         .map(item => String(item) as PremiumSection)
         .filter(item => CATALOG_IDS.has(item) && !seen.has(item) && Boolean(seen.add(item)));
 
-    return navigation.length ? navigation : [...DEFAULT_NAVIGATION];
+    DEFAULT_NAVIGATION.forEach(item => { if (!navigation.includes(item)) navigation.push(item); });
+
+    return navigation;
 };
 
 const normalizeColors = (value: unknown): SiteThemeColors => {
