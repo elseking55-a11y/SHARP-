@@ -3,66 +3,63 @@
   "source": "src/components/premium/site-customization.ts",
   "navigation_catalog": [
     {
-      "id": "dashboard",
-      "label": "Dashboard",
-      "required": true
-    },
-    {
       "id": "bot_builder",
       "label": "Bot Builder"
     },
     {
       "id": "free_bots",
-      "label": "Free Bot"
+      "label": "Free Bots"
     },
     {
       "id": "manual_trading",
-      "label": "Manual Trading",
-      "required": true
+      "label": "Manual Trading"
     },
     {
-      "id": "dcircle",
-      "label": "Dcircle",
-      "required": true
+      "id": "speedbot",
+      "label": "Speed Bot"
+    },
+    {
+      "id": "analysis_tools",
+      "label": "Analysis Tools"
     },
     {
       "id": "charts",
       "label": "Charts"
     },
     {
-      "id": "analysis_hub",
-      "label": "Analysis"
-    },
-    {
-      "id": "tradingview",
-      "label": "TradingView"
+      "id": "dtrader",
+      "label": "DTrader"
     },
     {
       "id": "bulk_trader",
-      "label": "Bulk Trader"
+      "label": "Bulk Trading"
     },
     {
       "id": "copy_trading",
       "label": "Copy Trading"
     },
     {
-      "id": "calculator",
-      "label": "Calculator"
+      "id": "apex_bot",
+      "label": "Apex Bot"
+    },
+    {
+      "id": "market_hacker",
+      "label": "Market Hacker"
     }
   ],
   "defaults": {
     "navigation": [
-      "dashboard",
       "bot_builder",
       "free_bots",
       "manual_trading",
-      "dcircle",
+      "speedbot",
+      "analysis_tools",
       "charts",
-      "analysis_hub",
-      "tradingview",
+      "dtrader",
       "bulk_trader",
       "copy_trading",
-      "calculator"
+      "apex_bot",
+      "market_hacker"
     ],
     "colors": {
       "primary": "#059669",
