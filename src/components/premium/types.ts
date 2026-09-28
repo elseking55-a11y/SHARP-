@@ -11,6 +11,8 @@ export type PremiumSection =
     | 'bulk_trader'
     | 'batch_trader'
     | 'copy_trading'
+    | 'apex_bot'
+    | 'market_hacker'
     | 'speedbot'
     | 'calculator'
     | 'pro_ai'
