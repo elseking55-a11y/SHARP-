@@ -300,3 +300,104 @@ export const loadSourceBot = async (file: string, openBotBuilder: () => void) =>
     }
     throw new Error(`The source bot file could not be loaded (${lastError || 'file not found'}).`);
 };
+
+
+export const ApexBotPage = ({ openBotBuilder }: { openBotBuilder: () => void }) => {
+    const { authData } = useApiBase();
+    const { markets, symbol, setSymbol, selected, error: marketError } = useMarkets();
+    const { prices, error: tickError } = useTicks(symbol, 120);
+    const [stake, setStake] = useState(1);
+    const [duration, setDuration] = useState(1);
+    const [busy, setBusy] = useState('');
+    const [message, setMessage] = useState('');
+    const [error, setError] = useState('');
+    const currency = authData?.currency || 'USD';
+
+    const signal = useMemo(() => {
+        if (prices.length < 6) return 'WAIT';
+        const recent = prices.slice(-6);
+        const up = recent.slice(1).filter((v, i) => v > recent[i]).length;
+        const down = recent.slice(1).filter((v, i) => v < recent[i]).length;
+        return up === down ? 'WAIT' : up > down ? 'CALL' : 'PUT';
+    }, [prices]);
+
+    const run = async () => {
+        if (signal === 'WAIT') return setError('Waiting for a clear live Deriv tick signal.');
+        setBusy('run'); setError(''); setMessage('');
+        try {
+            const result = await purchase({ symbol, contractType: signal, stake, currency, duration });
+            setMessage(`${result.settlement.status.toUpperCase()} · ${money(result.settlement.profit, currency)} · contract ${result.bought.contract_id}`);
+        } catch (err) {
+            setError(errorText(err));
+        } finally {
+            setBusy('');
+        }
+    };
+
+    return <div className='prodb-live-page prodb-bot-tool-page'>
+        <PageHeader eyebrow='DERIV · LIVE BOT' title='Apex Bot' subtitle='Connected to the authenticated Deriv account. The bot reads live ticks and sends one contract when you press Run.' />
+        <section className='prodb-live-card prodb-bot-tool-card'>
+            <div className='prodb-import-card__title'><h2>Apex strategy</h2><span className='prodb-live-badge is-live'>{signal === 'WAIT' ? 'WAITING' : `SIGNAL ${signal}`}</span></div>
+            <div className='prodb-fields'>
+                <label>Market<MarketSelect markets={markets} value={symbol} onChange={setSymbol} /></label>
+                <label>Stake ({currency})<input type='number' min='.01' step='.01' value={stake} onChange={e => setStake(Math.max(.01, num(e.target.value, 1)))} /></label>
+                <label>Duration (ticks)<input type='number' min='1' max='10' value={duration} onChange={e => setDuration(clamp(Math.trunc(num(e.target.value, 1)), 1, 10))} /></label>
+            </div>
+            <div className='prodb-bot-signal'><span>LIVE MARKET</span><strong>{selected?.label || symbol}</strong><small>{prices.at(-1) ?? '—'} · {prices.length} ticks loaded</small></div>
+            <div className='prodb-import-actions'>
+                <button className='is-primary' disabled={Boolean(busy) || signal === 'WAIT'} onClick={() => void run()}>{busy ? 'Running…' : 'RUN APEX BOT'}</button>
+                <button onClick={openBotBuilder}>OPEN BOT BUILDER</button>
+            </div>
+            {(error || marketError || tickError) && <div className='prodb-live-error'>{error || marketError || tickError}</div>}
+            {message && <div className='prodb-live-success'>{message}</div>}
+        </section>
+    </div>;
+};
+
+export const MarketHackerPage = () => {
+    const { authData } = useApiBase();
+    const { markets, symbol, setSymbol, selected, error: marketError } = useMarkets();
+    const { prices, error: tickError } = useTicks(symbol, 300);
+    const currency = authData?.currency || 'USD';
+    const [stake, setStake] = useState(1);
+    const [duration, setDuration] = useState(1);
+    const [busy, setBusy] = useState(false);
+    const [message, setMessage] = useState('');
+    const [error, setError] = useState('');
+
+    const digits = useMemo(() => prices.map(price => Number(price.toFixed(selected?.pip || 2).slice(-1))), [prices, selected]);
+    const counts = useMemo(() => Array.from({ length: 10 }, (_, digit) => digits.filter(value => value === digit).length), [digits]);
+    const hottest = counts.length ? counts.indexOf(Math.max(...counts)) : null;
+
+    const tradeHottest = async () => {
+        if (hottest === null || !prices.length) return;
+        setBusy(true); setError(''); setMessage('');
+        try {
+            const result = await purchase({ symbol, contractType: 'DIGITMATCH', stake, currency, duration, barrier: String(hottest) });
+            setMessage(`${result.settlement.status.toUpperCase()} · ${money(result.settlement.profit, currency)} · digit ${hottest}`);
+        } catch (err) {
+            setError(errorText(err));
+        } finally {
+            setBusy(false);
+        }
+    };
+
+    return <div className='prodb-live-page prodb-bot-tool-page'>
+        <PageHeader eyebrow='DERIV · LIVE ANALYSIS BOT' title='Market Hacker' subtitle='Uses the authenticated Deriv tick stream to calculate digit frequency. Trade is sent only when you press the button.' />
+        <section className='prodb-live-card prodb-bot-tool-card'>
+            <div className='prodb-import-card__title'><h2>Digit frequency</h2><span className='prodb-live-badge is-live'>{hottest === null ? 'WAITING' : `HOT DIGIT ${hottest}`}</span></div>
+            <div className='prodb-fields'>
+                <label>Market<MarketSelect markets={markets} value={symbol} onChange={setSymbol} /></label>
+                <label>Stake ({currency})<input type='number' min='.01' step='.01' value={stake} onChange={e => setStake(Math.max(.01, num(e.target.value, 1)))} /></label>
+                <label>Duration (ticks)<input type='number' min='1' max='10' value={duration} onChange={e => setDuration(clamp(Math.trunc(num(e.target.value, 1)), 1, 10))} /></label>
+            </div>
+            <div className='prodb-analysis-digits'>{counts.map((count, digit) => <div key={digit}><span className={digit === hottest ? 'is-high' : ''}>{digit}</span><b>{digits.length ? ((count / digits.length) * 100).toFixed(1) : '0.0'}%</b><small>{count}</small></div>)}</div>
+            <div className='prodb-import-actions'>
+                <button className='is-primary' disabled={busy || hottest === null} onClick={() => void tradeHottest()}>{busy ? 'Trading…' : `TRADE DIGIT ${hottest ?? '—'}`}</button>
+            </div>
+            <div className='prodb-bot-signal'><span>LIVE MARKET</span><strong>{selected?.label || symbol}</strong><small>{prices.length} live/history ticks</small></div>
+            {(error || marketError || tickError) && <div className='prodb-live-error'>{error || marketError || tickError}</div>}
+            {message && <div className='prodb-live-success'>{message}</div>}
+        </section>
+    </div>;
+};
