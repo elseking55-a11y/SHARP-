@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { DownloadIcon } from '../icons';
+import { load, save_types } from '@/external/bot-skeleton';
 import { decodeManagedBotXml, readManagedBots, type ManagedBot } from '@/utils/managed-bot-library';
 
 type DomainBot = ManagedBot;
@@ -29,7 +30,7 @@ const FreeBotsPage = ({ openBotBuilder }: { openBotBuilder?: () => void }) => {
             const decodedXml = bot.xmlBase64
                 ? decodeManagedBotXml(bot.xmlBase64)
                 : bot.xmlUrl
-                  ? await fetch(bot.xmlUrl).then(response => {
+                  ? await fetch(bot.xmlUrl, { cache: 'no-store' }).then(response => {
                         if (!response.ok) throw new Error('Unable to load this free bot.');
                         return response.text();
                     })
@@ -39,18 +40,37 @@ const FreeBotsPage = ({ openBotBuilder }: { openBotBuilder?: () => void }) => {
                 throw new Error('This uploaded file is not valid Blockly XML.');
             }
 
-            sessionStorage.setItem(
-                'sharp_pending_free_bot_xml',
-                JSON.stringify({ xml: decodedXml, fileName: bot.file, botId: bot.id, botName: bot.name })
-            );
-            sessionStorage.removeItem('sharp_loaded_free_bot');
+            // Open the native Deriv Bot Builder first, then import XML into
+            // the actual Blockly workspace instead of parsing page HTML.
             openBotBuilder();
+
+            let workspace: any = null;
+            for (let attempt = 0; attempt < 12 && !workspace; attempt += 1) {
+                await new Promise(resolve => window.setTimeout(resolve, attempt === 0 ? 350 : 200));
+                workspace = window.Blockly?.derivWorkspace;
+            }
+
+            if (!workspace) throw new Error('Bot Builder workspace did not finish loading. Please tap LOAD again.');
+
+            await load({
+                block_string: decodedXml,
+                file_name: bot.file || `${bot.name || 'free-bot'}.xml`,
+                workspace,
+                from: save_types.LOCAL,
+                drop_event: {},
+                strategy_id: null,
+                showIncompatibleStrategyDialog: false,
+            });
+
+            sessionStorage.setItem('sharp_loaded_free_bot', bot.id);
+            sessionStorage.removeItem('sharp_pending_free_bot_xml');
         } catch (err) {
             setError(err instanceof Error ? err.message : String(err));
         } finally {
             setBusyFile('');
         }
     };
+
 
     return (
         <div className='prodb-free-bots prodb-free-bots--app'>
