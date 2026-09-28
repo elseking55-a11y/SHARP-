@@ -25,6 +25,9 @@ export const NAVIGATION_CATALOG: Array<{ id: PremiumSection; label: string; requ
     { id: 'charts', label: 'Charts' },
     { id: 'dtrader', label: 'DTrader' },
     { id: 'bulk_trader', label: 'Bulk Trading' },
+    { id: 'copy_trading', label: 'Copy Trading' },
+    { id: 'apex_bot', label: 'Apex Bot' },
+    { id: 'market_hacker', label: 'Market Hacker' },
 ];
 
 export const DEFAULT_NAVIGATION = NAVIGATION_CATALOG.map(item => item.id);
