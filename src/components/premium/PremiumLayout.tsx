@@ -32,6 +32,7 @@ import {
     MarketHackerPage,
     QuickBotPage,
     SignalAIPage,
+    SpeedbotPage,
     SourceAnalysisToolsPage,
 } from './pages/ImportedFeaturePages';
 import { ChartsPage } from './pages/LiveTradingPages';
@@ -70,7 +71,7 @@ import './premium-site-theme.scss';
 const validSections: PremiumSection[] = [
     'dashboard', 'bot_ideas', 'quick_bot', 'bot_builder', 'free_bots', 'signal_ai',
     'manual_trading', 'dcircle', 'bulk_trader', 'copy_trading', 'calculator', 'pro_ai',
-    'analysis_hub', 'charts', 'tradingview', 'dtrader',
+    'analysis_hub', 'analysis_tools', 'speedbot', 'apex_bot', 'market_hacker', 'charts', 'tradingview', 'dtrader',
 ];
 
 const sectionFromHash = (hash: string): PremiumSection => {
@@ -299,6 +300,8 @@ const PremiumLayout = observer(() => {
             case 'free_bots': return <FreeBotsPage openBotBuilder={openBotBuilder} />;
             case 'signal_ai': return <SignalAIPage />;
             case 'manual_trading': return <ManualTradingPage />;
+            case 'speedbot': return <SpeedbotPage />;
+            case 'analysis_tools': return <SourceAnalysisToolsPage />;
             case 'dcircle': return <DcirclePage />;
             case 'bulk_trader': return <BulkTraderPage />;
             case 'copy_trading': return <PatCopyTradingPage />;
