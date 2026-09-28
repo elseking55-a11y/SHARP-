@@ -24,10 +24,12 @@ import DashboardHome from './pages/DashboardHome';
 import FreeBotsPage from './pages/FreeBotsPage';
 import {
     AdvancedManualTradingPage,
+    ApexBotPage,
     AutoTraderPage,
     BotIdeasPage,
     DTraderPage,
     ProAIPage,
+    MarketHackerPage,
     QuickBotPage,
     SignalAIPage,
     SourceAnalysisToolsPage,
@@ -300,6 +302,8 @@ const PremiumLayout = observer(() => {
             case 'dcircle': return <DcirclePage />;
             case 'bulk_trader': return <BulkTraderPage />;
             case 'copy_trading': return <PatCopyTradingPage />;
+            case 'apex_bot': return <ApexBotPage openBotBuilder={openBotBuilder} />;
+            case 'market_hacker': return <MarketHackerPage />;
             case 'calculator': return <CalculatorPage />;
             case 'pro_ai': return <ProAIPage />;
             case 'analysis_hub': return <SourceAnalysisToolsPage />;
