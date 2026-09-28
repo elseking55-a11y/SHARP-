@@ -23,6 +23,8 @@ const NAV_ICONS: Partial<Record<PremiumSection, typeof HomeIcon>> = {
     speedbot: GridIcon,
     copy_trading: CopyIcon,
     analysis_tools: SearchIcon,
+    apex_bot: RobotIcon,
+    market_hacker: SearchIcon,
     calculator: CalculatorIcon,
     dcircle: GridIcon,
 };
@@ -114,7 +116,7 @@ const PremiumHeader = observer(
                     onPointerUp={endPointerDrag}
                     onPointerCancel={endPointerDrag}
                 >
-                    {Array.from(new Set(navigation)).filter(id => ['bot_builder', 'free_bots', 'manual_trading', 'speedbot', 'analysis_tools', 'charts', 'dtrader', 'bulk_trader'].includes(id)).map(id => {
+                    {Array.from(new Set(navigation)).filter(id => ['bot_builder', 'free_bots', 'manual_trading', 'speedbot', 'analysis_tools', 'charts', 'dtrader', 'bulk_trader', 'copy_trading', 'apex_bot', 'market_hacker'].includes(id)).map(id => {
                         const Icon = NAV_ICONS[id];
                         const label = NAV_LABELS[id];
                         if (!Icon || !label) return null;
