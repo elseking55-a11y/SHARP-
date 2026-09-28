@@ -47,7 +47,7 @@ const FreeBotsPage = ({ openBotBuilder }: { openBotBuilder?: () => void }) => {
             let workspace: any = null;
             for (let attempt = 0; attempt < 12 && !workspace; attempt += 1) {
                 await new Promise(resolve => window.setTimeout(resolve, attempt === 0 ? 350 : 200));
-                workspace = window.Blockly?.derivWorkspace;
+                workspace = (window as any).Blockly?.derivWorkspace;
             }
 
             if (!workspace) throw new Error('Bot Builder workspace did not finish loading. Please tap LOAD again.');
